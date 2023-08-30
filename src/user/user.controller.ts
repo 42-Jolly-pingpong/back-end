@@ -19,6 +19,7 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @ApiOperation({ summary: 'id를 이용한 유저정보 찾기' })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);

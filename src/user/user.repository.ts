@@ -3,6 +3,7 @@ import { UserEntity } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserInfoDTO } from './dto/UserInfo.dto';
 
 @Injectable()
 export class UserRepository extends Repository<UserEntity> {
@@ -11,10 +12,9 @@ export class UserRepository extends Repository<UserEntity> {
 	}
 
 	async createUserInfo(userInfo: CreateUserDto): Promise<void> {
-		console.log(userInfo);
 		const user = this.create({
 			intraId: userInfo.intra_id,
-			e_mail: userInfo.e_mail,
+			eMail: userInfo.e_mail,
 			nickname: userInfo.nickname,
 			avatarPath: userInfo.avatar_path,
 			status: userInfo.status,
@@ -24,5 +24,13 @@ export class UserRepository extends Repository<UserEntity> {
 			isLeave: userInfo.is_leave,
 		});
 		await this.save(user);
+	}
+
+	async getUserInfobyIdx(idx: number): Promise<UserInfoDTO> {
+		return await this.findOneBy({userIdx: idx})
+	}
+
+	async deleteUserInfobyIdx(idx: number): Promise<void> {
+		await this.delete({userIdx: idx})
 	}
 }

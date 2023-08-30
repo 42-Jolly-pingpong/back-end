@@ -9,7 +9,7 @@ export class UserEntity {
 	intraId: string;
 
 	@Column({name: 'e_mail'})
-	e_mail: string;
+	eMail: string;
 
 	@Column({name: "nickname"})
 	nickname: string;
