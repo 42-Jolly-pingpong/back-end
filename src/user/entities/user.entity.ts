@@ -2,30 +2,33 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('User')
 export class UserEntity {
-	@PrimaryGeneratedColumn()
-	user_idx: number;
+	@PrimaryGeneratedColumn({name: "user_idx"})
+	userIdx: number;
 
-	@Column()
-	intra_id: string;
+	@Column({name: "intra_id"})
+	intraId: string;
 
-	@Column()
+	@Column({name: 'e_mail'})
+	e_mail: string;
+
+	@Column({name: "nickname"})
 	nickname: string;
 
-	@Column()
-	avatar_path: string;
+	@Column({name: "avatar_path"})
+	avatarPath: string;
 
-	@Column()
+	@Column({name: "status"})
 	status: boolean;
 
-	@Column()
+	@Column({name: "auth"})
 	auth: boolean;
 
-	@Column()
+	@Column({name: "win"})
 	win: number;
 
-	@Column()
+	@Column({name: "lose"})
 	lose: number;
 
-	@Column()
-	is_leave: boolean;
+	@Column({name: "is_leave"})
+	isLeave: boolean;
 }
