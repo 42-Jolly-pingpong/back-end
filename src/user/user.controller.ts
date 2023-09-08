@@ -11,6 +11,7 @@ export class UserController {
   @ApiOperation({ summary: '유저 정보 DB 등록' })
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
+    console.log("api")
     return this.userService.create(createUserDto);
   }
 
@@ -21,7 +22,9 @@ export class UserController {
 
   @ApiOperation({ summary: 'id를 이용한 유저정보 찾기' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
+    console.log(id)
+    console.log("api")
     return this.userService.findOne(+id);
   }
 
@@ -34,4 +37,6 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
+
+  
 }
