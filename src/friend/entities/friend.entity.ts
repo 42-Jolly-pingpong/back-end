@@ -1,19 +1,19 @@
 import { User } from 'src/user/entities/user.entity';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('Friend')
-export class Friend extends BaseEntity {
+export class Friend {
 	@PrimaryColumn()
 	user_idx: number
 
 	@PrimaryColumn()
 	friend_idx: number
 
-	@ManyToOne(() => User)
+	@ManyToOne((type) => User)
 	@JoinColumn({name: 'user_idx'})
 	user: User
 
-	@ManyToOne(() => User)
+	@ManyToOne((type) => User)
 	@JoinColumn({name: 'friend_idx'})
 	friend: User
 }

@@ -3,11 +3,10 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserInfoDTO } from './dto/UserInfo.dto';
+import { UserInfoDTO } from './dto/userInfo.dto';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
-	
 	constructor(private dataSource: DataSource) {
 		super(User, dataSource.createEntityManager());
 	}
@@ -28,10 +27,10 @@ export class UserRepository extends Repository<User> {
 	}
 
 	async getUserInfobyIdx(idx: number): Promise<UserInfoDTO> {
-		return await this.findOneBy({userIdx: idx})
+		return await this.findOneBy({ userIdx: idx });
 	}
 
 	async deleteUserInfobyIdx(idx: number): Promise<void> {
-		await this.delete({userIdx: idx})
+		await this.delete({ userIdx: idx });
 	}
 }
