@@ -10,11 +10,12 @@ export class FriendRepository extends Repository<Friend> {
 		super(Friend, dataSource.createEntityManager());
 	}
 
-	async findAllFriend(userIdx: number) {
-		const friendList: FriendDTO[] = await this.find({
+	async findAllFriend(userIdx: number): Promise<UserInfoDTO[]> {
+		const friend: FriendDTO[] = await this.find({
 			relations: { user: true, friend: true },
 			where: { user_idx: userIdx },
 		});
-		console.log(friendList)
+		const friendList: UserInfoDTO[] = friend.map((item) => item.friend);
+		return friendList;
 	}
 }

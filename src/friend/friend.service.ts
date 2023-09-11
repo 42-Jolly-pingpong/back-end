@@ -10,7 +10,7 @@ export class FriendService {
 		private friendRepository: FriendRepository
 	) {}
 
-	findAllFriendList(userIdx: number) {
-		this.friendRepository.findAllFriend(userIdx);
+	async findAllFriendList(userIdx: number): Promise<UserInfoDTO[]> {
+		return await this.friendRepository.findAllFriend(userIdx);
 	}
 }
