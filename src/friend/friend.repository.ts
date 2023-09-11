@@ -18,4 +18,6 @@ export class FriendRepository extends Repository<Friend> {
 		const friendList: UserInfoDTO[] = friend.map((item) => item.friend);
 		return friendList;
 	}
+
+	
 }

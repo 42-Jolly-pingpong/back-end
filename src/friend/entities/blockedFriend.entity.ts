@@ -1,7 +1,7 @@
 import { User } from 'src/user/entities/user.entity';
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
-@Entity('Friend')
+@Entity('BlockedFriend')
 export class BlockedFriend {
 	@PrimaryColumn()
 	user_idx: number
