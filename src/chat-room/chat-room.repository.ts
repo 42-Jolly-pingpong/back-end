@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { ChatRoom } from './entities/chat-room.entity';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
