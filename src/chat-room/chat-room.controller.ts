@@ -1,4 +1,4 @@
-import { Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Logger, Param, Post } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { ChatRoomDto } from './dto/chat-room.dto';
 import { ChatRoomService } from './chat-room.service';
@@ -11,7 +11,7 @@ export class ChatRoomController {
 	@ApiOperation({ summary: '채팅방 생성' })
 	@Post('')
 	async createChatRoom(
-		@Param() createChatRoomDto: CreateChatRoomDto
+		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
 		return await this.chatRoomService.createChatRoom(createChatRoomDto);
 	}
