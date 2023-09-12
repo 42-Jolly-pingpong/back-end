@@ -1,30 +1,35 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+	Column,
+	Entity,
+	PrimaryGeneratedColumn,
+	UpdateDateColumn,
+} from 'typeorm';
 
 import { ChatRoomType } from '../chat-room-type.enum';
 
 @Entity('ChatRoom')
 export class ChatRoom {
-	@PrimaryGeneratedColumn({ name: 'room_idx' })
+	@PrimaryGeneratedColumn({ name: 'roomIdx' })
 	roomIdx: number;
 
-	@Column({ name: 'room_name' })
+	@Column({ name: 'roomName' })
 	roomName: string;
 
-	@Column({ name: 'room_type' })
+	@Column({ name: 'roomType' })
 	roomType: ChatRoomType;
 
 	@Column({ name: 'password', nullable: true })
 	password: number | null;
 
-	@Column({ name: 'max_people' })
+	@Column({ name: 'maxPeople' })
 	maxPeople: number;
 
-	@Column({ name: 'update_time' })
-	updateTime: Date;
+	@UpdateDateColumn({ name: 'updateTime' })
+	updatedTime: Date;
 
-	@Column({ name: 'status' })
+	@Column({ name: 'status', default: true })
 	status: boolean;
 
-	@Column({ name: 'current_people' })
+	@Column({ name: 'currentPeople', default: 1 })
 	currentPeople: number;
 }
