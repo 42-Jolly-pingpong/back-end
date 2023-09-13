@@ -3,6 +3,7 @@ import { DataSource, Repository } from 'typeorm';
 import { ChatRoom } from '../entities/chat-room.entity';
 import { CreateChatRoomDto } from '../dto/create-chat-room.dto';
 import { ChatRoomDto } from '../dto/chat-room.dto';
+import { ChatRoomType } from '../enums/chat-room-type.enum';
 
 @Injectable()
 export class ChatRoomRepository extends Repository<ChatRoom> {
@@ -26,5 +27,17 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 
 		await this.save(chatRoom);
 		return chatRoom;
+	}
+
+	async inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
+		const query = this.createQueryBuilder('room');
+
+		query
+			.where('room.roomType = :open', { open: ChatRoomType.PUBLIC })
+			.orWhere('room.roomType = :open', { open: ChatRoomType.PROTECTED });
+
+		const rooms = await query.getMany();
+
+		return rooms;
 	}
 }

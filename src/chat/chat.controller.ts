@@ -16,4 +16,9 @@ export class ChatController {
 		return await this.chatService.createChatRoom(createChatRoomDto);
 	}
 
+	@ApiOperation({ summary: '오픈 채팅방 목록 조회' })
+	@Get('/opened')
+	async inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
+		return await this.chatService.inquireOpenedChatRoom();
+	}
 }
