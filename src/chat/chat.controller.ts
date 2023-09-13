@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Logger, Param, Post } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	Logger,
+	Param,
+	Post,
+	Put,
+} from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { ChatRoomDto } from './dto/chat-room.dto';
 import { ChatService } from './chat.service';
@@ -25,5 +33,13 @@ export class ChatController {
 	@Get('/:roomIdx')
 	getChatRoomInfo(@Param('roomIdx') roomIdx: number): Promise<ChatRoomDto> {
 		return this.chatService.getChatRoomInfo(roomIdx);
+	}
+
+	@Put('/:roomIdx')
+	setChatRoomInfo(
+		@Param('roomIdx') roomIdx: number,
+		@Body() createChatRoomDto: CreateChatRoomDto
+	): Promise<void> {
+		return this.chatService.setChatRoomInfo(roomIdx, createChatRoomDto);
 	}
 }

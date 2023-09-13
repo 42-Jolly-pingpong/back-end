@@ -40,4 +40,11 @@ export class ChatService {
 	getChatRoomInfo(roomIdx: number): Promise<ChatRoomDto> {
 		return this.chatRoomRepository.getChatRoomInfo(roomIdx);
 	}
+
+	setChatRoomInfo(
+		roomIdx: number,
+		createChatRoomDto: CreateChatRoomDto
+	): Promise<void> {
+		return this.chatRoomRepository.setChatRoomInfo(roomIdx, createChatRoomDto);
+	}
 }

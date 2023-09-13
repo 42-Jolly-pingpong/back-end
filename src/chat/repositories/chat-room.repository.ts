@@ -1,7 +1,7 @@
+import { CreateChatRoomDto } from './../dto/create-chat-room.dto';
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { ChatRoom } from '../entities/chat-room.entity';
-import { CreateChatRoomDto } from '../dto/create-chat-room.dto';
 import { ChatRoomDto } from '../dto/chat-room.dto';
 import { ChatRoomType } from '../enums/chat-room-type.enum';
 
@@ -49,5 +49,20 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		const rooms = await query.getOne();
 
 		return rooms;
+	}
+
+	async setChatRoomInfo(
+		roomIdx: number,
+		createChatRoomDto: CreateChatRoomDto
+	): Promise<void> {
+		const { roomName, roomType, password, maxPeople } = createChatRoomDto;
+
+		const query = this.createQueryBuilder();
+
+		query
+			.update(ChatRoom)
+			.set({ roomName, roomType, password, maxPeople })
+			.where('roomIdx = :roomIdx', { roomIdx })
+			.execute();
 	}
 }
