@@ -1,7 +1,7 @@
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChatRoomRepository } from './chat-room.repository';
+import { ChatRoomRepository } from './repositories/chat-room.repository';
 import { ChatRoomDto } from './dto/chat-room.dto';
 
 @Injectable()

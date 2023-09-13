@@ -1,7 +1,7 @@
 import { Body, Controller, Logger, Param, Post } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { ChatRoomDto } from './dto/chat-room.dto';
-import { ChatRoomService } from './chat-room.service';
+import { ChatRoomService } from './chat.service';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 
 @Controller('chat-rooms')

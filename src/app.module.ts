@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeORMConfig } from 'configs/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
 import { FriendModule } from './friend/friend.module';
-import { ChatRoomModule } from './chat-room/chat-room.module';
+import { ChatRoomModule } from './chat/chat.module';
 
 @Module({
 	imports: [

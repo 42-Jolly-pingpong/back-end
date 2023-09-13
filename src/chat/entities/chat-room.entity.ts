@@ -5,7 +5,7 @@ import {
 	UpdateDateColumn,
 } from 'typeorm';
 
-import { ChatRoomType } from '../chat-room-type.enum';
+import { ChatRoomType } from '../enums/chat-room-type.enum';
 
 @Entity('ChatRoom')
 export class ChatRoom {
