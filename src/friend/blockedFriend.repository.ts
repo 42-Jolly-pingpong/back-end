@@ -13,7 +13,7 @@ export class BlockedFriendRepository extends Repository<BlockedFriend> {
 	async findBlackList(userIdx: number): Promise<UserInfoDTO[]> {
 		const blackList: FriendDTO[] = await this.find({
 			relations: { user: true, friend: true },
-			where: { user_idx: userIdx },
+			where: { userIdx },
 		});
 		return blackList.map((item) => item.friend);
 	}

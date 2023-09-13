@@ -3,7 +3,7 @@ import { FriendService } from './friend.service';
 import { ApiOperation } from '@nestjs/swagger';
 import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
 
-@Controller('')
+@Controller('friends')
 export class FriendController {
 	constructor(private readonly friendService: FriendService) {}
 

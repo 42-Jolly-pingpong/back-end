@@ -3,11 +3,11 @@ import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('BlockedFriend')
 export class BlockedFriend {
-	@PrimaryColumn()
-	user_idx: number
+	@PrimaryColumn({name: 'user_idx'})
+	userIdx: number
 
-	@PrimaryColumn()
-	friend_idx: number
+	@PrimaryColumn({name: 'friend_idx'})
+	friendIdx: number
 
 	@ManyToOne((type) => User)
 	@JoinColumn({name: 'user_idx'})
