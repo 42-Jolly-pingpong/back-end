@@ -1,0 +1,5 @@
+export enum RoomAuth {
+	OWNER = 'OWNER',
+	ADMINISTRATOR = 'ADMINISTRATOR',
+	NORMAL_USER = 'NORMAL_USER',
+}
