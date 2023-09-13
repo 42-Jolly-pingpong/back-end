@@ -15,5 +15,5 @@ export class CreateChatRoomDto {
 	maxPeople: number;
 
 	@ApiProperty({ description: '현재 인원' })
-	currentPeople: number = 1;
+	currentPeople: number;
 }
