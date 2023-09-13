@@ -26,7 +26,7 @@ export class ChatService {
 		const room = await this.chatRoomRepository.createChatRoom(
 			createChatRoomDto
 		);
-		const user = await this.userRepository.getUserInfobyIdx(1);
+		const user = await this.userRepository.getUserInfobyIdx(1); //temp
 
 		await this.chatParticipantRepository.createChatRoom(room, user);
 
