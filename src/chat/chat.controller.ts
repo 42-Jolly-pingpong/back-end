@@ -10,15 +10,17 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 생성' })
 	@Post('')
-	async createChatRoom(
+	createChatRoom(
 		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
-		return await this.chatService.createChatRoom(createChatRoomDto);
+		return this.chatService.createChatRoom(createChatRoomDto);
 	}
 
 	@ApiOperation({ summary: '오픈 채팅방 목록 조회' })
 	@Get('/opened')
-	async inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
-		return await this.chatService.inquireOpenedChatRoom();
+	inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
+		return this.chatService.inquireOpenedChatRoom();
 	}
+
+	async
 }

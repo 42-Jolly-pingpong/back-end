@@ -33,7 +33,7 @@ export class ChatService {
 		return room;
 	}
 
-	async inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
+	inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
 		return this.chatRoomRepository.inquireOpenedChatRoom();
 	}
 }
