@@ -1,11 +1,13 @@
 import {
 	Column,
 	Entity,
+	OneToMany,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
 
 import { ChatRoomType } from '../enums/chat-room-type.enum';
+import { ChatParticipant } from './chat-participant.entity';
 
 @Entity('ChatRoom')
 export class ChatRoom {
@@ -30,6 +32,9 @@ export class ChatRoom {
 	@Column({ name: 'status', default: true })
 	status: boolean;
 
-	@Column({ name: 'current_people' })
+	@Column({ name: 'current_people', default: 1 })
 	currentPeople: number;
+
+	@OneToMany(() => ChatParticipant, (participants) => participants.room)
+	participants: ChatParticipant[];
 }
