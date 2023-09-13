@@ -13,4 +13,7 @@ export class CreateChatRoomDto {
 
 	@ApiProperty({ description: '최대 인원' })
 	maxPeople: number;
+
+	@ApiProperty({ description: '현재 인원' })
+	currentPeople: number = 1;
 }
