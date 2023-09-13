@@ -36,4 +36,8 @@ export class ChatService {
 	inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
 		return this.chatRoomRepository.inquireOpenedChatRoom();
 	}
+
+	getChatRoomInfo(roomIdx: number): Promise<ChatRoomDto> {
+		return this.chatRoomRepository.getChatRoomInfo(roomIdx);
+	}
 }

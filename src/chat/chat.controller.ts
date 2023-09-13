@@ -22,5 +22,8 @@ export class ChatController {
 		return this.chatService.inquireOpenedChatRoom();
 	}
 
-	async
+	@Get('/:roomIdx')
+	getChatRoomInfo(@Param('roomIdx') roomIdx: number): Promise<ChatRoomDto> {
+		return this.chatService.getChatRoomInfo(roomIdx);
+	}
 }

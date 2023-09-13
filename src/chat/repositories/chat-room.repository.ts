@@ -40,4 +40,14 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 
 		return rooms;
 	}
+
+	async getChatRoomInfo(roomIdx: number): Promise<ChatRoomDto> {
+		const query = this.createQueryBuilder('room');
+
+		query.where('room.roomIdx = :roomIdx', { roomIdx });
+
+		const rooms = await query.getOne();
+
+		return rooms;
+	}
 }
