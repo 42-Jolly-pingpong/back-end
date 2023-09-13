@@ -30,6 +30,6 @@ export class ChatRoom {
 	@Column({ name: 'status', default: true })
 	status: boolean;
 
-	@Column({ name: 'current_people', default: 1 })
+	@Column({ name: 'current_people' })
 	currentPeople: number;
 }

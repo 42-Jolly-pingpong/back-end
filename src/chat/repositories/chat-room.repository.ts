@@ -13,16 +13,15 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 	async createChatRoom(
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
-		const { roomName, roomType, password, maxPeople } = createChatRoomDto;
+		const { roomName, roomType, password, maxPeople, currentPeople } =
+			createChatRoomDto;
 
 		const chatRoom = this.create({
-			roomName: createChatRoomDto.roomName,
+			roomName,
 			roomType,
 			password,
 			maxPeople,
-			status: true,
-			currentPeople: 1,
-			updatedTime: new Date(),
+			currentPeople,
 		});
 
 		await this.save(chatRoom);
