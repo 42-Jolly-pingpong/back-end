@@ -6,6 +6,7 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ChatParticipant } from './chat-participant.entity';
+import { ChatRoom } from './chat-room.entity';
 
 @Entity('Chat')
 export class Chat {
@@ -14,6 +15,9 @@ export class Chat {
 
 	@ManyToOne(() => ChatParticipant, (user) => user.chats)
 	user: ChatParticipant;
+
+	@ManyToOne(() => ChatRoom, (room) => room.chats)
+	room: ChatRoom;
 
 	@Column({ name: 'content' })
 	content: string;

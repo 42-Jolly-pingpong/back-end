@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 import { ChatRoomType } from '../enums/chat-room-type.enum';
+import { Chat } from './chat.entity';
 import { ChatParticipant } from './chat-participant.entity';
 
 @Entity('ChatRoom')
@@ -35,6 +36,9 @@ export class ChatRoom {
 	@Column({ name: 'current_people', default: 1 })
 	currentPeople: number;
 
-	@OneToMany(() => ChatParticipant, (participants) => participants.room)
+	@OneToMany(() => Chat, (chat) => chat.room)
+	chats: Chat[];
+
+	@OneToMany(() => ChatParticipant, (participant) => participant.room)
 	participants: ChatParticipant[];
 }
