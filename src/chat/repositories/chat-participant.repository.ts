@@ -5,6 +5,7 @@ import { PaticipantStatus } from '../enums/paticipant-status.enum';
 import { RoomAuth } from '../enums/room-auth.enum';
 import { ChatRoomDto } from '../dto/chat-room.dto';
 import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
+import { ChatRoom } from '../entities/chat-room.entity';
 
 @Injectable()
 export class ChatParticipantRepository extends Repository<ChatParticipant> {
@@ -12,7 +13,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		super(ChatParticipant, dataSource.createEntityManager());
 	}
 
-	async createChatRoom(room: ChatRoomDto, user: UserInfoDTO) {
+	async createChatRoom(room: ChatRoomDto, user: UserInfoDTO): Promise<void> {
 		const participant = this.create({
 			room,
 			user,
@@ -36,5 +37,17 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.getOne();
 
 		return user;
+	}
+
+	async addParticipant(room: ChatRoom, user: UserInfoDTO): Promise<void> {
+		const participant = this.create({
+			room,
+			user,
+			roomAuth: RoomAuth.NORMAL_USER,
+			status: PaticipantStatus.DEFAULT,
+			muteExpirationTime: null,
+		});
+
+		await this.save(participant);
 	}
 }

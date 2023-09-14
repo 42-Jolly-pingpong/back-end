@@ -36,6 +36,12 @@ export class ChatController {
 		return this.chatService.inquireOpenedChatRoom();
 	}
 
+	@ApiOperation({ summary: '채팅방 입장' })
+	@Post('/:roomIdx')
+	addParticipant(@Param('roomIdx') roomIdx: number): Promise<ChatRoomDto> {
+		return this.chatService.addParticipant(roomIdx);
+	}
+
 	@ApiOperation({ summary: '채팅방 정보 조회' })
 	@Get('/:roomIdx')
 	getChatRoomInfo(@Param('roomIdx') roomIdx: number): Promise<ChatRoomDto> {

@@ -40,6 +40,14 @@ export class ChatService {
 		return this.chatRoomRepository.inquireOpenedChatRoom();
 	}
 
+	async addParticipant(roomIdx: number): Promise<ChatRoomDto> {
+		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
+		const user = await this.userRepository.getUserInfobyIdx(2); //temp
+
+		await this.chatParticipantRepository.addParticipant(room, user);
+		return room;
+	}
+
 	getChatRoomInfo(roomIdx: number): Promise<ChatRoomDto> {
 		return this.chatRoomRepository.getChatRoomInfo(roomIdx);
 	}
