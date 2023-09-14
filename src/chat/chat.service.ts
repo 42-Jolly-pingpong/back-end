@@ -44,7 +44,7 @@ export class ChatService {
 
 	async addParticipant(roomIdx: number): Promise<ChatRoomDto> {
 		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
-		const user = await this.userRepository.getUserInfobyIdx(2); //temp
+		const user = await this.userRepository.getUserInfobyIdx(1); //temp
 
 		await this.chatParticipantRepository.addParticipant(room, user);
 		return room;
@@ -117,5 +117,10 @@ export class ChatService {
 			this.setParticipantAuth(roomIdx, setParticipantDto);
 			return;
 		}
+	}
+
+	deleteParticipant(roomIdx: number, userIdx: number): Promise<void> {
+		// return this.chatRoomRepository.deleteParticipant(roomIdx, userIdx);
+		return this.chatParticipantRepository.deleteParticipant(roomIdx, userIdx);
 	}
 }

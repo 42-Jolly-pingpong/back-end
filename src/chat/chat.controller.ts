@@ -93,4 +93,10 @@ export class ChatController {
 	): Promise<void> {
 		return this.chatService.setParticipantInfo(roomIdx, chatParticipantDto);
 	}
+
+	@ApiOperation({ summary: '참여자 채팅방 퇴장' })
+	@Delete('/:roomIdx/members')
+	deleteParticipant(@Param('roomIdx') roomIdx: number): Promise<void> {
+		return this.chatService.deleteParticipant(roomIdx, 1); //temp
+	}
 }

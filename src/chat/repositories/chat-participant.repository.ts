@@ -94,4 +94,14 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.andWhere('userIdx = :userIdx', { userIdx })
 			.execute();
 	}
+
+	async deleteParticipant(roomIdx: number, userIdx: number): Promise<void> {
+		const query = this.createQueryBuilder('user');
+
+		query
+			.delete()
+			.where('userIdx = :userIdx', { userIdx })
+			.andWhere('roomIdx = :roomIdx', { roomIdx })
+			.execute();
+	}
 }
