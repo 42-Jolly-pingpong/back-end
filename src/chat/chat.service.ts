@@ -7,6 +7,7 @@ import { ChatParticipantRepository } from './repositories/chat-participant.repos
 import { UserRepository } from 'src/user/user.repository';
 import { ChatRepository } from './repositories/chat.repository';
 import { ChatDto } from './dto/chat.dto';
+import { CreateChatDto } from './dto/create-chat.dto';
 
 @Injectable()
 export class ChatService {
@@ -55,5 +56,16 @@ export class ChatService {
 
 	getChats(roomIdx: number): Promise<ChatDto[]> {
 		return this.chatRepository.getChats(roomIdx);
+	}
+
+	async createChat(
+		roomIdx: number,
+		createChatDto: CreateChatDto
+	): Promise<ChatDto> {
+		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
+		const participant =
+			await this.chatParticipantRepository.getParticipantEntity(roomIdx, 1); //userIdx temp
+
+		return this.chatRepository.createChat(room, participant, createChatDto);
 	}
 }

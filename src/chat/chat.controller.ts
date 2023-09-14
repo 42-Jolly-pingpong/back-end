@@ -13,6 +13,7 @@ import { ChatRoomDto } from './dto/chat-room.dto';
 import { ChatService } from './chat.service';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { ChatDto } from './dto/chat.dto';
+import { CreateChatDto } from './dto/create-chat.dto';
 
 @Controller('chat-rooms')
 export class ChatController {
@@ -53,5 +54,13 @@ export class ChatController {
 	@Get('/:roomIdx/chats')
 	getChats(@Param('roomIdx') roomIdx: number): Promise<ChatDto[]> {
 		return this.chatService.getChats(roomIdx);
+	}
+
+	@Post('/:roomIdx/chats')
+	createChat(
+		@Param('roomIdx') roomIdx: number,
+		@Body() createChatDto: CreateChatDto
+	): Promise<ChatDto> {
+		return this.chatService.createChat(roomIdx, createChatDto);
 	}
 }
