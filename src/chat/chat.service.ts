@@ -1,5 +1,5 @@
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatRoomRepository } from './repositories/chat-room.repository';
 import { ChatRoomDto } from './dto/chat-room.dto';
@@ -9,6 +9,8 @@ import { ChatRepository } from './repositories/chat.repository';
 import { ChatDto } from './dto/chat.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { ChatParticipantDto } from './dto/chat-participant.dto';
+import { SetParticipantDto } from './dto/set-participant.dto';
+import { PaticipantStatus } from './enums/paticipant-status.enum';
 
 @Injectable()
 export class ChatService {
@@ -80,5 +82,40 @@ export class ChatService {
 
 	getPariticipants(roomIdx: number): Promise<ChatParticipantDto[]> {
 		return this.chatParticipantRepository.getPariticipants(roomIdx);
+	}
+
+	setParticipantStatus(roomIdx: number, setParticipantDto: SetParticipantDto) {
+		if (setParticipantDto.status == PaticipantStatus.MUTED) {
+			const mutedTime = new Date();
+			mutedTime.setMinutes(mutedTime.getMinutes() + 5);
+			setParticipantDto.muteExpirationTime = mutedTime;
+		}
+
+		return this.chatParticipantRepository.setParticipantStatus(
+			roomIdx,
+			setParticipantDto
+		);
+	}
+
+	setParticipantAuth(roomIdx: number, setParticipantDto: SetParticipantDto) {
+		return this.chatParticipantRepository.setParticipantAuth(
+			roomIdx,
+			setParticipantDto
+		);
+	}
+
+	async setParticipantInfo(
+		roomIdx: number,
+		setParticipantDto: SetParticipantDto
+	) {
+		const admin = await this.userRepository.getUserInfobyIdx(1); //temp
+
+		if (setParticipantDto.status != null) {
+			this.setParticipantStatus(roomIdx, setParticipantDto);
+			return;
+		} else if (setParticipantDto.roomAuth != null) {
+			this.setParticipantAuth(roomIdx, setParticipantDto);
+			return;
+		}
 	}
 }

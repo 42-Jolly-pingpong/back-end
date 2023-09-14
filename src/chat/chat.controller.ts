@@ -12,7 +12,6 @@ import {
 import { ApiOperation } from '@nestjs/swagger';
 import { ChatRoomDto } from './dto/chat-room.dto';
 import { ChatService } from './chat.service';
-import { ChatParticipantService } from './chat-participant.service';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { ChatDto } from './dto/chat.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
@@ -84,5 +83,14 @@ export class ChatController {
 		@Param('roomIdx') roomIdx: number
 	): Promise<ChatParticipantDto[]> {
 		return this.chatService.getPariticipants(roomIdx);
+	}
+
+	@ApiOperation({ summary: '채팅방 참여자 상태, 역할 변경' })
+	@Patch('/:roomIdx/members')
+	setParticipantInfo(
+		@Param('roomIdx') roomIdx: number,
+		@Body() chatParticipantDto: ChatParticipantDto
+	): Promise<void> {
+		return this.chatService.setParticipantInfo(roomIdx, chatParticipantDto);
 	}
 }

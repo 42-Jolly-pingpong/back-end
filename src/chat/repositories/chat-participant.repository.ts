@@ -7,6 +7,7 @@ import { ChatRoomDto } from '../dto/chat-room.dto';
 import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
 import { ChatRoom } from '../entities/chat-room.entity';
 import { ChatParticipantDto } from '../dto/chat-participant.dto';
+import { SetParticipantDto } from '../dto/set-participant.dto';
 
 @Injectable()
 export class ChatParticipantRepository extends Repository<ChatParticipant> {
@@ -60,5 +61,37 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.getMany();
 
 		return users;
+	}
+
+	async setParticipantStatus(
+		roomIdx: number,
+		setParticipantDto: SetParticipantDto
+	) {
+		const { user, status, muteExpirationTime } = setParticipantDto;
+		const userIdx = user.userIdx;
+		const query = this.createQueryBuilder();
+
+		query
+			.update(ChatParticipant)
+			.set({ status, muteExpirationTime })
+			.where('roomIdx = :roomIdx', { roomIdx })
+			.andWhere('userIdx = :userIdx', { userIdx })
+			.execute();
+	}
+
+	async setParticipantAuth(
+		roomIdx: number,
+		setParticipantDto: SetParticipantDto
+	) {
+		const { user, roomAuth } = setParticipantDto;
+		const userIdx = user.userIdx;
+		const query = this.createQueryBuilder();
+
+		query
+			.update(ChatParticipant)
+			.set({ roomAuth })
+			.where('roomIdx = :roomIdx', { roomIdx })
+			.andWhere('userIdx = :userIdx', { userIdx })
+			.execute();
 	}
 }
