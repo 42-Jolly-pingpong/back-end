@@ -39,6 +39,8 @@ export class ChatRoom {
 	@OneToMany(() => Chat, (chat) => chat.room)
 	chats: Chat[];
 
-	@OneToMany(() => ChatParticipant, (participant) => participant.room)
+	@OneToMany(() => ChatParticipant, (participant) => participant.room, {
+		onDelete: 'NO ACTION',
+	})
 	participants: ChatParticipant[];
 }
