@@ -3,9 +3,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatRoomRepository } from './repositories/chat-room.repository';
 import { ChatRoomDto } from './dto/chat-room.dto';
-import { ChatParticipantRepository } from './repositories/chat-participant.repository copy';
+import { ChatParticipantRepository } from './repositories/chat-participant.repository';
 import { UserRepository } from 'src/user/user.repository';
 import { ChatRepository } from './repositories/chat.repository';
+import { ChatDto } from './dto/chat.dto';
 
 @Injectable()
 export class ChatService {
@@ -50,5 +51,9 @@ export class ChatService {
 
 	deleteChatRoom(roomIdx: number): Promise<void> {
 		return this.chatRoomRepository.deleteChatRoom(roomIdx);
+	}
+
+	getChats(roomIdx: number): Promise<ChatDto[]> {
+		return this.chatRepository.getChats(roomIdx);
 	}
 }

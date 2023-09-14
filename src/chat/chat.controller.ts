@@ -12,6 +12,7 @@ import { ApiOperation } from '@nestjs/swagger';
 import { ChatRoomDto } from './dto/chat-room.dto';
 import { ChatService } from './chat.service';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
+import { ChatDto } from './dto/chat.dto';
 
 @Controller('chat-rooms')
 export class ChatController {
@@ -47,5 +48,10 @@ export class ChatController {
 	@Delete('/:roomIdx')
 	deleteChatRoom(@Param('roomIdx') roomIdx: number): Promise<void> {
 		return this.chatService.deleteChatRoom(roomIdx);
+	}
+
+	@Get('/:roomIdx/chats')
+	getChats(@Param('roomIdx') roomIdx: number): Promise<ChatDto[]> {
+		return this.chatService.getChats(roomIdx);
 	}
 }
