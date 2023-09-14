@@ -4,16 +4,8 @@ import {
 	Entity,
 	ManyToOne,
 	PrimaryGeneratedColumn,
-	UpdateDateColumn,
 } from 'typeorm';
 import { ChatParticipant } from './chat-participant.entity';
-
-// CREATE TABLE `chat` (
-// 	`chat_idx`	number	NOT NULL,
-// 	`chat_user_idx`	number	NOT NULL,
-// 	`content`	text	NULL,
-// 	`time`	time	NULL
-// );
 
 @Entity('Chat')
 export class Chat {
