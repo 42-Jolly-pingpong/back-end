@@ -18,9 +18,11 @@ export class ChatParticipant {
 	participantIdx: number;
 
 	@ManyToOne(() => ChatRoom, (room) => room.participants)
+	@JoinColumn({ name: 'roomIdx' })
 	room: ChatRoom;
 
 	@ManyToOne(() => User, (user) => user.userIdx)
+	@JoinColumn({ name: 'userIdx' })
 	user: User;
 
 	@Column({ name: 'room_auth' })

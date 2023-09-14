@@ -2,6 +2,7 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
+	JoinColumn,
 	ManyToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -14,9 +15,11 @@ export class Chat {
 	chatIdx: number;
 
 	@ManyToOne(() => ChatParticipant, (user) => user.chats)
+	@JoinColumn({ name: 'userIdx' })
 	user: ChatParticipant;
 
 	@ManyToOne(() => ChatRoom, (room) => room.chats)
+	@JoinColumn({ name: 'roomIdx' })
 	room: ChatRoom;
 
 	@Column({ name: 'content' })
