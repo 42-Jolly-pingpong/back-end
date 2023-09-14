@@ -5,6 +5,7 @@ import {
 	Get,
 	Logger,
 	Param,
+	Patch,
 	Post,
 	Put,
 } from '@nestjs/common';
@@ -33,11 +34,13 @@ export class ChatController {
 		return this.chatService.inquireOpenedChatRoom();
 	}
 
+	@ApiOperation({ summary: '채팅방 정보 조회' })
 	@Get('/:roomIdx')
 	getChatRoomInfo(@Param('roomIdx') roomIdx: number): Promise<ChatRoomDto> {
 		return this.chatService.getChatRoomInfo(roomIdx);
 	}
 
+	@ApiOperation({ summary: '채팅방 정보 수정' })
 	@Put('/:roomIdx')
 	setChatRoomInfo(
 		@Param('roomIdx') roomIdx: number,
@@ -46,16 +49,19 @@ export class ChatController {
 		return this.chatService.setChatRoomInfo(roomIdx, createChatRoomDto);
 	}
 
+	@ApiOperation({ summary: '채팅방 삭제' })
 	@Delete('/:roomIdx')
 	deleteChatRoom(@Param('roomIdx') roomIdx: number): Promise<void> {
 		return this.chatService.deleteChatRoom(roomIdx);
 	}
 
+	@ApiOperation({ summary: '채팅방 내부 챗 조회' })
 	@Get('/:roomIdx/chats')
 	getChats(@Param('roomIdx') roomIdx: number): Promise<ChatDto[]> {
 		return this.chatService.getChats(roomIdx);
 	}
 
+	@ApiOperation({ summary: '챗 생성' })
 	@Post('/:roomIdx/chats')
 	createChat(
 		@Param('roomIdx') roomIdx: number,
@@ -63,4 +69,5 @@ export class ChatController {
 	): Promise<ChatDto> {
 		return this.chatService.createChat(roomIdx, createChatDto);
 	}
+
 }
