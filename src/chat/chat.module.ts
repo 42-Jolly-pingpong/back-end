@@ -4,7 +4,7 @@ import { ChatService } from './chat.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatRoom } from './entities/chat-room.entity';
 import { ChatRoomRepository } from './repositories/chat-room.repository';
-import { ChatParticipantRepository } from './repositories/chat-participant.repository copy';
+import { ChatParticipantRepository } from './repositories/chat-participant.repository';
 import { ChatParticipant } from './entities/chat-participant.entity';
 import { Chat } from './entities/chat.entity';
 import { ChatRepository } from './repositories/chat.repository';
