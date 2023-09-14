@@ -65,4 +65,10 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 			.where('roomIdx = :roomIdx', { roomIdx })
 			.execute();
 	}
+
+	async deleteChatRoom(roomIdx: number): Promise<void> {
+		const query = this.createQueryBuilder('room');
+
+		query.delete().where('roomIdx = :roomIdx', { roomIdx }).execute();
+	}
 }

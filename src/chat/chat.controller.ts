@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	Logger,
 	Param,
@@ -41,5 +42,10 @@ export class ChatController {
 		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
 		return this.chatService.setChatRoomInfo(roomIdx, createChatRoomDto);
+	}
+
+	@Delete('/:roomIdx')
+	deleteChatRoom(@Param('roomIdx') roomIdx: number): Promise<void> {
+		return this.chatService.deleteChatRoom(roomIdx);
 	}
 }

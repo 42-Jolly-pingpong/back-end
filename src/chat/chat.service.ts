@@ -47,4 +47,8 @@ export class ChatService {
 	): Promise<void> {
 		return this.chatRoomRepository.setChatRoomInfo(roomIdx, createChatRoomDto);
 	}
+
+	deleteChatRoom(roomIdx: number): Promise<void> {
+		return this.chatRoomRepository.deleteChatRoom(roomIdx);
+	}
 }
