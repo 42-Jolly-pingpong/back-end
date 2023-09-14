@@ -4,6 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { ChatRoom } from '../entities/chat-room.entity';
 import { ChatRoomDto } from '../dto/chat-room.dto';
 import { ChatRoomType } from '../enums/chat-room-type.enum';
+import { ChatParticipantDto } from '../dto/chat-participant.dto';
 
 @Injectable()
 export class ChatRoomRepository extends Repository<ChatRoom> {
@@ -73,5 +74,11 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		const query = this.createQueryBuilder('room');
 
 		query.delete().where('roomIdx = :roomIdx', { roomIdx }).execute();
+	}
+
+	async getPariticipants(roomIdx: number): Promise<ChatParticipantDto[]> {
+		const room = await this.findOneBy({ roomIdx });
+
+		return room.participants;
 	}
 }

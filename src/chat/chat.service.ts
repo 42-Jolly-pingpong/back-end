@@ -8,6 +8,7 @@ import { UserRepository } from 'src/user/user.repository';
 import { ChatRepository } from './repositories/chat.repository';
 import { ChatDto } from './dto/chat.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
+import { ChatParticipantDto } from './dto/chat-participant.dto';
 
 @Injectable()
 export class ChatService {
@@ -67,5 +68,9 @@ export class ChatService {
 			await this.chatParticipantRepository.getParticipantEntity(roomIdx, 1); //userIdx temp
 
 		return this.chatRepository.createChat(room, participant, createChatDto);
+	}
+
+	getPariticipants(roomIdx: number): Promise<ChatParticipantDto[]> {
+		return this.chatRoomRepository.getPariticipants(roomIdx);
 	}
 }

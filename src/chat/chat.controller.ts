@@ -12,9 +12,11 @@ import {
 import { ApiOperation } from '@nestjs/swagger';
 import { ChatRoomDto } from './dto/chat-room.dto';
 import { ChatService } from './chat.service';
+import { ChatParticipantService } from './chat-participant.service';
 import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { ChatDto } from './dto/chat.dto';
 import { CreateChatDto } from './dto/create-chat.dto';
+import { ChatParticipantDto } from './dto/chat-participant.dto';
 
 @Controller('chat-rooms')
 export class ChatController {
@@ -70,4 +72,11 @@ export class ChatController {
 		return this.chatService.createChat(roomIdx, createChatDto);
 	}
 
+	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })
+	@Get('/:roomIdx/members')
+	getPariticipants(
+		@Param('roomIdx') roomIdx: number
+	): Promise<ChatParticipantDto[]> {
+		return this.chatService.getPariticipants(roomIdx);
+	}
 }
