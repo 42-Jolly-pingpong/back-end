@@ -40,6 +40,10 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return rooms;
 	}
 
+	async getChatRoomEntity(roomIdx: number): Promise<ChatRoom> {
+		return await this.findOneBy({ roomIdx });
+	}
+
 	async getChatRoomInfo(roomIdx: number): Promise<ChatRoomDto> {
 		const query = this.createQueryBuilder('room');
 

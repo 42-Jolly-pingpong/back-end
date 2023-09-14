@@ -23,4 +23,18 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 
 		await this.save(participant);
 	}
+
+	async getParticipantEntity(
+		roomIdx: number,
+		userIdx: number
+	): Promise<ChatParticipant> {
+		const query = this.createQueryBuilder('user');
+
+		const user = await query
+			.where('user.roomIdx = :roomIdx', { roomIdx })
+			.andWhere('user.userIdx = :userIdx', { userIdx })
+			.getOne();
+
+		return user;
+	}
 }
