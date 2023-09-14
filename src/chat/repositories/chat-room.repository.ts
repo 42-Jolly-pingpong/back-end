@@ -75,10 +75,4 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 
 		query.delete().where('roomIdx = :roomIdx', { roomIdx }).execute();
 	}
-
-	async getPariticipants(roomIdx: number): Promise<ChatParticipantDto[]> {
-		const room = await this.findOneBy({ roomIdx });
-
-		return room.participants;
-	}
 }

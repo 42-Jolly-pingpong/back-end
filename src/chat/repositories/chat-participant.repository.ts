@@ -6,6 +6,7 @@ import { RoomAuth } from '../enums/room-auth.enum';
 import { ChatRoomDto } from '../dto/chat-room.dto';
 import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
 import { ChatRoom } from '../entities/chat-room.entity';
+import { ChatParticipantDto } from '../dto/chat-participant.dto';
 
 @Injectable()
 export class ChatParticipantRepository extends Repository<ChatParticipant> {
@@ -49,5 +50,15 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		});
 
 		await this.save(participant);
+	}
+
+	async getPariticipants(roomIdx: number): Promise<ChatParticipantDto[]> {
+		const query = this.createQueryBuilder('user');
+
+		const users = await query
+			.where('user.roomIdx = :roomIdx', { roomIdx })
+			.getMany();
+
+		return users;
 	}
 }

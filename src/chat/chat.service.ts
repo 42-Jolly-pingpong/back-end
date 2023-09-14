@@ -79,6 +79,6 @@ export class ChatService {
 	}
 
 	getPariticipants(roomIdx: number): Promise<ChatParticipantDto[]> {
-		return this.chatRoomRepository.getPariticipants(roomIdx);
+		return this.chatParticipantRepository.getPariticipants(roomIdx);
 	}
 }
