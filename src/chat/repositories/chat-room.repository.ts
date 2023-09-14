@@ -4,7 +4,6 @@ import { DataSource, Repository } from 'typeorm';
 import { ChatRoom } from '../entities/chat-room.entity';
 import { ChatRoomDto } from '../dto/chat-room.dto';
 import { ChatRoomType } from '../enums/chat-room-type.enum';
-import { ChatDto } from '../dto/chat.dto';
 
 @Injectable()
 export class ChatRoomRepository extends Repository<ChatRoom> {
