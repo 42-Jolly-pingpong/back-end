@@ -32,11 +32,10 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 	async inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
 		const query = this.createQueryBuilder('room');
 
-		query
+		const rooms = await query
 			.where('room.roomType = :open', { open: ChatRoomType.PUBLIC })
-			.orWhere('room.roomType = :open', { open: ChatRoomType.PROTECTED });
-
-		const rooms = await query.getMany();
+			.orWhere('room.roomType = :open', { open: ChatRoomType.PROTECTED })
+			.getMany();
 
 		return rooms;
 	}
@@ -44,9 +43,9 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 	async getChatRoomInfo(roomIdx: number): Promise<ChatRoomDto> {
 		const query = this.createQueryBuilder('room');
 
-		query.where('room.roomIdx = :roomIdx', { roomIdx });
-
-		const room = await query.getOne();
+		const room = await query
+			.where('room.roomIdx = :roomIdx', { roomIdx })
+			.getOne();
 
 		return room;
 	}
