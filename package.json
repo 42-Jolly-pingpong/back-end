@@ -29,6 +29,7 @@
     "@nestjs/swagger": "^7.1.10",
     "@nestjs/typeorm": "^10.0.0",
     "@nestjs/websockets": "^10.1.3",
+    "class-transformer": "^0.5.1",
     "Logger": "^0.0.0",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
