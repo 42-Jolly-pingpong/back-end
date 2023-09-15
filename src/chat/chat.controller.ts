@@ -18,6 +18,7 @@ import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
+import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
 
 @Controller('chat-rooms')
 export class ChatController {
@@ -97,9 +98,10 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 참여자 상태, 역할 변경' })
 	@Patch('/:roomIdx/members')
+	@UsePipes(ValidationPipe)
 	setParticipantInfo(
 		@Param('roomIdx') roomIdx: number,
-		@Body() chatParticipantDto: ChatParticipantDto
+		@Body() chatParticipantDto: SetParticipantDto
 	): Promise<void> {
 		return this.chatService.setParticipantInfo(roomIdx, chatParticipantDto);
 	}
