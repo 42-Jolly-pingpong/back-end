@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 
 export class SetParticipantDto {
+	@ApiProperty({ description: '참여자 정보' })
 	@IsNotEmpty()
 	user: UserInfoDTO;
 
