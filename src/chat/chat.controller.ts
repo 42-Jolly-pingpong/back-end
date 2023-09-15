@@ -10,12 +10,12 @@ import {
 	Put,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
-import { ChatRoomDto } from './dto/chat-room.dto';
-import { ChatService } from './chat.service';
-import { CreateChatRoomDto } from './dto/create-chat-room.dto';
-import { ChatDto } from './dto/chat.dto';
-import { CreateChatDto } from './dto/create-chat.dto';
-import { ChatParticipantDto } from './dto/chat-participant.dto';
+import { ChatService } from 'src/chat/chat.service';
+import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
+import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
+import { ChatDto } from 'src/chat/dto/chat.dto';
+import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
+import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 
 @Controller('chat-rooms')
 export class ChatController {

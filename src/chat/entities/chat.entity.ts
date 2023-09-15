@@ -1,3 +1,5 @@
+import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
+import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import {
 	Column,
 	CreateDateColumn,
@@ -6,8 +8,6 @@ import {
 	ManyToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ChatParticipant } from './chat-participant.entity';
-import { ChatRoom } from './chat-room.entity';
 
 @Entity('Chat')
 export class Chat {

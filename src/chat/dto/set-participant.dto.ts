@@ -1,7 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { PaticipantStatus } from '../enums/paticipant-status.enum';
+import { Role } from 'src/chat/enums/role.enum';
 import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
-import { Role } from '../enums/role.enum';
+import { ApiProperty } from '@nestjs/swagger';
+import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 
 export class SetParticipantDto {
 	@ApiProperty({ description: '참여자 정보' })

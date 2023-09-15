@@ -1,16 +1,16 @@
-import { CreateChatRoomDto } from './dto/create-chat-room.dto';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ChatRoomRepository } from './repositories/chat-room.repository';
-import { ChatRoomDto } from './dto/chat-room.dto';
-import { ChatParticipantRepository } from './repositories/chat-participant.repository';
+import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
+import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
+import { ChatDto } from 'src/chat/dto/chat.dto';
+import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
+import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
+import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
+import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
+import { ChatParticipantRepository } from 'src/chat/repositories/chat-participant.repository';
+import { ChatRoomRepository } from 'src/chat/repositories/chat-room.repository';
+import { ChatRepository } from 'src/chat/repositories/chat.repository';
 import { UserRepository } from 'src/user/user.repository';
-import { ChatRepository } from './repositories/chat.repository';
-import { ChatDto } from './dto/chat.dto';
-import { CreateChatDto } from './dto/create-chat.dto';
-import { ChatParticipantDto } from './dto/chat-participant.dto';
-import { SetParticipantDto } from './dto/set-participant.dto';
-import { PaticipantStatus } from './enums/paticipant-status.enum';
 
 @Injectable()
 export class ChatService {

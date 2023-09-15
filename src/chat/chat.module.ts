@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { ChatController } from './chat.controller';
-import { ChatService } from './chat.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ChatRoom } from './entities/chat-room.entity';
-import { ChatRoomRepository } from './repositories/chat-room.repository';
-import { ChatParticipantRepository } from './repositories/chat-participant.repository';
-import { ChatParticipant } from './entities/chat-participant.entity';
-import { Chat } from './entities/chat.entity';
-import { ChatRepository } from './repositories/chat.repository';
+import { ChatController } from 'src/chat/chat.controller';
+import { ChatService } from 'src/chat/chat.service';
+import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
+import { ChatRoom } from 'src/chat/entities/chat-room.entity';
+import { Chat } from 'src/chat/entities/chat.entity';
+import { ChatParticipantRepository } from 'src/chat/repositories/chat-participant.repository';
+import { ChatRoomRepository } from 'src/chat/repositories/chat-room.repository';
+import { ChatRepository } from 'src/chat/repositories/chat.repository';
 import { UserRepository } from 'src/user/user.repository';
 
 @Module({

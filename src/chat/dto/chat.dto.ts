@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ChatParticipantDto } from './chat-participant.dto';
+import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 
 export class ChatDto {
 	@ApiProperty({ description: '챗 인덱스' })

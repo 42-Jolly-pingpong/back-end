@@ -1,3 +1,6 @@
+import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
+import { Chat } from 'src/chat/entities/chat.entity';
+import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 import {
 	Column,
 	Entity,
@@ -5,10 +8,6 @@ import {
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
-
-import { ChatRoomType } from '../enums/chat-room-type.enum';
-import { Chat } from './chat.entity';
-import { ChatParticipant } from './chat-participant.entity';
 
 @Entity('ChatRoom')
 export class ChatRoom {

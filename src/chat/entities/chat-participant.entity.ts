@@ -1,3 +1,8 @@
+import { ChatRoom } from 'src/chat/entities/chat-room.entity';
+import { Chat } from 'src/chat/entities/chat.entity';
+import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
+import { Role } from 'src/chat/enums/role.enum';
+import { User } from 'src/user/entities/user.entity';
 import {
 	Column,
 	Entity,
@@ -6,11 +11,6 @@ import {
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Role } from '../enums/role.enum';
-import { PaticipantStatus } from '../enums/paticipant-status.enum';
-import { User } from 'src/user/entities/user.entity';
-import { ChatRoom } from './chat-room.entity';
-import { Chat } from './chat.entity';
 
 @Entity('ChatParticipant')
 export class ChatParticipant {

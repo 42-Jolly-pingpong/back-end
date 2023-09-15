@@ -1,13 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
-import { ChatParticipant } from '../entities/chat-participant.entity';
-import { PaticipantStatus } from '../enums/paticipant-status.enum';
-import { Role } from '../enums/role.enum';
-import { ChatRoomDto } from '../dto/chat-room.dto';
+import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
+import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
+import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
+import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
+import { ChatRoom } from 'src/chat/entities/chat-room.entity';
+import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
+import { Role } from 'src/chat/enums/role.enum';
 import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
-import { ChatRoom } from '../entities/chat-room.entity';
-import { ChatParticipantDto } from '../dto/chat-participant.dto';
-import { SetParticipantDto } from '../dto/set-participant.dto';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class ChatParticipantRepository extends Repository<ChatParticipant> {

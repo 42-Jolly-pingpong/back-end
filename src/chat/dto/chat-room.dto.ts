@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ChatRoomType } from '../enums/chat-room-type.enum';
+import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 
 export class ChatRoomDto {
 	@ApiProperty({ description: '채팅방 인덱스' })
