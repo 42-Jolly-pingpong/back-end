@@ -62,6 +62,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 정보 수정' })
 	@Put('/:roomIdx')
+	@UsePipes(ValidationPipe)
 	setChatRoomInfo(
 		@Param('roomIdx', ParseIntPipe) roomIdx: number,
 		@Body() createChatRoomDto: CreateChatRoomDto
