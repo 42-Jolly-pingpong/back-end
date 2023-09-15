@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
@@ -124,6 +124,10 @@ export class ChatService {
 	}
 
 	deleteParticipant(roomIdx: number, userIdx: number): Promise<void> {
-		return this.chatParticipantRepository.deleteParticipant(roomIdx, userIdx);
+		try {
+			return this.chatParticipantRepository.deleteParticipant(roomIdx, userIdx);
+		} catch (error) {
+			HttpStatus.NOT_FOUND;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
@@ -110,11 +110,17 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 
 	async deleteParticipant(roomIdx: number, userIdx: number): Promise<void> {
 		const query = this.createQueryBuilder('user');
+		Logger.log(roomIdx, userIdx);
 
-		query
-			.delete()
-			.where('userIdx = :userIdx', { userIdx })
-			.andWhere('roomIdx = :roomIdx', { roomIdx })
-			.execute();
+		const participant = await query
+			.where('user.userIdx = :userIdx', { userIdx })
+			.andWhere('user.roomIdx = :roomIdx', { roomIdx })
+			.getOne();
+
+		if (participant == null) {
+			throw new NotFoundException('해당하는 참여자가 존재하지 않습니다.');
+		}
+
+		this.delete(participant.participantIdx);
 	}
 }
