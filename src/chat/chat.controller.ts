@@ -21,6 +21,12 @@ import { ChatParticipantDto } from './dto/chat-participant.dto';
 export class ChatController {
 	constructor(private readonly chatService: ChatService) {}
 
+	@ApiOperation({ summary: '채팅방 목록 조회' })
+	@Get('')
+	inquireChatRoom(): Promise<ChatRoomDto[]> {
+		return this.chatService.inquireChatRoom(2); //temp
+	}
+
 	@ApiOperation({ summary: '채팅방 생성' })
 	@Post('')
 	createChatRoom(

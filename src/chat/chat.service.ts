@@ -38,13 +38,17 @@ export class ChatService {
 		return room;
 	}
 
+	inquireChatRoom(userIdx: number): Promise<ChatRoomDto[]> {
+		return this.chatParticipantRepository.inquireChatRoom(userIdx);
+	}
+
 	inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
 		return this.chatRoomRepository.inquireOpenedChatRoom();
 	}
 
 	async addParticipant(roomIdx: number): Promise<ChatRoomDto> {
 		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
-		const user = await this.userRepository.getUserInfobyIdx(1); //temp
+		const user = await this.userRepository.getUserInfobyIdx(2); //temp
 
 		await this.chatParticipantRepository.addParticipant(room, user);
 		return room;
