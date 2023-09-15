@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
@@ -24,6 +24,13 @@ export class ChatService {
 		@InjectRepository(ChatRepository)
 		private chatRepository: ChatRepository
 	) {}
+
+	async checkIfRoomExist(roomIdx: number) {
+		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
+		if (room == null) {
+			throw new HttpException('존재하지않는 채팅방입니다.', HttpStatus.NOT_FOUND);
+		}
+	}
 
 	async createChatRoom(
 		createChatRoomDto: CreateChatRoomDto
@@ -123,11 +130,15 @@ export class ChatService {
 		}
 	}
 
-	deleteParticipant(roomIdx: number, userIdx: number): Promise<void> {
+	async deleteParticipant(roomIdx: number, userIdx: number): Promise<void> {
 		try {
-			return this.chatParticipantRepository.deleteParticipant(roomIdx, userIdx);
+			await this.checkIfRoomExist(roomIdx);
+			return await this.chatParticipantRepository.deleteParticipant(
+				roomIdx,
+				userIdx
+			);
 		} catch (error) {
-			HttpStatus.NOT_FOUND;
+			throw error;
 		}
 	}
 }
