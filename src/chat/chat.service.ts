@@ -117,7 +117,7 @@ export class ChatService {
 		if (setParticipantDto.status != null) {
 			this.setParticipantStatus(roomIdx, setParticipantDto);
 			return;
-		} else if (setParticipantDto.roomAuth != null) {
+		} else if (setParticipantDto.role != null) {
 			this.setParticipantAuth(roomIdx, setParticipantDto);
 			return;
 		}

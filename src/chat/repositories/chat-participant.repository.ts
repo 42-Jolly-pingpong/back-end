@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { ChatParticipant } from '../entities/chat-participant.entity';
 import { PaticipantStatus } from '../enums/paticipant-status.enum';
-import { RoomAuth } from '../enums/room-auth.enum';
+import { Role } from '../enums/role.enum';
 import { ChatRoomDto } from '../dto/chat-room.dto';
 import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
 import { ChatRoom } from '../entities/chat-room.entity';
@@ -19,7 +19,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		const participant = this.create({
 			room,
 			user,
-			roomAuth: RoomAuth.OWNER,
+			role: Role.OWNER,
 			status: PaticipantStatus.DEFAULT,
 			muteExpirationTime: null,
 		});
@@ -58,7 +58,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		const participant = this.create({
 			room,
 			user,
-			roomAuth: RoomAuth.NORMAL_USER,
+			role: Role.NORMAL_USER,
 			status: PaticipantStatus.DEFAULT,
 			muteExpirationTime: null,
 		});
@@ -96,13 +96,13 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		roomIdx: number,
 		setParticipantDto: SetParticipantDto
 	) {
-		const { user, roomAuth } = setParticipantDto;
+		const { user, role } = setParticipantDto;
 		const userIdx = user.userIdx;
 		const query = this.createQueryBuilder();
 
 		query
 			.update(ChatParticipant)
-			.set({ roomAuth })
+			.set({ role })
 			.where('roomIdx = :roomIdx', { roomIdx })
 			.andWhere('userIdx = :userIdx', { userIdx })
 			.execute();

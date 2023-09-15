@@ -6,7 +6,7 @@ import {
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { RoomAuth } from '../enums/room-auth.enum';
+import { Role } from '../enums/role.enum';
 import { PaticipantStatus } from '../enums/paticipant-status.enum';
 import { User } from 'src/user/entities/user.entity';
 import { ChatRoom } from './chat-room.entity';
@@ -27,8 +27,8 @@ export class ChatParticipant {
 	@JoinColumn({ name: 'userIdx' })
 	user: User;
 
-	@Column({ name: 'room_auth' })
-	roomAuth: RoomAuth;
+	@Column({ name: 'role' })
+	role: Role;
 
 	@Column({ name: 'status' })
 	status: PaticipantStatus;
