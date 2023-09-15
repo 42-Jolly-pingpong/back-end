@@ -5,6 +5,7 @@ import {
 	Get,
 	Logger,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Put,
@@ -53,14 +54,16 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 정보 조회' })
 	@Get('/:roomIdx')
-	getChatRoomInfo(@Param('roomIdx') roomIdx: number): Promise<ChatRoomDto> {
+	getChatRoomInfo(
+		@Param('roomIdx', ParseIntPipe) roomIdx: number
+	): Promise<ChatRoomDto> {
 		return this.chatService.getChatRoomInfo(roomIdx);
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 수정' })
 	@Put('/:roomIdx')
 	setChatRoomInfo(
-		@Param('roomIdx') roomIdx: number,
+		@Param('roomIdx', ParseIntPipe) roomIdx: number,
 		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
 		return this.chatService.setChatRoomInfo(roomIdx, createChatRoomDto);
@@ -68,13 +71,17 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 삭제' })
 	@Delete('/:roomIdx')
-	deleteChatRoom(@Param('roomIdx') roomIdx: number): Promise<void> {
+	deleteChatRoom(
+		@Param('roomIdx', ParseIntPipe) roomIdx: number
+	): Promise<void> {
 		return this.chatService.deleteChatRoom(roomIdx);
 	}
 
 	@ApiOperation({ summary: '채팅방 내부 챗 조회' })
 	@Get('/:roomIdx/chats')
-	getChats(@Param('roomIdx') roomIdx: number): Promise<ChatDto[]> {
+	getChats(
+		@Param('roomIdx', ParseIntPipe) roomIdx: number
+	): Promise<ChatDto[]> {
 		return this.chatService.getChats(roomIdx);
 	}
 
@@ -82,7 +89,7 @@ export class ChatController {
 	@Post('/:roomIdx/chats')
 	@UsePipes(ValidationPipe)
 	createChat(
-		@Param('roomIdx') roomIdx: number,
+		@Param('roomIdx', ParseIntPipe) roomIdx: number,
 		@Body() createChatDto: CreateChatDto
 	): Promise<ChatDto> {
 		return this.chatService.createChat(roomIdx, createChatDto);
@@ -91,7 +98,7 @@ export class ChatController {
 	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })
 	@Get('/:roomIdx/members')
 	getPariticipants(
-		@Param('roomIdx') roomIdx: number
+		@Param('roomIdx', ParseIntPipe) roomIdx: number
 	): Promise<ChatParticipantDto[]> {
 		return this.chatService.getPariticipants(roomIdx);
 	}
@@ -100,7 +107,7 @@ export class ChatController {
 	@Patch('/:roomIdx/members')
 	@UsePipes(ValidationPipe)
 	setParticipantInfo(
-		@Param('roomIdx') roomIdx: number,
+		@Param('roomIdx', ParseIntPipe) roomIdx: number,
 		@Body() chatParticipantDto: SetParticipantDto
 	): Promise<void> {
 		return this.chatService.setParticipantInfo(roomIdx, chatParticipantDto);
@@ -108,7 +115,9 @@ export class ChatController {
 
 	@ApiOperation({ summary: '참여자 채팅방 퇴장' })
 	@Delete('/:roomIdx/members')
-	deleteParticipant(@Param('roomIdx') roomIdx: number): Promise<void> {
+	deleteParticipant(
+		@Param('roomIdx', ParseIntPipe) roomIdx: number
+	): Promise<void> {
 		return this.chatService.deleteParticipant(roomIdx, 1); //temp
 	}
 }
