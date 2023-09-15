@@ -58,7 +58,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		const participant = this.create({
 			room,
 			user,
-			role: Role.NORMAL_USER,
+			role: Role.MEMBER,
 			status: PaticipantStatus.DEFAULT,
 			muteExpirationTime: null,
 		});
