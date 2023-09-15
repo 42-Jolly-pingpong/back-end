@@ -8,6 +8,8 @@ import {
 	Patch,
 	Post,
 	Put,
+	UsePipes,
+	ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { ChatService } from 'src/chat/chat.service';
@@ -29,6 +31,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 생성' })
 	@Post('')
+	@UsePipes(ValidationPipe)
 	createChatRoom(
 		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
