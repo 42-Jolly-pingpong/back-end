@@ -79,6 +79,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '챗 생성' })
 	@Post('/:roomIdx/chats')
+	@UsePipes(ValidationPipe)
 	createChat(
 		@Param('roomIdx') roomIdx: number,
 		@Body() createChatDto: CreateChatDto
