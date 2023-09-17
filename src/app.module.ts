@@ -7,6 +7,7 @@ import { typeORMConfig } from 'configs/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
 import { FriendModule } from './friend/friend.module';
 import { ChatModule } from './chat/chat.module';
+import { GameModule } from './game/game.module';
 
 @Module({
 	imports: [
@@ -24,6 +25,7 @@ import { ChatModule } from './chat/chat.module';
 		UserModule,
 		FriendModule,
 		ChatModule,
+		GameModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
