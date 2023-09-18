@@ -12,8 +12,18 @@ export class UserRepository extends Repository<User> {
 	}
 
 	async createUserInfo(userInfo: CreateUserDto): Promise<void> {
-		const user = userInfo;
-
+		//const user = this.create({ ...userInfo });
+		const user = this.create({
+			intraId: userInfo.intra_id,
+			email: userInfo.e_mail,
+			nickname: userInfo.nickname,
+			avatarPath: userInfo.avatar_path,
+			status: userInfo.status,
+			auth: userInfo.auth,
+			win: userInfo.win_count,
+			lose: userInfo.lose_count,
+			isLeave: userInfo.is_leave,
+		});
 		await this.save(user);
 	}
 

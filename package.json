@@ -30,6 +30,7 @@
     "@nestjs/typeorm": "^10.0.0",
     "@nestjs/websockets": "^10.1.3",
     "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.0",
     "Logger": "^0.0.0",
     "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
