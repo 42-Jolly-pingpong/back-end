@@ -5,10 +5,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 import { GameService } from 'src/game/game.service';
+import { GameHistoryRepository } from 'src/game/repositories/game-history.repository';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([User])],
 	controllers: [UserController],
-	providers: [UserService, GameService, UserRepository],
+	providers: [
+		UserService,
+		GameService,
+		GameHistoryRepository,
+		UserRepository,
+	],
 })
 export class UserModule {}
