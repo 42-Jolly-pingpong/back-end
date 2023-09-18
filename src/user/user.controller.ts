@@ -10,11 +10,17 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { GameHistoryDto } from 'src/game/dto/game-history.dto';
+import { GameService } from 'src/game/game.service';
 
+@ApiTags('user-controller')
 @Controller('user')
 export class UserController {
-	constructor(private readonly userService: UserService) {}
+	constructor(
+		private readonly userService: UserService,
+		private readonly gameService: GameService
+	) {}
 
 	@ApiOperation({ summary: '유저 정보 DB 등록' })
 	@Post()
@@ -44,5 +50,12 @@ export class UserController {
 	@Delete(':id')
 	remove(@Param('id') id: string) {
 		return this.userService.remove(+id);
+	}
+
+	@Post('/:userIdx/history')
+	async getUserGameHistory(
+		@Param('userIdx') userIdx: number
+	): Promise<GameHistoryDto[]> {
+		return await this.gameService.getGameHistoryByuserIdx(userIdx);
 	}
 }

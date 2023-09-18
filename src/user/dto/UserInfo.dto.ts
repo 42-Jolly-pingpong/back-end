@@ -1,7 +1,7 @@
 export class UserInfoDTO {
 	userIdx: number;
 	intraId: string;
-	eMail: string;
+	email: string;
 	nickname: string;
 	avatarPath: string;
 	status: boolean;
