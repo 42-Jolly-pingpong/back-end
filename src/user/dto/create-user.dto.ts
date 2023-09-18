@@ -1,9 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
 	@ApiProperty({ description: '인트라 아이디' })
 	intra_id: string;
-	
+
 	@ApiProperty({ description: '이메일' })
 	e_mail: string;
 
