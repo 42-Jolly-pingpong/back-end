@@ -14,11 +14,11 @@ export class GameHistory {
 	historyIdx!: number;
 
 	@ManyToOne(() => User, (user) => user.userIdx)
-	@JoinColumn({ name: 'user_idx' })
+	@JoinColumn({ name: 'win_player_idx' })
 	winUser!: User;
 
 	@ManyToOne(() => User, (user) => user.userIdx)
-	@JoinColumn({ name: 'user_idx' })
+	@JoinColumn({ name: 'lose_player_idx' })
 	loseUser!: User;
 
 	@Column({ type: 'int2', name: 'win_score' })
