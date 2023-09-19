@@ -16,10 +16,7 @@ export class UserRepository extends Repository<User> {
 		await this.save(user);
 	}
 
-	async updateUser(
-		userDto: UserDto,
-		updateUserDto: UpdateUserDto
-	): Promise<void> {
+	async updateUser(userDto: UserDto, updateUserDto: UpdateUserDto): Promise<void> {
 		const user = { ...userDto, ...updateUserDto };
 		await this.save(user);
 	}
@@ -27,6 +24,10 @@ export class UserRepository extends Repository<User> {
 	async updateUserAsLeave(user: UserDto): Promise<void> {
 		user.isLeave = true;
 		await this.save(user);
+	}
+
+	async findNickname(nickname: string): Promise<number> {
+		return await this.count({ where: { nickname } });
 	}
 
 	async findUserByUserIdx(idx: number): Promise<UserDto> {

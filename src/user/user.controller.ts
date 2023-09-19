@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	Post,
+	Body,
+	Patch,
+	Param,
+	HttpException,
+	HttpStatus,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -42,11 +51,19 @@ export class UserController {
 		return await this.userService.withdrawUser(+idx);
 	}
 
+	@ApiOperation({ summary: '닉네임 중복 검사' })
+	@Get('/nickname/:nickname')
+	async checkNicknameDuplicate(@Param('nickname') nickname: string): Promise<void> {
+		const isDuplicate = await this.userService.checkNicknameDuplicate(nickname);
+
+		if (isDuplicate) {
+			throw new HttpException('이거 나중에 핸들링 어케하지 흠', HttpStatus.CONFLICT);
+		}
+	}
+
 	@ApiOperation({ summary: '게임 전적 불러오기 ' })
 	@Post('/:userIdx/history')
-	async getGameHistoryByUserIdx(
-		@Param('userIdx') idx: number
-	): Promise<GameHistoryDto[]> {
+	async getGameHistoryByUserIdx(@Param('userIdx') idx: number): Promise<GameHistoryDto[]> {
 		return await this.gameService.getGameHistoryByUserIdx(+idx);
 	}
 }
