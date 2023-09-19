@@ -3,6 +3,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -10,12 +11,20 @@ export class UserRepository extends Repository<User> {
 		super(User, dataSource.createEntityManager());
 	}
 
-	async createUserInfo(userInfo: CreateUserDto): Promise<void> {
+	async createUser(userInfo: CreateUserDto): Promise<void> {
 		const user = this.create({ ...userInfo });
 		await this.save(user);
 	}
 
-	async getUserByUserIdx(idx: number): Promise<UserDto> {
+	async updateUser(
+		userDto: UserDto,
+		updateUserDto: UpdateUserDto
+	): Promise<void> {
+		const user = { ...userDto, ...updateUserDto };
+		await this.save(user);
+	}
+
+	async findUserByUserIdx(idx: number): Promise<UserDto> {
 		return await this.findOneBy({ userIdx: idx });
 	}
 }

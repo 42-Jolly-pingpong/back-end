@@ -10,7 +10,7 @@ export class GameService {
 		private gameHistoryRepository: GameHistoryRepository
 	) {}
 
-	async getGameHistoryByuserIdx(idx: number): Promise<GameHistoryDto[]> {
+	async getGameHistoryByUserIdx(idx: number): Promise<GameHistoryDto[]> {
 		return await this.gameHistoryRepository.findGameHistoryByuserIdx(idx);
 	}
 

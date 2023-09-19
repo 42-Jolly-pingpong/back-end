@@ -31,7 +31,7 @@ export class ChatService {
 		const room = await this.chatRoomRepository.createChatRoom(
 			createChatRoomDto
 		);
-		const user = await this.userRepository.getUserInfobyIdx(1); //temp
+		const user = await this.userRepository.findUserByUserIdx(1); //temp
 
 		await this.chatParticipantRepository.createChatRoom(room, user);
 
@@ -48,7 +48,7 @@ export class ChatService {
 
 	async addParticipant(roomIdx: number): Promise<ChatRoomDto> {
 		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
-		const user = await this.userRepository.getUserInfobyIdx(2); //temp
+		const user = await this.userRepository.findUserByUserIdx(2); //temp
 
 		await this.chatParticipantRepository.addParticipant(room, user);
 		return room;
@@ -62,7 +62,10 @@ export class ChatService {
 		roomIdx: number,
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
-		return this.chatRoomRepository.setChatRoomInfo(roomIdx, createChatRoomDto);
+		return this.chatRoomRepository.setChatRoomInfo(
+			roomIdx,
+			createChatRoomDto
+		);
 	}
 
 	deleteChatRoom(roomIdx: number): Promise<void> {
@@ -79,7 +82,10 @@ export class ChatService {
 	): Promise<ChatDto> {
 		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
 		const participant =
-			await this.chatParticipantRepository.getParticipantEntity(roomIdx, 1); //userIdx temp
+			await this.chatParticipantRepository.getParticipantEntity(
+				roomIdx,
+				1
+			); //userIdx temp
 
 		return this.chatRepository.createChat(room, participant, createChatDto);
 	}
@@ -88,7 +94,10 @@ export class ChatService {
 		return this.chatParticipantRepository.getPariticipants(roomIdx);
 	}
 
-	setParticipantStatus(roomIdx: number, setParticipantDto: SetParticipantDto) {
+	setParticipantStatus(
+		roomIdx: number,
+		setParticipantDto: SetParticipantDto
+	) {
 		if (setParticipantDto.status == PaticipantStatus.MUTED) {
 			const mutedTime = new Date();
 			mutedTime.setMinutes(mutedTime.getMinutes() + 5);
@@ -112,7 +121,7 @@ export class ChatService {
 		roomIdx: number,
 		setParticipantDto: SetParticipantDto
 	) {
-		const admin = await this.userRepository.getUserInfobyIdx(1); //temp
+		const admin = await this.userRepository.findUserByUserIdx(1); //temp
 
 		if (setParticipantDto.status != null) {
 			this.setParticipantStatus(roomIdx, setParticipantDto);
@@ -125,6 +134,9 @@ export class ChatService {
 
 	deleteParticipant(roomIdx: number, userIdx: number): Promise<void> {
 		// return this.chatRoomRepository.deleteParticipant(roomIdx, userIdx);
-		return this.chatParticipantRepository.deleteParticipant(roomIdx, userIdx);
+		return this.chatParticipantRepository.deleteParticipant(
+			roomIdx,
+			userIdx
+		);
 	}
 }

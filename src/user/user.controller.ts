@@ -1,18 +1,11 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Body,
-	Patch,
-	Param,
-	Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GameHistoryDto } from 'src/game/dto/game-history.dto';
 import { GameService } from 'src/game/game.service';
 import { UserDto } from './dto/user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('user-controller')
 @Controller('user')
@@ -22,23 +15,32 @@ export class UserController {
 		private readonly gameService: GameService
 	) {}
 
-	@ApiOperation({ summary: '유저 정보 DB 등록' })
+	@ApiOperation({ summary: '새로운 유저 생성' })
 	@Post('/')
-	create(@Body() createUserDto: CreateUserDto) {
-		return this.userService.create(createUserDto);
+	async create(@Body() createUserDto: CreateUserDto): Promise<void> {
+		return await this.userService.create(createUserDto);
 	}
 
-	@ApiOperation({ summary: '유저 ID를 이용한 유저정보 찾기' })
+	@ApiOperation({ summary: '유저정보 찾기' })
 	@Get('/:userIdx')
-	findOne(@Param('userIdx') id: number) {
-		return this.userService.findOne(+id);
+	async getUser(@Param('userIdx') idx: number): Promise<UserDto> {
+		return await this.userService.getUserByUserIdx(+idx);
 	}
 
-	@ApiOperation({ summary: 'id를 이용한 게임 전적 불러오기 ' })
+	@ApiOperation({ summary: '유저정보 업데이트' })
+	@Patch('/:userIdx')
+	async updateUser(
+		@Param('userIdx') idx: number,
+		@Body() updateUserDto: UpdateUserDto
+	): Promise<void> {
+		return await this.userService.updateUser(+idx, updateUserDto);
+	}
+
+	@ApiOperation({ summary: '게임 전적 불러오기 ' })
 	@Post('/:userIdx/history')
-	async findGameHistoryByUserIdx(
-		@Param('userIdx') userIdx: number
+	async getGameHistoryByUserIdx(
+		@Param('userIdx') idx: number
 	): Promise<GameHistoryDto[]> {
-		return await this.gameService.getGameHistoryByuserIdx(userIdx);
+		return await this.gameService.getGameHistoryByUserIdx(+idx);
 	}
 }
