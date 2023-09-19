@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Friend } from './entities/friend.entity';
+import { Friend } from '../entities/friend.entity';
 import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
-import { FriendDTO } from './dto/friend.DTO';
+import { FriendDTO } from '../dto/friend.DTO';
 
 @Injectable()
 export class FriendRepository extends Repository<Friend> {
@@ -18,5 +18,4 @@ export class FriendRepository extends Repository<Friend> {
 		const friendList: UserInfoDTO[] = friend.map((item) => item.friend);
 		return friendList;
 	}
-
 }
