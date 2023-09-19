@@ -36,6 +36,12 @@ export class UserController {
 		return await this.userService.updateUser(+idx, updateUserDto);
 	}
 
+	@ApiOperation({ summary: '회원 탈퇴' })
+	@Patch('/:userIdx/leave')
+	async withdrawUser(@Param('userIdx') idx: number): Promise<void> {
+		return await this.userService.withdrawUser(+idx);
+	}
+
 	@ApiOperation({ summary: '게임 전적 불러오기 ' })
 	@Post('/:userIdx/history')
 	async getGameHistoryByUserIdx(

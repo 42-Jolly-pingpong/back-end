@@ -17,8 +17,12 @@ export class UserService {
 
 	async updateUser(idx: number, updateUserDto: UpdateUserDto): Promise<void> {
 		const user: UserDto = await this.userRepository.findUserByUserIdx(idx);
-
 		await this.userRepository.updateUser(user, updateUserDto);
+	}
+
+	async withdrawUser(idx: number): Promise<void> {
+		const user: UserDto = await this.userRepository.findUserByUserIdx(idx);
+		await this.userRepository.updateUserAsLeave(user);
 	}
 
 	async getUserByUserIdx(idx: number): Promise<UserDto> {

@@ -11,8 +11,8 @@ export class UserRepository extends Repository<User> {
 		super(User, dataSource.createEntityManager());
 	}
 
-	async createUser(userInfo: CreateUserDto): Promise<void> {
-		const user = this.create({ ...userInfo });
+	async createUser(userDto: CreateUserDto): Promise<void> {
+		const user = this.create({ ...userDto });
 		await this.save(user);
 	}
 
@@ -21,6 +21,11 @@ export class UserRepository extends Repository<User> {
 		updateUserDto: UpdateUserDto
 	): Promise<void> {
 		const user = { ...userDto, ...updateUserDto };
+		await this.save(user);
+	}
+
+	async updateUserAsLeave(user: UserDto): Promise<void> {
+		user.isLeave = true;
 		await this.save(user);
 	}
 
