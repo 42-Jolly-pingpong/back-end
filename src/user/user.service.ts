@@ -24,8 +24,12 @@ export class UserService {
 	}
 
 	async checkNicknameDuplicate(nickname: string): Promise<boolean> {
-		const count = await this.userRepository.findNickname(nickname);
+		const count: number = await this.userRepository.findNickname(nickname);
 		return count > 0;
+	}
+
+	async getUsersByKeyword(keyword: string): Promise<UserDto[]> {
+		return await this.userRepository.findUsersByKeyword(keyword);
 	}
 
 	async getUserByUserIdx(idx: number): Promise<UserDto> {

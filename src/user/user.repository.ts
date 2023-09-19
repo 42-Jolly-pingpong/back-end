@@ -1,4 +1,4 @@
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
@@ -28,6 +28,10 @@ export class UserRepository extends Repository<User> {
 
 	async findNickname(nickname: string): Promise<number> {
 		return await this.count({ where: { nickname } });
+	}
+
+	async findUsersByKeyword(keyword: string): Promise<UserDto[]> {
+		return await this.find({ where: { nickname: Like(`%${keyword}%`) } });
 	}
 
 	async findUserByUserIdx(idx: number): Promise<UserDto> {

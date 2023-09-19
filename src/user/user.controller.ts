@@ -51,6 +51,18 @@ export class UserController {
 		return await this.userService.withdrawUser(+idx);
 	}
 
+	@ApiOperation({ summary: '게임 전적 불러오기 ' })
+	@Post('/:userIdx/history')
+	async getGameHistoryByUserIdx(@Param('userIdx') idx: number): Promise<GameHistoryDto[]> {
+		return await this.gameService.getGameHistoryByUserIdx(+idx);
+	}
+
+	@ApiOperation({ summary: '유저 검색' })
+	@Get('/search/:keyword')
+	async getUsersByKeyword(@Param('keyword') keyword: string): Promise<UserDto[]> {
+		return await this.userService.getUsersByKeyword(keyword);
+	}
+
 	@ApiOperation({ summary: '닉네임 중복 검사' })
 	@Get('/nickname/:nickname')
 	async checkNicknameDuplicate(@Param('nickname') nickname: string): Promise<void> {
@@ -59,11 +71,5 @@ export class UserController {
 		if (isDuplicate) {
 			throw new HttpException('이거 나중에 핸들링 어케하지 흠', HttpStatus.CONFLICT);
 		}
-	}
-
-	@ApiOperation({ summary: '게임 전적 불러오기 ' })
-	@Post('/:userIdx/history')
-	async getGameHistoryByUserIdx(@Param('userIdx') idx: number): Promise<GameHistoryDto[]> {
-		return await this.gameService.getGameHistoryByUserIdx(+idx);
 	}
 }
