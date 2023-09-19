@@ -6,7 +6,7 @@ export class UserInfoDTO {
 	avatarPath: string;
 	status: boolean;
 	auth: boolean;
-	win: number;
-	lose: number;
+	winCount: number;
+	loseCount: number;
 	isLeave: boolean;
 }
