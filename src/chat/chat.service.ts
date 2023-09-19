@@ -124,7 +124,6 @@ export class ChatService {
 	}
 
 	deleteParticipant(roomIdx: number, userIdx: number): Promise<void> {
-		// return this.chatRoomRepository.deleteParticipant(roomIdx, userIdx);
 		return this.chatParticipantRepository.deleteParticipant(roomIdx, userIdx);
 	}
 }

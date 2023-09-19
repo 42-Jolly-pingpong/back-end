@@ -5,9 +5,12 @@ import {
 	Get,
 	Logger,
 	Param,
+	ParseIntPipe,
 	Patch,
 	Post,
 	Put,
+	UsePipes,
+	ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { ChatService } from 'src/chat/chat.service';
@@ -16,6 +19,7 @@ import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
+import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
 
 @Controller('chat-rooms')
 export class ChatController {
@@ -29,6 +33,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 생성' })
 	@Post('')
+	@UsePipes(ValidationPipe)
 	createChatRoom(
 		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
@@ -49,14 +54,17 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 정보 조회' })
 	@Get('/:roomIdx')
-	getChatRoomInfo(@Param('roomIdx') roomIdx: number): Promise<ChatRoomDto> {
+	getChatRoomInfo(
+		@Param('roomIdx', ParseIntPipe) roomIdx: number
+	): Promise<ChatRoomDto> {
 		return this.chatService.getChatRoomInfo(roomIdx);
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 수정' })
 	@Put('/:roomIdx')
+	@UsePipes(ValidationPipe)
 	setChatRoomInfo(
-		@Param('roomIdx') roomIdx: number,
+		@Param('roomIdx', ParseIntPipe) roomIdx: number,
 		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
 		return this.chatService.setChatRoomInfo(roomIdx, createChatRoomDto);
@@ -64,20 +72,25 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 삭제' })
 	@Delete('/:roomIdx')
-	deleteChatRoom(@Param('roomIdx') roomIdx: number): Promise<void> {
+	deleteChatRoom(
+		@Param('roomIdx', ParseIntPipe) roomIdx: number
+	): Promise<void> {
 		return this.chatService.deleteChatRoom(roomIdx);
 	}
 
 	@ApiOperation({ summary: '채팅방 내부 챗 조회' })
 	@Get('/:roomIdx/chats')
-	getChats(@Param('roomIdx') roomIdx: number): Promise<ChatDto[]> {
+	getChats(
+		@Param('roomIdx', ParseIntPipe) roomIdx: number
+	): Promise<ChatDto[]> {
 		return this.chatService.getChats(roomIdx);
 	}
 
 	@ApiOperation({ summary: '챗 생성' })
 	@Post('/:roomIdx/chats')
+	@UsePipes(ValidationPipe)
 	createChat(
-		@Param('roomIdx') roomIdx: number,
+		@Param('roomIdx', ParseIntPipe) roomIdx: number,
 		@Body() createChatDto: CreateChatDto
 	): Promise<ChatDto> {
 		return this.chatService.createChat(roomIdx, createChatDto);
@@ -86,23 +99,26 @@ export class ChatController {
 	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })
 	@Get('/:roomIdx/members')
 	getPariticipants(
-		@Param('roomIdx') roomIdx: number
+		@Param('roomIdx', ParseIntPipe) roomIdx: number
 	): Promise<ChatParticipantDto[]> {
 		return this.chatService.getPariticipants(roomIdx);
 	}
 
 	@ApiOperation({ summary: '채팅방 참여자 상태, 역할 변경' })
 	@Patch('/:roomIdx/members')
+	@UsePipes(ValidationPipe)
 	setParticipantInfo(
-		@Param('roomIdx') roomIdx: number,
-		@Body() chatParticipantDto: ChatParticipantDto
+		@Param('roomIdx', ParseIntPipe) roomIdx: number,
+		@Body() chatParticipantDto: SetParticipantDto
 	): Promise<void> {
 		return this.chatService.setParticipantInfo(roomIdx, chatParticipantDto);
 	}
 
 	@ApiOperation({ summary: '참여자 채팅방 퇴장' })
 	@Delete('/:roomIdx/members')
-	deleteParticipant(@Param('roomIdx') roomIdx: number): Promise<void> {
+	deleteParticipant(
+		@Param('roomIdx', ParseIntPipe) roomIdx: number
+	): Promise<void> {
 		return this.chatService.deleteParticipant(roomIdx, 1); //temp
 	}
 }
