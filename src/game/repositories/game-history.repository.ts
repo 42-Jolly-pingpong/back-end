@@ -8,12 +8,10 @@ export class GameHistoryRepository extends Repository<GameHistory> {
 		super(GameHistory, dataSource.createEntityManager());
 	}
 
-	async findGameHistoryByuserIdx(idx: number): Promise<GameHistory[]> {
+	async findGameHistoryByUserId(id: number): Promise<GameHistory[]> {
 		const gameHistories = await this.createQueryBuilder('GameHistory')
-			.where('GameHistory.win_player_idx = :userIdx', { userIdx: idx })
-			.orWhere('GameHistory.lose_player_idx = :userIdx', { userIdx: idx })
+			.where('GameHistory.winner_id = :id OR GameHistory.loser_id = :id', { id })
 			.getMany();
-
 		return gameHistories;
 	}
 }

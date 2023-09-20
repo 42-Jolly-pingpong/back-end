@@ -13,13 +13,13 @@ export class UserService {
 		await this.userRepository.createUser(createUserDto);
 	}
 
-	async updateUser(idx: number, updateUserDto: UpdateUserDto): Promise<void> {
-		const user: UserDto = await this.userRepository.findUserByUserIdx(idx);
+	async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<void> {
+		const user: UserDto = await this.userRepository.findUserById(id);
 		await this.userRepository.updateUser(user, updateUserDto);
 	}
 
-	async withdrawUser(idx: number): Promise<void> {
-		const user: UserDto = await this.userRepository.findUserByUserIdx(idx);
+	async withdrawUser(id: number): Promise<void> {
+		const user: UserDto = await this.userRepository.findUserById(id);
 		await this.userRepository.updateUserAsLeave(user);
 	}
 
@@ -32,8 +32,8 @@ export class UserService {
 		return await this.userRepository.findUsersByKeyword(keyword);
 	}
 
-	async getUserByUserIdx(idx: number): Promise<UserDto> {
-		const user: UserDto = await this.userRepository.findUserByUserIdx(idx);
+	async getUserById(id: number): Promise<UserDto> {
+		const user: UserDto = await this.userRepository.findUserById(id);
 		if (!user) {
 			throw new NotFoundException();
 		}

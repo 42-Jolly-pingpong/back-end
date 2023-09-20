@@ -2,36 +2,36 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('User')
 export class User {
-	@PrimaryGeneratedColumn({ name: 'user_idx' })
-	userIdx: number;
+	@PrimaryGeneratedColumn({ name: 'id', type: 'int' })
+	id: number;
 
-	@Column({ name: 'intra_id' })
+	@Column({ name: 'intra_id', type: 'text' })
 	intraId: string;
 
-	@Column({ name: 'e_mail' })
+	@Column({ name: 'e_mail', type: 'text' })
 	email: string;
 
-	@Column({ name: 'nickname' })
+	@Column({ name: 'nickname', type: 'text' })
 	nickname: string;
 
-	@Column({ name: 'avatar_path', default: 'test' })
+	@Column({ name: 'avatar_path', type: 'text', default: 'test' })
 	avatarPath: string;
 
-	@Column({ name: 'status', default: false })
+	@Column({ name: 'status', type: 'bool', default: false })
 	status: boolean;
 
-	@Column({ name: 'status_message', nullable: true })
-	statusMessage: string;
+	@Column({ name: 'bio', type: 'text', nullable: true })
+	bio: string;
 
-	@Column({ name: 'auth', default: false })
+	@Column({ name: 'auth', type: 'bool', default: false })
 	auth: boolean;
 
-	@Column({ name: 'win', default: 0 })
+	@Column({ name: 'win', type: 'int', default: 0 })
 	winCount: number;
 
-	@Column({ name: 'lose', default: 0 })
+	@Column({ name: 'lose', type: 'int', default: 0 })
 	loseCount: number;
 
-	@Column({ name: 'is_leave', default: false })
+	@Column({ name: 'is_leave', type: 'bool', default: false })
 	isLeave: boolean;
 }

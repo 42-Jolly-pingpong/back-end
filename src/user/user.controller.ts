@@ -31,30 +31,27 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: '유저정보 찾기' })
-	@Get('/:userIdx')
-	async getUser(@Param('userIdx') idx: number): Promise<UserDto> {
-		return await this.userService.getUserByUserIdx(+idx);
+	@Get('/:id')
+	async getUser(@Param('id') id: number): Promise<UserDto> {
+		return await this.userService.getUserById(+id);
 	}
 
 	@ApiOperation({ summary: '유저정보 업데이트' })
-	@Patch('/:userIdx')
-	async updateUser(
-		@Param('userIdx') idx: number,
-		@Body() updateUserDto: UpdateUserDto
-	): Promise<void> {
-		return await this.userService.updateUser(+idx, updateUserDto);
+	@Patch('/:id')
+	async updateUser(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto): Promise<void> {
+		return await this.userService.updateUser(+id, updateUserDto);
 	}
 
 	@ApiOperation({ summary: '회원 탈퇴' })
-	@Patch('/:userIdx/leave')
-	async withdrawUser(@Param('userIdx') idx: number): Promise<void> {
-		return await this.userService.withdrawUser(+idx);
+	@Patch('/:id/leave')
+	async withdrawUser(@Param('id') id: number): Promise<void> {
+		return await this.userService.withdrawUser(+id);
 	}
 
 	@ApiOperation({ summary: '게임 전적 불러오기 ' })
-	@Post('/:userIdx/history')
-	async getGameHistoryByUserIdx(@Param('userIdx') idx: number): Promise<GameHistoryDto[]> {
-		return await this.gameService.getGameHistoryByUserIdx(+idx);
+	@Post('/:id/history')
+	async getGameHistoryById(@Param('id') id: number): Promise<GameHistoryDto[]> {
+		return await this.gameService.getGameHistoryByUserId(+id);
 	}
 
 	@ApiOperation({ summary: '유저 검색' })

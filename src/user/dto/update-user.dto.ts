@@ -8,7 +8,7 @@ export class UpdateUserDto {
 	avatarPath: string;
 
 	@ApiProperty({ description: '상태 메시지' })
-	statusMessage: string;
+	bio: string;
 
 	@ApiProperty({ description: '2차 인증 설정' })
 	auth: boolean;

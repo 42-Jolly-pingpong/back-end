@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
@@ -16,9 +16,7 @@ export class ChatRepository extends Repository<Chat> {
 	async getChats(roomIdx: number): Promise<ChatDto[]> {
 		const query = this.createQueryBuilder('chat');
 
-		const chats = await query
-			.where('chat.roomIdx = :roomIdx', { roomIdx })
-			.getMany();
+		const chats = await query.where('chat.roomIdx = :roomIdx', { roomIdx }).getMany();
 
 		return plainToInstance(ChatDto, chats);
 	}

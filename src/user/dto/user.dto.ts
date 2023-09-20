@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserDto {
-	@ApiProperty({ description: '유저 인덱스' })
-	userIdx: number;
+	@ApiProperty({ description: '유저 아이디' })
+	id: number;
 
 	@ApiProperty({ description: '인트라 아이디' })
 	intraId: string;
@@ -20,7 +20,7 @@ export class UserDto {
 	status: boolean;
 
 	@ApiProperty({ description: '상태 메시지' })
-	statusMessage: string;
+	bio: string;
 
 	@ApiProperty({ description: '2차 인증 설정' })
 	auth: boolean;
