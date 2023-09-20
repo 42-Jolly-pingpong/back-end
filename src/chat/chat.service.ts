@@ -10,6 +10,7 @@ import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 import { ChatParticipantRepository } from 'src/chat/repositories/chat-participant.repository';
 import { ChatRoomRepository } from 'src/chat/repositories/chat-room.repository';
 import { ChatRepository } from 'src/chat/repositories/chat.repository';
+import { UserDto } from 'src/user/dto/user.dto';
 import { UserRepository } from 'src/user/user.repository';
 
 @Injectable()
@@ -28,7 +29,10 @@ export class ChatService {
 	async checkIfRoomExist(roomIdx: number) {
 		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
 		if (room == null) {
-			throw new HttpException('존재하지않는 채팅방입니다.', HttpStatus.NOT_FOUND);
+			throw new HttpException(
+				'존재하지않는 채팅방입니다.',
+				HttpStatus.NOT_FOUND
+			);
 		}
 	}
 
@@ -45,8 +49,10 @@ export class ChatService {
 		return room;
 	}
 
-	inquireChatRoom(userIdx: number): Promise<ChatRoomDto[]> {
-		return this.chatParticipantRepository.inquireChatRoom(userIdx);
+	async inquireChatRoom(userIdx: number): Promise<ChatRoomDto[]> {
+		const user = await this.userRepository.findUserById(1); //temp
+
+		return this.chatParticipantRepository.inquireChatRoom(user);
 	}
 
 	inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
@@ -65,7 +71,10 @@ export class ChatService {
 		return this.chatRoomRepository.getChatRoomInfo(roomIdx);
 	}
 
-	setChatRoomInfo(roomIdx: number, createChatRoomDto: CreateChatRoomDto): Promise<void> {
+	setChatRoomInfo(
+		roomIdx: number,
+		createChatRoomDto: CreateChatRoomDto
+	): Promise<void> {
 		return this.chatRoomRepository.setChatRoomInfo(roomIdx, createChatRoomDto);
 	}
 
@@ -77,9 +86,13 @@ export class ChatService {
 		return this.chatRepository.getChats(roomIdx);
 	}
 
-	async createChat(roomIdx: number, createChatDto: CreateChatDto): Promise<ChatDto> {
+	async createChat(
+		roomIdx: number,
+		createChatDto: CreateChatDto
+	): Promise<ChatDto> {
 		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
-		const participant = await this.chatParticipantRepository.getParticipantEntity(roomIdx, 1); //userIdx temp
+		const participant =
+			await this.chatParticipantRepository.getParticipantEntity(roomIdx, 1); //userIdx temp
 
 		return this.chatRepository.createChat(room, participant, createChatDto);
 	}
@@ -95,14 +108,23 @@ export class ChatService {
 			setParticipantDto.muteExpirationTime = mutedTime;
 		}
 
-		return this.chatParticipantRepository.setParticipantStatus(roomIdx, setParticipantDto);
+		return this.chatParticipantRepository.setParticipantStatus(
+			roomIdx,
+			setParticipantDto
+		);
 	}
 
 	setParticipantAuth(roomIdx: number, setParticipantDto: SetParticipantDto) {
-		return this.chatParticipantRepository.setParticipantAuth(roomIdx, setParticipantDto);
+		return this.chatParticipantRepository.setParticipantAuth(
+			roomIdx,
+			setParticipantDto
+		);
 	}
 
-	async setParticipantInfo(roomIdx: number, setParticipantDto: SetParticipantDto) {
+	async setParticipantInfo(
+		roomIdx: number,
+		setParticipantDto: SetParticipantDto
+	) {
 		const admin = await this.userRepository.findUserById(1); //temp
 
 		if (setParticipantDto.status != null) {

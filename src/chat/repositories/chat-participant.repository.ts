@@ -1,9 +1,4 @@
-import {
-	HttpException,
-	HttpStatus,
-	Injectable,
-	Logger,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
@@ -32,13 +27,13 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		await this.save(participant);
 	}
 
-	async inquireChatRoom(userIdx: number): Promise<ChatRoomDto[]> {
+	async inquireChatRoom(user: UserDto): Promise<ChatRoomDto[]> {
 		const query = this.createQueryBuilder('part');
 
 		const users = await query
 			.leftJoinAndSelect('part.room', 'room')
 			.leftJoinAndSelect('part.user', 'user')
-			.where('user.id=:userIdx', { userIdx })
+			.where('user.id=:userIdx', { userIdx: user.id })
 			.getMany();
 
 		const rooms = users.map((user) => user.room);

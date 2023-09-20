@@ -16,7 +16,9 @@ export class ChatRepository extends Repository<Chat> {
 	async getChats(roomIdx: number): Promise<ChatDto[]> {
 		const query = this.createQueryBuilder('chat');
 
-		const chats = await query.where('chat.roomIdx = :roomIdx', { roomIdx }).getMany();
+		const chats = await query
+			.where('chat.roomIdx = :roomIdx', { roomIdx })
+			.getMany();
 
 		return plainToInstance(ChatDto, chats);
 	}

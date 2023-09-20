@@ -11,8 +11,11 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		super(ChatRoom, dataSource.createEntityManager());
 	}
 
-	async createChatRoom(createChatRoomDto: CreateChatRoomDto): Promise<ChatRoomDto> {
-		const { roomName, roomType, password, maxPeople, currentPeople } = createChatRoomDto;
+	async createChatRoom(
+		createChatRoomDto: CreateChatRoomDto
+	): Promise<ChatRoomDto> {
+		const { roomName, roomType, password, maxPeople, currentPeople } =
+			createChatRoomDto;
 
 		const chatRoom = this.create({
 			roomName,
@@ -44,12 +47,17 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 	async getChatRoomInfo(roomIdx: number): Promise<ChatRoomDto> {
 		const query = this.createQueryBuilder('room');
 
-		const room = await query.where('room.roomIdx = :roomIdx', { roomIdx }).getOne();
+		const room = await query
+			.where('room.roomIdx = :roomIdx', { roomIdx })
+			.getOne();
 
 		return room;
 	}
 
-	async setChatRoomInfo(roomIdx: number, createChatRoomDto: CreateChatRoomDto): Promise<void> {
+	async setChatRoomInfo(
+		roomIdx: number,
+		createChatRoomDto: CreateChatRoomDto
+	): Promise<void> {
 		const { roomName, roomType, password, maxPeople } = createChatRoomDto;
 
 		const query = this.createQueryBuilder();
