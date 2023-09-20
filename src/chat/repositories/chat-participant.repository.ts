@@ -40,12 +40,15 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		return rooms;
 	}
 
-	async getParticipantEntity(roomIdx: number, userIdx: number): Promise<ChatParticipant> {
+	async getParticipantEntity(
+		roomIdx: number,
+		userIdx: number
+	): Promise<ChatParticipant> {
 		const query = this.createQueryBuilder('user');
 
 		const user = await query
 			.where('user.roomIdx = :roomIdx', { roomIdx })
-			.andWhere('user.id = :userIdx', { userIdx })
+			.andWhere('user.userIdx = :userIdx', { userIdx })
 			.getOne();
 
 		return user;
@@ -66,12 +69,17 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 	async getPariticipants(roomIdx: number): Promise<ChatParticipantDto[]> {
 		const query = this.createQueryBuilder('user');
 
-		const users = await query.where('user.roomIdx = :roomIdx', { roomIdx }).getMany();
+		const users = await query
+			.where('user.roomIdx = :roomIdx', { roomIdx })
+			.getMany();
 
 		return users;
 	}
 
-	async setParticipantStatus(roomIdx: number, setParticipantDto: SetParticipantDto) {
+	async setParticipantStatus(
+		roomIdx: number,
+		setParticipantDto: SetParticipantDto
+	) {
 		const { user, status, muteExpirationTime } = setParticipantDto;
 		const userIdx = user.id;
 		const query = this.createQueryBuilder();
@@ -80,11 +88,14 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.update(ChatParticipant)
 			.set({ status, muteExpirationTime })
 			.where('roomIdx = :roomIdx', { roomIdx })
-			.andWhere('id = :userIdx', { userIdx })
+			.andWhere('userIdx = :userIdx', { userIdx })
 			.execute();
 	}
 
-	async setParticipantAuth(roomIdx: number, setParticipantDto: SetParticipantDto) {
+	async setParticipantAuth(
+		roomIdx: number,
+		setParticipantDto: SetParticipantDto
+	) {
 		const { user, role } = setParticipantDto;
 		const userIdx = user.id;
 		const query = this.createQueryBuilder();
@@ -93,7 +104,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.update(ChatParticipant)
 			.set({ role })
 			.where('roomIdx = :roomIdx', { roomIdx })
-			.andWhere('id = :userIdx', { userIdx })
+			.andWhere('userIdx = :userIdx', { userIdx })
 			.execute();
 	}
 
@@ -102,7 +113,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 
 		query
 			.delete()
-			.where('id = :userIdx', { userIdx })
+			.where('userIdx = :userIdx', { userIdx })
 			.andWhere('roomIdx = :roomIdx', { roomIdx })
 			.execute();
 	}
