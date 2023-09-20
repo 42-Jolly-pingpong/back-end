@@ -38,7 +38,10 @@ export class UserController {
 
 	@ApiOperation({ summary: '유저정보 업데이트' })
 	@Patch('/:id')
-	async updateUser(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto): Promise<void> {
+	async updateUser(
+		@Param('id') id: number,
+		@Body() updateUserDto: UpdateUserDto
+	): Promise<void> {
 		return await this.userService.updateUser(+id, updateUserDto);
 	}
 
@@ -50,23 +53,34 @@ export class UserController {
 
 	@ApiOperation({ summary: '게임 전적 불러오기 ' })
 	@Post('/:id/history')
-	async getGameHistoryById(@Param('id') id: number): Promise<GameHistoryDto[]> {
+	async getGameHistoryById(
+		@Param('id') id: number
+	): Promise<GameHistoryDto[]> {
 		return await this.gameService.getGameHistoryByUserId(+id);
 	}
 
 	@ApiOperation({ summary: '유저 검색' })
 	@Get('/search/:keyword')
-	async getUsersByKeyword(@Param('keyword') keyword: string): Promise<UserDto[]> {
+	async getUsersByKeyword(
+		@Param('keyword') keyword: string
+	): Promise<UserDto[]> {
 		return await this.userService.getUsersByKeyword(keyword);
 	}
 
 	@ApiOperation({ summary: '닉네임 중복 검사' })
 	@Get('/nickname/:nickname')
-	async checkNicknameDuplicate(@Param('nickname') nickname: string): Promise<void> {
-		const isDuplicate = await this.userService.checkNicknameDuplicate(nickname);
+	async checkNicknameDuplicate(
+		@Param('nickname') nickname: string
+	): Promise<void> {
+		const isDuplicate = await this.userService.checkNicknameDuplicate(
+			nickname
+		);
 
 		if (isDuplicate) {
-			throw new HttpException('이거 나중에 핸들링 어케하지 흠', HttpStatus.CONFLICT);
+			throw new HttpException(
+				'이거 나중에 핸들링 어케하지 흠',
+				HttpStatus.CONFLICT
+			);
 		}
 	}
 }

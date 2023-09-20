@@ -7,7 +7,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
-	constructor(@InjectRepository(UserRepository) private userRepository: UserRepository) {}
+	constructor(
+		@InjectRepository(UserRepository) private userRepository: UserRepository
+	) {}
 
 	async create(createUserDto: CreateUserDto): Promise<void> {
 		await this.userRepository.createUser(createUserDto);
