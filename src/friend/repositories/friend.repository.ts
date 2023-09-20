@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
+import { UserDto } from 'src/user/dto/user.dto';
 import { Friend } from '../entities/friend.entity';
-import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
 import { FriendDTO } from '../dto/friend.DTO';
 
 @Injectable()
@@ -10,12 +10,12 @@ export class FriendRepository extends Repository<Friend> {
 		super(Friend, dataSource.createEntityManager());
 	}
 
-	async findAllFriend(userIdx: number): Promise<UserInfoDTO[]> {
+	async findAllFriend(userIdx: number): Promise<UserDto[]> {
 		const friend: FriendDTO[] = await this.find({
 			relations: { user: true, friend: true },
 			where: { userId: userIdx },
 		});
-		const friendList: UserInfoDTO[] = friend.map((item) => item.friend);
+		const friendList: UserDto[] = friend.map((item) => item.friend);
 		return friendList;
 	}
 }

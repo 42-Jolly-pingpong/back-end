@@ -1,9 +1,10 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { UserInfoDTO } from "src/user/dto/userInfo.dto";
+import { ApiProperty } from '@nestjs/swagger';
+import { UserDto } from 'src/user/dto/user.dto';
 
 export class FriendDTO {
 	@ApiProperty({ description: '유저' })
-	user: UserInfoDTO;
-	@ApiProperty({ description: '친구' })
-	friend: UserInfoDTO;
+	user: UserDto;
+	
+	@ApiProperty({ description: '유저' })
+	friend: UserDto;
 }

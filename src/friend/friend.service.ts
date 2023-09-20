@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
 import { FriendRepository } from './repositories/friend.repository';
 import { BlockedFriendRepository } from './repositories/blockedFriend.repository';
 import { FriendRequestDTO } from './dto/friendRequest.DTO';
 import { FriendRequestRepository } from './repositories/friendRequest.repository';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class FriendService {
@@ -17,11 +17,11 @@ export class FriendService {
 		private friendRequestRepository: FriendRequestRepository
 	) {}
 
-	async findAllFriendList(userIdx: number): Promise<UserInfoDTO[]> {
+	async findAllFriendList(userIdx: number): Promise<UserDto[]> {
 		return await this.friendRepository.findAllFriend(userIdx);
 	}
 
-	async getBlackList(userIdx: number): Promise<UserInfoDTO[]> {
+	async getBlackList(userIdx: number): Promise<UserDto[]> {
 		return await this.blockedFriendRepository.findBlackList(userIdx);
 	}
 

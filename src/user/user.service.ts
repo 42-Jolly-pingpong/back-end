@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
-import { UserInfoDTO } from './dto/userInfo.dto';
+import { UserDto } from './dto/user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -11,27 +11,34 @@ export class UserService {
 		@InjectRepository(UserRepository) private userRepository: UserRepository
 	) {}
 
-	create(createUserDto: CreateUserDto) {
-		this.userRepository.createUserInfo(createUserDto);
+	async create(createUserDto: CreateUserDto): Promise<void> {
+		await this.userRepository.createUser(createUserDto);
 	}
 
-	findAll() {
-		return `This action returns all user`;
+	async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<void> {
+		const user: UserDto = await this.userRepository.findUserById(id);
+		await this.userRepository.updateUser(user, updateUserDto);
 	}
 
-	async findOne(id: number): Promise<UserInfoDTO> {
-		const userInfo: UserInfoDTO =
-			await this.userRepository.getUserInfobyIdx(id);
-		console.log(userInfo);
-		if (!userInfo) throw new NotFoundException();
-		return userInfo;
+	async withdrawUser(id: number): Promise<void> {
+		const user: UserDto = await this.userRepository.findUserById(id);
+		await this.userRepository.updateUserAsLeave(user);
 	}
 
-	update(id: number, updateUserDto: UpdateUserDto) {
-		return `This action updates a #${id} user`;
+	async checkNicknameDuplicate(nickname: string): Promise<boolean> {
+		const count: number = await this.userRepository.findNickname(nickname);
+		return count > 0;
 	}
 
-	remove(idx: number) {
-		this.userRepository.deleteUserInfobyIdx(idx);
+	async getUsersByKeyword(keyword: string): Promise<UserDto[]> {
+		return await this.userRepository.findUsersByKeyword(keyword);
+	}
+
+	async getUserById(id: number): Promise<UserDto> {
+		const user: UserDto = await this.userRepository.findUserById(id);
+		if (!user) {
+			throw new NotFoundException();
+		}
+		return user;
 	}
 }
