@@ -12,7 +12,7 @@ import {
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChatService } from 'src/chat/chat.service';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
@@ -21,6 +21,7 @@ import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
 
+@ApiTags('chat-controller')
 @Controller('chat-rooms')
 export class ChatController {
 	constructor(private readonly chatService: ChatService) {}
