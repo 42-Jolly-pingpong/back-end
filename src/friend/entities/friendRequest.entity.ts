@@ -9,20 +9,20 @@ import {
 
 @Entity('Friend_request')
 export class FriendRequest {
-	@PrimaryColumn({ name: 'sender_idx' })
+	@PrimaryColumn({ name: 'sender_id', type: 'int' })
 	senderIdx: number;
 
-	@PrimaryColumn({ name: 'receiver_idx' })
+	@PrimaryColumn({ name: 'receiver_id', type: 'int' })
 	receiverIdx: number;
 
-	@CreateDateColumn({ type: 'timestamptz' })
+	@CreateDateColumn({ name: 'update_time', type: 'timestamptz' })
 	updateTime: Date;
 
 	@ManyToOne((type) => User)
-	@JoinColumn({ name: 'sender_idx' })
+	@JoinColumn({ name: 'sender_id' })
 	sender: User;
 
 	@ManyToOne((type) => User)
-	@JoinColumn({ name: 'receiver_idx' })
+	@JoinColumn({ name: 'receiver_id' })
 	receiver: User;
 }

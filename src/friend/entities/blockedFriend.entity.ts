@@ -3,17 +3,17 @@ import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('BlockedFriend')
 export class BlockedFriend {
-	@PrimaryColumn({name: 'user_idx'})
-	userIdx: number
+	@PrimaryColumn({ name: 'user_id', type: 'int' })
+	userId: number;
 
-	@PrimaryColumn({name: 'friend_idx'})
-	friendIdx: number
-
-	@ManyToOne((type) => User)
-	@JoinColumn({name: 'user_idx'})
-	user: User
+	@PrimaryColumn({ name: 'friend_id', type: 'int' })
+	friendId: number;
 
 	@ManyToOne((type) => User)
-	@JoinColumn({name: 'friend_idx'})
-	friend: User
+	@JoinColumn({ name: 'user_id' })
+	user: User;
+
+	@ManyToOne((type) => User)
+	@JoinColumn({ name: 'friend_id' })
+	friend: User;
 }
