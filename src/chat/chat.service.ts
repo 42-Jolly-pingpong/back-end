@@ -25,13 +25,9 @@ export class ChatService {
 		private chatRepository: ChatRepository
 	) {}
 
-	async createChatRoom(
-		createChatRoomDto: CreateChatRoomDto
-	): Promise<ChatRoomDto> {
-		const room = await this.chatRoomRepository.createChatRoom(
-			createChatRoomDto
-		);
-		const user = await this.userRepository.getUserInfobyIdx(1); //temp
+	async createChatRoom(createChatRoomDto: CreateChatRoomDto): Promise<ChatRoomDto> {
+		const room = await this.chatRoomRepository.createChatRoom(createChatRoomDto);
+		const user = await this.userRepository.findUserById(1); //temp
 
 		await this.chatParticipantRepository.createChatRoom(room, user);
 
@@ -48,7 +44,7 @@ export class ChatService {
 
 	async addParticipant(roomIdx: number): Promise<ChatRoomDto> {
 		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
-		const user = await this.userRepository.getUserInfobyIdx(2); //temp
+		const user = await this.userRepository.findUserById(2); //temp
 
 		await this.chatParticipantRepository.addParticipant(room, user);
 		return room;
@@ -58,10 +54,7 @@ export class ChatService {
 		return this.chatRoomRepository.getChatRoomInfo(roomIdx);
 	}
 
-	setChatRoomInfo(
-		roomIdx: number,
-		createChatRoomDto: CreateChatRoomDto
-	): Promise<void> {
+	setChatRoomInfo(roomIdx: number, createChatRoomDto: CreateChatRoomDto): Promise<void> {
 		return this.chatRoomRepository.setChatRoomInfo(roomIdx, createChatRoomDto);
 	}
 
@@ -73,13 +66,9 @@ export class ChatService {
 		return this.chatRepository.getChats(roomIdx);
 	}
 
-	async createChat(
-		roomIdx: number,
-		createChatDto: CreateChatDto
-	): Promise<ChatDto> {
+	async createChat(roomIdx: number, createChatDto: CreateChatDto): Promise<ChatDto> {
 		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
-		const participant =
-			await this.chatParticipantRepository.getParticipantEntity(roomIdx, 1); //userIdx temp
+		const participant = await this.chatParticipantRepository.getParticipantEntity(roomIdx, 1); //userIdx temp
 
 		return this.chatRepository.createChat(room, participant, createChatDto);
 	}
@@ -95,24 +84,15 @@ export class ChatService {
 			setParticipantDto.muteExpirationTime = mutedTime;
 		}
 
-		return this.chatParticipantRepository.setParticipantStatus(
-			roomIdx,
-			setParticipantDto
-		);
+		return this.chatParticipantRepository.setParticipantStatus(roomIdx, setParticipantDto);
 	}
 
 	setParticipantAuth(roomIdx: number, setParticipantDto: SetParticipantDto) {
-		return this.chatParticipantRepository.setParticipantAuth(
-			roomIdx,
-			setParticipantDto
-		);
+		return this.chatParticipantRepository.setParticipantAuth(roomIdx, setParticipantDto);
 	}
 
-	async setParticipantInfo(
-		roomIdx: number,
-		setParticipantDto: SetParticipantDto
-	) {
-		const admin = await this.userRepository.getUserInfobyIdx(1); //temp
+	async setParticipantInfo(roomIdx: number, setParticipantDto: SetParticipantDto) {
+		const admin = await this.userRepository.findUserById(1); //temp
 
 		if (setParticipantDto.status != null) {
 			this.setParticipantStatus(roomIdx, setParticipantDto);

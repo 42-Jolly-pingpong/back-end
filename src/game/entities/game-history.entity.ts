@@ -1,38 +1,32 @@
 import { User } from 'src/user/entities/user.entity';
-import {
-	Column,
-	Entity,
-	JoinColumn,
-	ManyToOne,
-	PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { GameMode } from '../enums/game-mode.enum';
 
 @Entity('GameHistory')
 export class GameHistory {
-	@PrimaryGeneratedColumn({ type: 'int', name: 'history_idx' })
-	historyIdx!: number;
+	@PrimaryGeneratedColumn({ name: 'id', type: 'int' })
+	id: number;
 
-	@ManyToOne(() => User, (user) => user.userIdx)
-	@JoinColumn({ name: 'win_player_idx' })
-	winUser!: User;
+	@ManyToOne(() => User, (user) => user.id)
+	@JoinColumn({ name: 'winner_id' })
+	winner: User;
 
-	@ManyToOne(() => User, (user) => user.userIdx)
-	@JoinColumn({ name: 'lose_player_idx' })
-	loseUser!: User;
+	@ManyToOne(() => User, (user) => user.id)
+	@JoinColumn({ name: 'loser_id' })
+	loser: User;
 
-	@Column({ type: 'int2', name: 'win_score' })
-	winScore!: number;
+	@Column({ name: 'win_score', type: 'int2' })
+	winScore: number;
 
-	@Column({ type: 'int2', name: 'lose_score' })
-	loseScore!: number;
+	@Column({ name: 'lose_score', type: 'int2' })
+	loseScore: number;
 
-	@Column({ type: 'timestamp', name: 'play_date ' })
-	playDate!: Date;
+	@Column({ name: 'play_date', type: 'timestamp' })
+	playDate: Date;
 
-	@Column({ type: 'time', name: 'play_time' })
-	playTime!: Date;
+	@Column({ name: 'play_time', type: 'time' })
+	playTime: Date;
 
-	@Column({ type: 'enum', name: 'mode', enum: GameMode })
+	@Column({ name: 'mode', type: 'enum', enum: GameMode })
 	mode!: GameMode;
 }
