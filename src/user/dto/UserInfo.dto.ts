@@ -1,5 +1,5 @@
 export class UserInfoDTO {
-	userIdx: number;
+	userId: number;
 	intraId: string;
 	eMail: string;
 	nickname: string;

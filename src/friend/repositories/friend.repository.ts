@@ -13,7 +13,7 @@ export class FriendRepository extends Repository<Friend> {
 	async findAllFriend(userIdx: number): Promise<UserInfoDTO[]> {
 		const friend: FriendDTO[] = await this.find({
 			relations: { user: true, friend: true },
-			where: { userIdx: userIdx },
+			where: { userId: userIdx },
 		});
 		const friendList: UserInfoDTO[] = friend.map((item) => item.friend);
 		return friendList;

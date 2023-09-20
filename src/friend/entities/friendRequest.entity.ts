@@ -10,10 +10,10 @@ import {
 @Entity('Friend_request')
 export class FriendRequest {
 	@PrimaryColumn({ name: 'sender_id', type: 'int' })
-	senderIdx: number;
+	senderId: number;
 
 	@PrimaryColumn({ name: 'receiver_id', type: 'int' })
-	receiverIdx: number;
+	receiverId: number;
 
 	@CreateDateColumn({ name: 'update_time', type: 'timestamptz' })
 	updateTime: Date;

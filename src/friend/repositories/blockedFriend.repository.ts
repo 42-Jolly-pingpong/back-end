@@ -10,10 +10,10 @@ export class BlockedFriendRepository extends Repository<BlockedFriend> {
 		super(BlockedFriend, dataSource.createEntityManager());
 	}
 
-	async findBlackList(userIdx: number): Promise<UserInfoDTO[]> {
+	async findBlackList(userId: number): Promise<UserInfoDTO[]> {
 		const blackList: FriendDTO[] = await this.find({
 			relations: { user: true, friend: true },
-			where: { userIdx },
+			where: { userId },
 		});
 		return blackList.map((item) => item.friend);
 	}

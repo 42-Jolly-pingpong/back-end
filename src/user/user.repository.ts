@@ -26,11 +26,11 @@ export class UserRepository extends Repository<User> {
 		await this.save(user);
 	}
 
-	async getUserInfobyIdx(idx: number): Promise<UserInfoDTO> {
-		return await this.findOneBy({ userIdx: idx });
+	async getUserInfobyIdx(id: number): Promise<UserInfoDTO> {
+		return await this.findOneBy({ userId: id });
 	}
 
-	async deleteUserInfobyIdx(idx: number): Promise<void> {
-		await this.delete({ userIdx: idx });
+	async deleteUserInfobyIdx(id: number): Promise<void> {
+		await this.delete({ userId: id });
 	}
 }
