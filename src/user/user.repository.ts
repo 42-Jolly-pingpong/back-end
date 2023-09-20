@@ -16,15 +16,10 @@ export class UserRepository extends Repository<User> {
 		await this.save(user);
 	}
 
-	async getUserInfobyIdx(id: number): Promise<UserDto> {
-		return await this.findOneBy({ id });
-	}
-
-	async deleteUserInfobyIdx(id: number): Promise<void> {
-		await this.delete({ id });
-	}
-
-	async updateUser(userDto: UserDto, updateUserDto: UpdateUserDto): Promise<void> {
+	async updateUser(
+		userDto: UserDto,
+		updateUserDto: UpdateUserDto
+	): Promise<void> {
 		const user = { ...userDto, ...updateUserDto };
 		await this.save(user);
 	}
@@ -39,7 +34,7 @@ export class UserRepository extends Repository<User> {
 	}
 
 	async findUsersByKeyword(keyword: string): Promise<UserDto[]> {
-		return await this.find({ where: { nickname: Like(`%${keyword}%`) } });
+		return await this.find({ where: { nickname: Like(`${keyword}%`) } });
 	}
 
 	async findUserById(id: number): Promise<UserDto> {
