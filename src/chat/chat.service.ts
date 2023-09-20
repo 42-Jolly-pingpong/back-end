@@ -26,14 +26,12 @@ export class ChatService {
 		private chatRepository: ChatRepository
 	) {}
 
-	async checkIfRoomExist(roomIdx: number) {
+	async checkIfRoomExist(roomIdx: number): Promise<boolean> {
 		const room = await this.chatRoomRepository.getChatRoomEntity(roomIdx);
 		if (room == null) {
-			throw new HttpException(
-				'존재하지않는 채팅방입니다.',
-				HttpStatus.NOT_FOUND
-			);
+			return false;
 		}
+		return true;
 	}
 
 	async createChatRoom(
@@ -138,7 +136,6 @@ export class ChatService {
 
 	async deleteParticipant(roomIdx: number, userIdx: number): Promise<void> {
 		try {
-			await this.checkIfRoomExist(roomIdx);
 			return await this.chatParticipantRepository.deleteParticipant(
 				roomIdx,
 				userIdx

@@ -9,6 +9,7 @@ import {
 	Patch,
 	Post,
 	Put,
+	UseGuards,
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
@@ -20,6 +21,7 @@ import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
+import { RoomGuard } from 'src/chat/guards/room.guard';
 
 @ApiTags('chat-controller')
 @Controller('chat-rooms')
@@ -49,12 +51,14 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 입장' })
 	@Post('/:roomIdx')
+	@UseGuards(RoomGuard)
 	addParticipant(@Param('roomIdx') roomIdx: number): Promise<ChatRoomDto> {
 		return this.chatService.addParticipant(roomIdx);
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 조회' })
 	@Get('/:roomIdx')
+	@UseGuards(RoomGuard)
 	getChatRoomInfo(
 		@Param('roomIdx', ParseIntPipe) roomIdx: number
 	): Promise<ChatRoomDto> {
@@ -63,6 +67,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 정보 수정' })
 	@Put('/:roomIdx')
+	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
 	setChatRoomInfo(
 		@Param('roomIdx', ParseIntPipe) roomIdx: number,
@@ -73,6 +78,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 삭제' })
 	@Delete('/:roomIdx')
+	@UseGuards(RoomGuard)
 	deleteChatRoom(
 		@Param('roomIdx', ParseIntPipe) roomIdx: number
 	): Promise<void> {
@@ -81,6 +87,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 내부 챗 조회' })
 	@Get('/:roomIdx/chats')
+	@UseGuards(RoomGuard)
 	getChats(
 		@Param('roomIdx', ParseIntPipe) roomIdx: number
 	): Promise<ChatDto[]> {
@@ -89,6 +96,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '챗 생성' })
 	@Post('/:roomIdx/chats')
+	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
 	createChat(
 		@Param('roomIdx', ParseIntPipe) roomIdx: number,
@@ -99,6 +107,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })
 	@Get('/:roomIdx/members')
+	@UseGuards(RoomGuard)
 	getPariticipants(
 		@Param('roomIdx', ParseIntPipe) roomIdx: number
 	): Promise<ChatParticipantDto[]> {
@@ -107,6 +116,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '채팅방 참여자 상태, 역할 변경' })
 	@Patch('/:roomIdx/members')
+	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
 	setParticipantInfo(
 		@Param('roomIdx', ParseIntPipe) roomIdx: number,
@@ -117,6 +127,7 @@ export class ChatController {
 
 	@ApiOperation({ summary: '참여자 채팅방 퇴장' })
 	@Delete('/:roomIdx/members')
+	@UseGuards(RoomGuard)
 	deleteParticipant(
 		@Param('roomIdx', ParseIntPipe) roomIdx: number
 	): Promise<void> {
