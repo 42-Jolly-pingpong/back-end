@@ -11,7 +11,7 @@ import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
 import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 import { Role } from 'src/chat/enums/role.enum';
-import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		super(ChatParticipant, dataSource.createEntityManager());
 	}
 
-	async createChatRoom(room: ChatRoomDto, user: UserInfoDTO): Promise<void> {
+	async createChatRoom(room: ChatRoomDto, user: UserDto): Promise<void> {
 		const participant = this.create({
 			room,
 			user,
@@ -38,7 +38,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		const users = await query
 			.leftJoinAndSelect('part.room', 'room')
 			.leftJoinAndSelect('part.user', 'user')
-			.where('user.userIdx=:userIdx', { userIdx })
+			.where('user.id=:userIdx', { userIdx })
 			.getMany();
 
 		const rooms = users.map((user) => user.room);
@@ -59,7 +59,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		return user;
 	}
 
-	async addParticipant(room: ChatRoom, user: UserInfoDTO): Promise<void> {
+	async addParticipant(room: ChatRoom, user: UserDto): Promise<void> {
 		const participant = this.create({
 			room,
 			user,
@@ -86,7 +86,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		setParticipantDto: SetParticipantDto
 	) {
 		const { user, status, muteExpirationTime } = setParticipantDto;
-		const userIdx = user.userIdx;
+		const userIdx = user.id;
 		const query = this.createQueryBuilder();
 
 		query
@@ -102,7 +102,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		setParticipantDto: SetParticipantDto
 	) {
 		const { user, role } = setParticipantDto;
-		const userIdx = user.userIdx;
+		const userIdx = user.id;
 		const query = this.createQueryBuilder();
 
 		query

@@ -1,7 +1,6 @@
-import { UserInfo } from "os";
-import { UserInfoDTO } from "src/user/dto/userInfo.dto";
+import { UserDto } from 'src/user/dto/user.dto';
 
 export class FriendDTO {
-	user: UserInfoDTO;
-	friend: UserInfoDTO;
+	user: UserDto;
+	friend: UserDto;
 }

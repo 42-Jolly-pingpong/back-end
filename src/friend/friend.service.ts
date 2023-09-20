@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
 import { FriendRepository } from './friend.repositody';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class FriendService {
@@ -10,7 +10,7 @@ export class FriendService {
 		private friendRepository: FriendRepository
 	) {}
 
-	async findAllFriendList(userIdx: number): Promise<UserInfoDTO[]> {
+	async findAllFriendList(userIdx: number): Promise<UserDto[]> {
 		return await this.friendRepository.findAllFriend(userIdx);
 	}
 }

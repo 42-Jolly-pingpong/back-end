@@ -1,13 +1,13 @@
 import { IsNotEmpty, IsEnum, ValidateIf, IsEmpty } from 'class-validator';
 import { Role } from 'src/chat/enums/role.enum';
-import { UserInfoDTO } from 'src/user/dto/userInfo.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
+import { UserDto } from 'src/user/dto/user.dto';
 
 export class SetParticipantDto {
 	@ApiProperty({ description: '참여자 정보' })
 	@IsNotEmpty()
-	user: UserInfoDTO;
+	user: UserDto;
 
 	@ApiProperty({ description: '참여자 상태' })
 	@ValidateIf((user) => user.status != null)
