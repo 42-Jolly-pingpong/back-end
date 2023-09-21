@@ -1,14 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
-import {
-	IsNotEmpty,
-	IsEnum,
-	IsNumber,
-	Length,
-	Min,
-	Max,
-	ValidateIf,
-} from 'class-validator';
+import { IsNotEmpty, IsEnum, ValidateIf, isNotEmpty } from 'class-validator';
+
 export class CreateChatRoomDto {
 	@ApiProperty({ description: '채팅방 이름' })
 	@IsNotEmpty()
@@ -19,9 +12,7 @@ export class CreateChatRoomDto {
 	roomType: ChatRoomType;
 
 	@ApiProperty({ description: '비밀번호' })
-	@ValidateIf((room) => room.password != null)
-	@IsNumber()
-	@Min(1)
-	@Max(9999) //
+	@ValidateIf((room) => room.roomType == ChatRoomType.PROTECTED)
+	@IsNotEmpty()
 	password: number | null;
 }
