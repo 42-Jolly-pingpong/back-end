@@ -2,6 +2,7 @@ import {
 	ConflictException,
 	Injectable,
 	Logger,
+	NotFoundException,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -67,6 +68,10 @@ export class ChatService {
 		return true;
 	}
 
+	checkUserInParticipant(participants: ChatParticipant[], user: User): boolean {
+		return participants.some((participant) => participant.user.id === user.id);
+	}
+
 	async createChatRoom(
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
@@ -94,10 +99,6 @@ export class ChatService {
 		);
 	}
 
-	checkUserInChatRoom(participants: ChatParticipant[], user: User): boolean {
-		return participants.some((participant) => participant.user.id === user.id);
-	}
-
 	async addParticipant(
 		roomId: number,
 		enterChatRoomDto: EnterChatRoomDto
@@ -112,7 +113,7 @@ export class ChatService {
 			}
 		}
 		const user = await this.userRepository.findUserById(1); //temp
-		if (this.checkUserInChatRoom(room.participants, user)) {
+		if (this.checkUserInParticipant(room.participants, user)) {
 			throw new ConflictException();
 		}
 
@@ -150,6 +151,9 @@ export class ChatService {
 			roomId,
 			1
 		); //userId temp
+		if (participant == null) {
+			throw new NotFoundException();
+		}
 
 		return this.chatRepository.createChat(room, participant, createChatDto);
 	}
@@ -166,6 +170,9 @@ export class ChatService {
 			roomId,
 			setParticipantDto.user.id
 		);
+		if (participant == null) {
+			throw new NotFoundException();
+		}
 
 		if (participant.role == Role.OWNER) {
 			throw new UnauthorizedException();
@@ -187,7 +194,18 @@ export class ChatService {
 		);
 	}
 
-	setParticipantRole(roomId: number, setParticipantDto: SetParticipantRoleDto) {
+	async setParticipantRole(
+		roomId: number,
+		setParticipantDto: SetParticipantRoleDto
+	) {
+		const participant = await this.chatParticipantRepository.getParticipant(
+			roomId,
+			setParticipantDto.user.id
+		);
+		if (participant == null) {
+			throw new NotFoundException();
+		}
+
 		return this.chatParticipantRepository.setParticipantRole(
 			roomId,
 			setParticipantDto
