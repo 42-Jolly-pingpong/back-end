@@ -29,8 +29,6 @@ export class ChatRoom {
 	@Column({ name: 'status', default: true })
 	status: boolean;
 
-	@Column({ name: 'current_people', default: 1 })
-	currentPeople: number;
 
 	@OneToMany(() => Chat, (chat) => chat.room)
 	chats: Chat[];
