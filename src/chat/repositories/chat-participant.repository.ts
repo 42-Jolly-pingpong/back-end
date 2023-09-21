@@ -28,11 +28,11 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 	}
 
 	async inquireChatRoom(user: UserDto): Promise<ChatRoomDto[]> {
-		const query = this.createQueryBuilder('part');
+		const query = this.createQueryBuilder('participant');
 
 		const users = await query
-			.leftJoinAndSelect('part.room', 'room')
-			.leftJoinAndSelect('part.user', 'user')
+			.leftJoinAndSelect('participant.room', 'room')
+			.leftJoinAndSelect('participant.user', 'user')
 			.where('user.id=:userId', { userId: user.id })
 			.getMany();
 
@@ -44,11 +44,11 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		roomId: number,
 		userId: number
 	): Promise<ChatParticipant> {
-		const query = this.createQueryBuilder('user');
+		const query = this.createQueryBuilder('participant');
 
 		const user = await query
-			.where('user.roomId = :roomId', { roomId })
-			.andWhere('user.userId = :userId', { userId })
+			.where('participant.roomId = :roomId', { roomId })
+			.andWhere('participant.userId = :userId', { userId })
 			.getOne();
 
 		return user;
@@ -67,13 +67,13 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 	}
 
 	async getPariticipants(roomId: number): Promise<ChatParticipantDto[]> {
-		const query = this.createQueryBuilder('user');
+		const query = this.createQueryBuilder('participant');
 
-		const users = await query
-			.where('user.roomId = :roomId', { roomId })
+		const participants = await query
+			.where('participant.roomId = :roomId', { roomId })
 			.getMany();
 
-		return users;
+		return participants;
 	}
 
 	async setParticipantStatus(
@@ -109,11 +109,11 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 	}
 
 	async deleteParticipant(roomId: number, userId: number): Promise<void> {
-		const query = this.createQueryBuilder('user');
+		const query = this.createQueryBuilder('participant');
 
 		const participant = await query
-			.where('user.userId = :userId', { userId })
-			.andWhere('user.roomId = :roomId', { roomId })
+			.where('participant.userId = :userId', { userId })
+			.andWhere('participant.roomId = :roomId', { roomId })
 			.getOne();
 
 		if (participant == null) {

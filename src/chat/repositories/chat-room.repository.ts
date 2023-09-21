@@ -41,15 +41,13 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 	}
 
 	async getChatRoomEntity(roomId: number): Promise<ChatRoom> {
-		return await this.findOneBy({ roomId });
+		return await this.findOneBy({ id: roomId });
 	}
 
 	async getChatRoomInfo(roomId: number): Promise<ChatRoomDto> {
 		const query = this.createQueryBuilder('room');
 
-		const room = await query
-			.where('room.roomId = :roomId', { roomId })
-			.getOne();
+		const room = await query.where('room.id = :roomId', { roomId }).getOne();
 
 		return room;
 	}
@@ -65,13 +63,13 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		query
 			.update(ChatRoom)
 			.set({ roomName, roomType, password, maxPeople })
-			.where('roomId = :roomId', { roomId })
+			.where('id = :roomId', { roomId })
 			.execute();
 	}
 
 	async deleteChatRoom(roomId: number): Promise<void> {
 		const query = this.createQueryBuilder('room');
 
-		query.delete().where('roomId = :roomId', { roomId }).execute();
+		query.delete().where('id = :roomId', { roomId }).execute();
 	}
 }
