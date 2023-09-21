@@ -11,9 +11,6 @@ export class ChatRoomDto {
 	@ApiProperty({ description: '채팅방 타입' })
 	roomType: ChatRoomType;
 
-	@ApiProperty({ description: '채팅방 비밀번호' })
-	password: number | null;
-
 	@ApiProperty({ description: '채팅방 최근 업데이트 시간' })
 	updatedTime: Date;
 
