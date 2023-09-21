@@ -1,4 +1,9 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+	ConflictException,
+	Injectable,
+	Logger,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
@@ -7,11 +12,13 @@ import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
 import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
+import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 import { ChatParticipantRepository } from 'src/chat/repositories/chat-participant.repository';
 import { ChatRoomRepository } from 'src/chat/repositories/chat-room.repository';
 import { ChatRepository } from 'src/chat/repositories/chat.repository';
+import { User } from 'src/user/entities/user.entity';
 import { UserRepository } from 'src/user/user.repository';
 
 @Injectable()
@@ -58,6 +65,10 @@ export class ChatService {
 		return this.chatRoomRepository.inquireOpenedChatRoom();
 	}
 
+	checkUserInChatRoom(participants: ChatParticipant[], user: User): boolean {
+		return participants.some((participant) => participant.user.id === user.id);
+	}
+
 	async addParticipant(
 		roomId: number,
 		enterChatRoomDto: EnterChatRoomDto
@@ -71,7 +82,10 @@ export class ChatService {
 				throw new UnauthorizedException();
 			}
 		}
-		const user = await this.userRepository.findUserById(2); //temp
+		const user = await this.userRepository.findUserById(1); //temp
+		if (this.checkUserInChatRoom(room.participants, user)) {
+			throw new ConflictException();
+		}
 
 		await this.chatParticipantRepository.addParticipant(room, user);
 		return room;
