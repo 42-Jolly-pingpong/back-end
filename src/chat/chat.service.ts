@@ -16,6 +16,7 @@ import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
+import { Role } from 'src/chat/enums/role.enum';
 import { ChatParticipantRepository } from 'src/chat/repositories/chat-participant.repository';
 import { ChatRoomRepository } from 'src/chat/repositories/chat-room.repository';
 import { ChatRepository } from 'src/chat/repositories/chat.repository';
@@ -126,10 +127,20 @@ export class ChatService {
 		return this.chatParticipantRepository.getPariticipants(roomId);
 	}
 
-	setParticipantStatus(
+	async setParticipantStatus(
 		roomId: number,
 		setParticipantDto: SetParticipantStatusDto
 	) {
+		const participant =
+			await this.chatParticipantRepository.getParticipantEntity(
+				roomId,
+				setParticipantDto.user.id
+			);
+
+		if (participant.role == Role.OWNER) {
+			throw new UnauthorizedException();
+		}
+
 		if (setParticipantDto.status == PaticipantStatus.MUTED) {
 			const mutedTime = new Date();
 			mutedTime.setMinutes(mutedTime.getMinutes() + 5);
