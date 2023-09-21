@@ -30,7 +30,4 @@ export class CreateChatRoomDto {
 	@Min(2)
 	@Max(30)
 	maxPeople: number;
-
-	@ApiProperty({ description: '현재 인원' })
-	currentPeople: number;
 }
