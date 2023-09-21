@@ -29,7 +29,7 @@ import { RoomGuard } from 'src/chat/guards/room.guard';
 export class ChatController {
 	constructor(private readonly chatService: ChatService) {}
 
-	@ApiOperation({ summary: '채팅방 목록 조회' })
+	@ApiOperation({ summary: '사용자가 참여하고있는 채팅방 목록 조회' })
 	@Get('')
 	inquireChatRoom(): Promise<ChatRoomDto[]> {
 		return this.chatService.inquireChatRoom(2); //temp
