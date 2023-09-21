@@ -1,7 +1,8 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
-import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
+import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
+import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
 import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
@@ -78,9 +79,10 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 
 	async setParticipantStatus(
 		roomId: number,
-		setParticipantDto: SetParticipantDto
+		setParticipantDto: SetParticipantStatusDto,
+		muteExpirationTime: Date = null
 	) {
-		const { user, status, muteExpirationTime } = setParticipantDto;
+		const { user, status } = setParticipantDto;
 		const userId = user.id;
 		const query = this.createQueryBuilder();
 
@@ -92,9 +94,9 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.execute();
 	}
 
-	async setParticipantAuth(
+	async setParticipantRole(
 		roomId: number,
-		setParticipantDto: SetParticipantDto
+		setParticipantDto: SetParticipantRoleDto
 	) {
 		const { user, role } = setParticipantDto;
 		const userId = user.id;

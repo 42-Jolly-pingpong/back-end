@@ -21,7 +21,8 @@ import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
-import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
+import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
+import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { RoomGuard } from 'src/chat/guards/room.guard';
 
 @ApiTags('chat-controller')
@@ -114,15 +115,26 @@ export class ChatController {
 		return this.chatService.getPariticipants(roomId);
 	}
 
-	@ApiOperation({ summary: '채팅방 참여자 상태, 역할 변경' })
-	@Patch('/:roomId/members')
+	@ApiOperation({ summary: '채팅방 역할 변경' })
+	@Patch('/:roomId/members/role')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
-	setParticipantInfo(
+	setParticipantRole(
 		@Param('roomId', ParseIntPipe) roomId: number,
-		@Body() chatParticipantDto: SetParticipantDto
+		@Body() chatParticipantDto: SetParticipantRoleDto
 	): Promise<void> {
-		return this.chatService.setParticipantInfo(roomId, chatParticipantDto);
+		return this.chatService.setParticipantRole(roomId, chatParticipantDto);
+	}
+
+	@ApiOperation({ summary: '채팅방 참여자 상태 변경' })
+	@Patch('/:roomId/members/status')
+	@UseGuards(RoomGuard)
+	@UsePipes(ValidationPipe)
+	setParticipantStatus(
+		@Param('roomId', ParseIntPipe) roomId: number,
+		@Body() chatParticipantDto: SetParticipantStatusDto
+	): Promise<void> {
+		return this.chatService.setParticipantStatus(roomId, chatParticipantDto);
 	}
 
 	@ApiOperation({ summary: '참여자 채팅방 퇴장' })

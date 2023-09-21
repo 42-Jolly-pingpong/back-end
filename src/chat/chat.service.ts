@@ -11,7 +11,8 @@ import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
-import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
+import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
+import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
@@ -125,11 +126,18 @@ export class ChatService {
 		return this.chatParticipantRepository.getPariticipants(roomId);
 	}
 
-	setParticipantStatus(roomId: number, setParticipantDto: SetParticipantDto) {
+	setParticipantStatus(
+		roomId: number,
+		setParticipantDto: SetParticipantStatusDto
+	) {
 		if (setParticipantDto.status == PaticipantStatus.MUTED) {
 			const mutedTime = new Date();
 			mutedTime.setMinutes(mutedTime.getMinutes() + 5);
-			setParticipantDto.muteExpirationTime = mutedTime;
+			return this.chatParticipantRepository.setParticipantStatus(
+				roomId,
+				setParticipantDto,
+				mutedTime
+			);
 		}
 
 		return this.chatParticipantRepository.setParticipantStatus(
@@ -138,26 +146,11 @@ export class ChatService {
 		);
 	}
 
-	setParticipantAuth(roomId: number, setParticipantDto: SetParticipantDto) {
-		return this.chatParticipantRepository.setParticipantAuth(
+	setParticipantRole(roomId: number, setParticipantDto: SetParticipantRoleDto) {
+		return this.chatParticipantRepository.setParticipantRole(
 			roomId,
 			setParticipantDto
 		);
-	}
-
-	async setParticipantInfo(
-		roomId: number,
-		setParticipantDto: SetParticipantDto
-	) {
-		const admin = await this.userRepository.findUserById(1); //temp
-
-		if (setParticipantDto.status != null) {
-			this.setParticipantStatus(roomId, setParticipantDto);
-			return;
-		} else if (setParticipantDto.role != null) {
-			this.setParticipantAuth(roomId, setParticipantDto);
-			return;
-		}
 	}
 
 	async deleteParticipant(roomId: number, userId: number): Promise<void> {
