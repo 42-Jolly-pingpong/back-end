@@ -20,6 +20,7 @@ import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
+import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
 import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
 import { RoomGuard } from 'src/chat/guards/room.guard';
 
@@ -52,8 +53,11 @@ export class ChatController {
 	@ApiOperation({ summary: '채팅방 입장' })
 	@Post('/:roomId')
 	@UseGuards(RoomGuard)
-	addParticipant(@Param('roomId') roomId: number): Promise<ChatRoomDto> {
-		return this.chatService.addParticipant(roomId);
+	addParticipant(
+		@Param('roomId') roomId: number,
+		@Body() enterChatRoomDto: EnterChatRoomDto
+	): Promise<ChatRoomDto> {
+		return this.chatService.addParticipant(roomId, enterChatRoomDto);
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 조회' })
