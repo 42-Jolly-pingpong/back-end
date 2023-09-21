@@ -13,11 +13,11 @@ export class ChatRepository extends Repository<Chat> {
 		super(Chat, dataSource.createEntityManager());
 	}
 
-	async getChats(roomIdx: number): Promise<ChatDto[]> {
+	async getChats(roomId: number): Promise<ChatDto[]> {
 		const query = this.createQueryBuilder('chat');
 
 		const chats = await query
-			.where('chat.roomIdx = :roomIdx', { roomIdx })
+			.where('chat.roomId = :roomId', { roomId })
 			.getMany();
 
 		return plainToInstance(ChatDto, chats);

@@ -3,7 +3,7 @@ import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 
 export class ChatRoomDto {
 	@ApiProperty({ description: '채팅방 인덱스' })
-	roomIdx: number;
+	id: number;
 
 	@ApiProperty({ description: '채팅방 이름' })
 	roomName: string;

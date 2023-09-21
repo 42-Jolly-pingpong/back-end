@@ -40,22 +40,22 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return rooms;
 	}
 
-	async getChatRoomEntity(roomIdx: number): Promise<ChatRoom> {
-		return await this.findOneBy({ roomIdx });
+	async getChatRoomEntity(roomId: number): Promise<ChatRoom> {
+		return await this.findOneBy({ roomId });
 	}
 
-	async getChatRoomInfo(roomIdx: number): Promise<ChatRoomDto> {
+	async getChatRoomInfo(roomId: number): Promise<ChatRoomDto> {
 		const query = this.createQueryBuilder('room');
 
 		const room = await query
-			.where('room.roomIdx = :roomIdx', { roomIdx })
+			.where('room.roomId = :roomId', { roomId })
 			.getOne();
 
 		return room;
 	}
 
 	async setChatRoomInfo(
-		roomIdx: number,
+		roomId: number,
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
 		const { roomName, roomType, password, maxPeople } = createChatRoomDto;
@@ -65,13 +65,13 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		query
 			.update(ChatRoom)
 			.set({ roomName, roomType, password, maxPeople })
-			.where('roomIdx = :roomIdx', { roomIdx })
+			.where('roomId = :roomId', { roomId })
 			.execute();
 	}
 
-	async deleteChatRoom(roomIdx: number): Promise<void> {
+	async deleteChatRoom(roomId: number): Promise<void> {
 		const query = this.createQueryBuilder('room');
 
-		query.delete().where('roomIdx = :roomIdx', { roomIdx }).execute();
+		query.delete().where('roomId = :roomId', { roomId }).execute();
 	}
 }

@@ -50,87 +50,83 @@ export class ChatController {
 	}
 
 	@ApiOperation({ summary: '채팅방 입장' })
-	@Post('/:roomIdx')
+	@Post('/:roomId')
 	@UseGuards(RoomGuard)
-	addParticipant(@Param('roomIdx') roomIdx: number): Promise<ChatRoomDto> {
-		return this.chatService.addParticipant(roomIdx);
+	addParticipant(@Param('roomId') roomId: number): Promise<ChatRoomDto> {
+		return this.chatService.addParticipant(roomId);
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 조회' })
-	@Get('/:roomIdx')
+	@Get('/:roomId')
 	@UseGuards(RoomGuard)
 	getChatRoomInfo(
-		@Param('roomIdx', ParseIntPipe) roomIdx: number
+		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatRoomDto> {
-		return this.chatService.getChatRoomInfo(roomIdx);
+		return this.chatService.getChatRoomInfo(roomId);
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 수정' })
-	@Put('/:roomIdx')
+	@Put('/:roomId')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
 	setChatRoomInfo(
-		@Param('roomIdx', ParseIntPipe) roomIdx: number,
+		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
-		return this.chatService.setChatRoomInfo(roomIdx, createChatRoomDto);
+		return this.chatService.setChatRoomInfo(roomId, createChatRoomDto);
 	}
 
 	@ApiOperation({ summary: '채팅방 삭제' })
-	@Delete('/:roomIdx')
+	@Delete('/:roomId')
 	@UseGuards(RoomGuard)
-	deleteChatRoom(
-		@Param('roomIdx', ParseIntPipe) roomIdx: number
-	): Promise<void> {
-		return this.chatService.deleteChatRoom(roomIdx);
+	deleteChatRoom(@Param('roomId', ParseIntPipe) roomId: number): Promise<void> {
+		return this.chatService.deleteChatRoom(roomId);
 	}
 
 	@ApiOperation({ summary: '채팅방 내부 챗 조회' })
-	@Get('/:roomIdx/chats')
+	@Get('/:roomId/chats')
 	@UseGuards(RoomGuard)
-	getChats(
-		@Param('roomIdx', ParseIntPipe) roomIdx: number
-	): Promise<ChatDto[]> {
-		return this.chatService.getChats(roomIdx);
+	getChats(@Param('roomId', ParseIntPipe) roomId: number): Promise<ChatDto[]> {
+		return this.chatService.getChats(roomId);
 	}
 
 	@ApiOperation({ summary: '챗 생성' })
-	@Post('/:roomIdx/chats')
+	@Post('/:roomId/chats')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
 	createChat(
-		@Param('roomIdx', ParseIntPipe) roomIdx: number,
+		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() createChatDto: CreateChatDto
 	): Promise<ChatDto> {
-		return this.chatService.createChat(roomIdx, createChatDto);
+		return this.chatService.createChat(roomId, createChatDto);
 	}
 
 	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })
-	@Get('/:roomIdx/members')
+	@Get('/:roomId/members')
 	@UseGuards(RoomGuard)
 	getPariticipants(
-		@Param('roomIdx', ParseIntPipe) roomIdx: number
+		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatParticipantDto[]> {
-		return this.chatService.getPariticipants(roomIdx);
+		return this.chatService.getPariticipants(roomId);
 	}
 
 	@ApiOperation({ summary: '채팅방 참여자 상태, 역할 변경' })
-	@Patch('/:roomIdx/members')
+	@Patch('/:roomId/members')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
 	setParticipantInfo(
-		@Param('roomIdx', ParseIntPipe) roomIdx: number,
+		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() chatParticipantDto: SetParticipantDto
 	): Promise<void> {
-		return this.chatService.setParticipantInfo(roomIdx, chatParticipantDto);
+		return this.chatService.setParticipantInfo(roomId, chatParticipantDto);
 	}
 
 	@ApiOperation({ summary: '참여자 채팅방 퇴장' })
-	@Delete('/:roomIdx/members')
+	@Delete('/:roomId/members')
 	@UseGuards(RoomGuard)
 	deleteParticipant(
-		@Param('roomIdx', ParseIntPipe) roomIdx: number
+		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<void> {
-		return this.chatService.deleteParticipant(roomIdx, 1); //temp
+		return this.chatService.deleteParticipant(roomId, 1); //temp
 	}
 }

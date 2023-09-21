@@ -14,17 +14,17 @@ import {
 
 @Entity('ChatParticipant')
 export class ChatParticipant {
-	@PrimaryGeneratedColumn({ name: 'participant_idx' })
-	participantIdx: number;
+	@PrimaryGeneratedColumn({ name: 'id' })
+	id: number;
 
 	@ManyToOne(() => ChatRoom, (room) => room.participants, {
 		onDelete: 'CASCADE',
 	})
-	@JoinColumn({ name: 'roomIdx' })
+	@JoinColumn({ name: 'roomId' })
 	room: ChatRoom;
 
 	@ManyToOne(() => User, (user) => user.id)
-	@JoinColumn({ name: 'userIdx' })
+	@JoinColumn({ name: 'userId' })
 	user: User;
 
 	@Column({ name: 'role' })

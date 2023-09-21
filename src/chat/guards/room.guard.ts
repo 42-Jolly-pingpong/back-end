@@ -6,14 +6,14 @@ export class RoomGuard implements CanActivate {
 	constructor(private chatService: ChatService) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const roomIdx = parseInt(
-			context.switchToHttp().getRequest().params['roomIdx']
+		const roomId = parseInt(
+			context.switchToHttp().getRequest().params['roomId']
 		);
-		return this.validate(roomIdx) && this.chatService.checkIfRoomExist(roomIdx);
+		return this.validate(roomId) && this.chatService.checkIfRoomExist(roomId);
 	}
 
-	validate(roomIdx: number) {
-		if (isNaN(roomIdx)) {
+	validate(roomId: number) {
+		if (isNaN(roomId)) {
 			return false;
 		}
 		return true;
