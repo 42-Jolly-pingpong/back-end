@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsEnum, ValidateIf, NotEquals } from 'class-validator';
+import { IsNotEmpty, IsEnum, NotEquals } from 'class-validator';
 import { Role } from 'src/chat/enums/role.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserDto } from 'src/user/dto/user.dto';
