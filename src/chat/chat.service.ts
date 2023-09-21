@@ -14,6 +14,7 @@ import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
+import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 import { Role } from 'src/chat/enums/role.enum';
@@ -36,8 +37,30 @@ export class ChatService {
 		private chatRepository: ChatRepository
 	) {}
 
+	roomsEntityToDto(rooms: ChatRoom[]): ChatRoomDto[] {
+		return rooms.map((room) => {
+			return this.roomEntityToDto(room);
+		});
+	}
+
+	roomEntityToDto(room: ChatRoom): ChatRoomDto {
+		const dto: ChatRoomDto = {
+			id: room.id,
+			roomName: room.roomName,
+			roomType: room.roomType,
+			updatedTime: room.updatedTime,
+			status: room.status,
+			currentPeople: room.participants.filter(
+				(participant) =>
+					participant.status === PaticipantStatus.DEFAULT ||
+					participant.status === PaticipantStatus.MUTED
+			).length,
+		};
+		return dto;
+	}
+
 	async checkIfRoomExist(roomId: number): Promise<boolean> {
-		const room = await this.chatRoomRepository.getChatRoomEntity(roomId);
+		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		if (room == null) {
 			return false;
 		}
@@ -54,17 +77,21 @@ export class ChatService {
 
 		await this.chatParticipantRepository.createChatRoom(room, user);
 
-		return room;
+		return this.roomEntityToDto(room);
 	}
 
 	async inquireChatRoom(userId: number): Promise<ChatRoomDto[]> {
 		const user = await this.userRepository.findUserById(userId); //temp
 
-		return this.chatParticipantRepository.inquireChatRoom(user);
+		return this.roomsEntityToDto(
+			await this.chatParticipantRepository.inquireChatRoom(user)
+		);
 	}
 
-	inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
-		return this.chatRoomRepository.inquireOpenedChatRoom();
+	async inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
+		return this.roomsEntityToDto(
+			await this.chatRoomRepository.inquireOpenedChatRoom()
+		);
 	}
 
 	checkUserInChatRoom(participants: ChatParticipant[], user: User): boolean {
@@ -75,7 +102,7 @@ export class ChatService {
 		roomId: number,
 		enterChatRoomDto: EnterChatRoomDto
 	): Promise<ChatRoomDto> {
-		const room = await this.chatRoomRepository.getChatRoomEntity(roomId);
+		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		if (
 			room.roomType == ChatRoomType.PROTECTED &&
 			enterChatRoomDto.password != null
@@ -90,11 +117,13 @@ export class ChatService {
 		}
 
 		await this.chatParticipantRepository.addParticipant(room, user);
-		return room;
+		return this.roomEntityToDto(room);
 	}
 
-	getChatRoomInfo(roomId: number): Promise<ChatRoomDto> {
-		return this.chatRoomRepository.getChatRoomInfo(roomId);
+	async getChatRoom(roomId: number): Promise<ChatRoomDto> {
+		return this.roomEntityToDto(
+			await this.chatRoomRepository.getChatRoom(roomId)
+		);
 	}
 
 	setChatRoomInfo(
@@ -116,9 +145,11 @@ export class ChatService {
 		roomId: number,
 		createChatDto: CreateChatDto
 	): Promise<ChatDto> {
-		const room = await this.chatRoomRepository.getChatRoomEntity(roomId);
-		const participant =
-			await this.chatParticipantRepository.getParticipantEntity(roomId, 1); //userId temp
+		const room = await this.chatRoomRepository.getChatRoom(roomId);
+		const participant = await this.chatParticipantRepository.getParticipant(
+			roomId,
+			1
+		); //userId temp
 
 		return this.chatRepository.createChat(room, participant, createChatDto);
 	}
@@ -131,11 +162,10 @@ export class ChatService {
 		roomId: number,
 		setParticipantDto: SetParticipantStatusDto
 	) {
-		const participant =
-			await this.chatParticipantRepository.getParticipantEntity(
-				roomId,
-				setParticipantDto.user.id
-			);
+		const participant = await this.chatParticipantRepository.getParticipant(
+			roomId,
+			setParticipantDto.user.id
+		);
 
 		if (participant.role == Role.OWNER) {
 			throw new UnauthorizedException();

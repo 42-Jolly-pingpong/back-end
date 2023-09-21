@@ -67,7 +67,7 @@ export class ChatController {
 	getChatRoomInfo(
 		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatRoomDto> {
-		return this.chatService.getChatRoomInfo(roomId);
+		return this.chatService.getChatRoom(roomId);
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 수정' })

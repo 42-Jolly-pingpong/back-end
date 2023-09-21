@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
-import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
@@ -8,6 +7,7 @@ import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 import { Role } from 'src/chat/enums/role.enum';
 import { UserDto } from 'src/user/dto/user.dto';
+import { User } from 'src/user/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		super(ChatParticipant, dataSource.createEntityManager());
 	}
 
-	async createChatRoom(room: ChatRoomDto, user: UserDto): Promise<void> {
+	async createChatRoom(room: ChatRoom, user: User): Promise<void> {
 		const participant = this.create({
 			room,
 			user,
@@ -28,7 +28,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		await this.save(participant);
 	}
 
-	async inquireChatRoom(user: UserDto): Promise<ChatRoomDto[]> {
+	async inquireChatRoom(user: UserDto): Promise<ChatRoom[]> {
 		const query = this.createQueryBuilder('participant');
 
 		const users = await query
@@ -41,7 +41,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		return rooms;
 	}
 
-	async getParticipantEntity(
+	async getParticipant(
 		roomId: number,
 		userId: number
 	): Promise<ChatParticipant> {
