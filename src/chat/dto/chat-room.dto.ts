@@ -14,9 +14,6 @@ export class ChatRoomDto {
 	@ApiProperty({ description: '채팅방 비밀번호' })
 	password: number | null;
 
-	@ApiProperty({ description: '채팅방 최대 인원' })
-	maxPeople: number;
-
 	@ApiProperty({ description: '채팅방 최근 업데이트 시간' })
 	updatedTime: Date;
 

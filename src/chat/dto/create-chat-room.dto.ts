@@ -24,10 +24,4 @@ export class CreateChatRoomDto {
 	@Min(1)
 	@Max(9999) //
 	password: number | null;
-
-	@ApiProperty({ description: '최대 인원' })
-	@IsNumber()
-	@Min(2)
-	@Max(30)
-	maxPeople: number;
 }

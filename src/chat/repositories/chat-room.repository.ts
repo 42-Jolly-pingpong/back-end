@@ -14,13 +14,12 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 	async createChatRoom(
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
-		const { roomName, roomType, password, maxPeople } = createChatRoomDto;
+		const { roomName, roomType, password } = createChatRoomDto;
 
 		const chatRoom = this.create({
 			roomName,
 			roomType,
 			password,
-			maxPeople,
 		});
 
 		await this.save(chatRoom);
@@ -54,13 +53,13 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		roomId: number,
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
-		const { roomName, roomType, password, maxPeople } = createChatRoomDto;
+		const { roomName, roomType, password } = createChatRoomDto;
 
 		const query = this.createQueryBuilder();
 
 		query
 			.update(ChatRoom)
-			.set({ roomName, roomType, password, maxPeople })
+			.set({ roomName, roomType, password })
 			.where('id = :roomId', { roomId })
 			.execute();
 	}

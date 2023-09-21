@@ -48,7 +48,7 @@ export class ChatService {
 	}
 
 	async inquireChatRoom(userId: number): Promise<ChatRoomDto[]> {
-		const user = await this.userRepository.findUserById(1); //temp
+		const user = await this.userRepository.findUserById(userId); //temp
 
 		return this.chatParticipantRepository.inquireChatRoom(user);
 	}

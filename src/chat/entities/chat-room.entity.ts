@@ -23,9 +23,6 @@ export class ChatRoom {
 	@Column({ name: 'password', nullable: true })
 	password: number | null;
 
-	@Column({ name: 'max_people' })
-	maxPeople: number;
-
 	@UpdateDateColumn({ name: 'update_time' })
 	updatedTime: Date;
 
