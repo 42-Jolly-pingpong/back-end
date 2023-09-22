@@ -16,10 +16,15 @@ export class UserRepository extends Repository<User> {
 		await this.save(user);
 	}
 
-	async updateUser(
-		userDto: UserDto,
-		updateUserDto: UpdateUserDto
-	): Promise<void> {
+	async getUserInfobyIdx(id: number): Promise<UserDto> {
+		return await this.findOneBy({ id });
+	}
+
+	async deleteUserInfobyIdx(id: number): Promise<void> {
+		await this.delete({ id });
+	}
+
+	async updateUser(userDto: UserDto, updateUserDto: UpdateUserDto): Promise<void> {
 		const user = { ...userDto, ...updateUserDto };
 		await this.save(user);
 	}
