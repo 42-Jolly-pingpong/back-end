@@ -168,10 +168,14 @@ export class ChatService {
 		);
 	}
 
-	setChatRoomInfo(
+	async setChatRoomInfo(
 		roomId: number,
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
+		const room = await this.chatRoomRepository.getChatRoom(roomId);
+		if ((room.roomType = ChatRoomType.PRIVATE)) {
+			throw new UnauthorizedException();
+		}
 		return this.chatRoomRepository.setChatRoomInfo(roomId, createChatRoomDto);
 	}
 
