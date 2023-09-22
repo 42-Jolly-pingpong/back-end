@@ -377,13 +377,11 @@ export class ChatService {
 	 * @returns void
 	 */
 	async deleteParticipant(roomId: number, userId: number): Promise<void> {
-		try {
-			return await this.chatParticipantRepository.deleteParticipant(
-				roomId,
-				userId
-			);
-		} catch (error) {
-			throw error;
+		const deletedParticipant =
+			await this.chatParticipantRepository.deleteParticipant(roomId, userId);
+
+		if (deletedParticipant == null) {
+			throw new NotFoundException();
 		}
 	}
 }

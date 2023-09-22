@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
@@ -134,7 +134,10 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.execute();
 	}
 
-	async deleteParticipant(roomId: number, userId: number): Promise<void> {
+	async deleteParticipant(
+		roomId: number,
+		userId: number
+	): Promise<ChatParticipant> {
 		const query = this.createQueryBuilder('participant');
 
 		const participant = await query
@@ -143,12 +146,10 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.getOne();
 
 		if (participant == null) {
-			throw new HttpException(
-				'존재하지않는 참여자입니다.',
-				HttpStatus.NOT_FOUND
-			);
+			return null;
 		}
-
 		this.delete(participant.id);
+
+		return participant;
 	}
 }
