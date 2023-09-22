@@ -21,6 +21,7 @@ import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
+import { GetPrivateChatRoomDto } from 'src/chat/dto/get-private-chat-room.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { RoomGuard } from 'src/chat/guards/room.guard';
@@ -43,6 +44,15 @@ export class ChatController {
 		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
 		return this.chatService.createChatRoom(createChatRoomDto);
+	}
+
+	@ApiOperation({ summary: 'dm 채팅방 입장' })
+	@Post('/dm')
+	@UsePipes(ValidationPipe)
+	getPrivateChatRoom(
+		@Body() getPrivateChatRoomDto: GetPrivateChatRoomDto
+	): Promise<ChatRoomDto> {
+		return this.chatService.getPrivateChatRoom(getPrivateChatRoomDto);
 	}
 
 	@ApiOperation({ summary: '오픈 채팅방 목록 조회' })

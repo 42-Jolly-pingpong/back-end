@@ -25,6 +25,30 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return chatRoom;
 	}
 
+	async getPrivateChatRoom(roomName: string): Promise<ChatRoom> {
+		const query = this.createQueryBuilder('room');
+
+		const room = await query
+			.leftJoinAndSelect('room.participants', 'participant')
+			.leftJoinAndSelect('participant.user', 'user')
+			.where('room.roomName = :roomName', { roomName })
+			.getOne();
+
+		console.log(room.participants[0].user);
+		return room;
+	}
+
+	async createPrivateChatRoom(roomName: string): Promise<ChatRoom> {
+		const chatRoom = this.create({
+			roomName,
+			roomType: ChatRoomType.PRIVATE,
+			password: null,
+		});
+
+		await this.save(chatRoom);
+		return chatRoom;
+	}
+
 	async inquireOpenedChatRoom(): Promise<ChatRoom[]> {
 		const query = this.createQueryBuilder('room');
 

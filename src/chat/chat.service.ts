@@ -1,3 +1,4 @@
+import { GetPrivateChatRoomDto } from './dto/get-private-chat-room.dto';
 import {
 	ConflictException,
 	Injectable,
@@ -70,6 +71,43 @@ export class ChatService {
 
 	checkUserInParticipant(participants: ChatParticipant[], user: User): boolean {
 		return participants.some((participant) => participant.user.id === user.id);
+	}
+
+	async getPrivateChatRoom(
+		getPrivateChatRoomDto: GetPrivateChatRoomDto
+	): Promise<ChatRoomDto> {
+		const user = await this.userRepository.getUserInfobyIdx(1); //temp
+		const chatMateId = getPrivateChatRoomDto.chatMate.id;
+		const chatMate = await this.userRepository.getUserInfobyIdx(chatMateId);
+		if (chatMate == null) {
+			throw new NotFoundException();
+		}
+
+		const roomName = this.createChatRoomName(user.id, chatMateId);
+		const room = await this.chatRoomRepository.getPrivateChatRoom(roomName);
+		if (room != null) {
+			return this.roomEntityToDto(room);
+		}
+		return this.createPrivateChatRoom(user, chatMate);
+	}
+
+	createChatRoomName(userId: number, chatMateId: number): string {
+		if (userId < chatMateId) {
+			return `DM ${userId}, ${chatMateId}`;
+		}
+		return `DM ${chatMateId}, ${userId}`;
+	}
+
+	async createPrivateChatRoom(
+		user: User,
+		chatMate: User
+	): Promise<ChatRoomDto> {
+		const roomName = this.createChatRoomName(user.id, chatMate.id);
+		console.log(roomName);
+		const room = await this.chatRoomRepository.createPrivateChatRoom(roomName);
+
+		this.chatParticipantRepository.createPrivateChatRoom(room, user, chatMate);
+		return this.roomEntityToDto(room);
 	}
 
 	async createChatRoom(

@@ -16,6 +16,30 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		super(ChatParticipant, dataSource.createEntityManager());
 	}
 
+	async createPrivateChatRoom(
+		room: ChatRoom,
+		user: User,
+		chatMate: User
+	): Promise<void> {
+		const firstParticipant = this.create({
+			room,
+			user,
+			role: Role.MEMBER,
+			status: PaticipantStatus.DEFAULT,
+			muteExpirationTime: null,
+		});
+
+		const secondParticipant = this.create({
+			room,
+			user: chatMate,
+			role: Role.MEMBER,
+			status: PaticipantStatus.DEFAULT,
+			muteExpirationTime: null,
+		});
+
+		await this.save([firstParticipant, secondParticipant]);
+	}
+
 	async createChatRoom(room: ChatRoom, user: User): Promise<void> {
 		const participant = this.create({
 			room,
