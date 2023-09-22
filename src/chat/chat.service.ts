@@ -39,12 +39,23 @@ export class ChatService {
 		private chatRepository: ChatRepository
 	) {}
 
+	/**
+	 * roomEntityToDto() 함수를 사용해 ChatRoom entity배열을 ChatRoomDto로 변환한다.
+	 * @param rooms 변환할 엔티티 배열.
+	 * @returns 변환된 Dto 배열을 반환한다.
+	 */
 	roomsEntityToDto(rooms: ChatRoom[]): ChatRoomDto[] {
 		return rooms.map((room) => {
 			return this.roomEntityToDto(room);
 		});
 	}
 
+	/**
+	 * entity에는 없지만 dto에는 존재하는 currentPeople값을 생성한 후 dto로 변환한다.
+	 * participants리스트를 이용해 currentPeople을 계산한다.
+	 * @param room dto로 변경할 ChatRoom entity.
+	 * @returns 변경된 dto를 반환한다.
+	 */
 	roomEntityToDto(room: ChatRoom): ChatRoomDto {
 		const dto: ChatRoomDto = {
 			id: room.id,
@@ -61,6 +72,11 @@ export class ChatService {
 		return dto;
 	}
 
+	/**
+	 * room id에 해당하는 room이 존재하는지 확인한다.
+	 * @param roomId 확인할 room의 id
+	 * @returns 존재하면 true, 존재하지않으면 false를 반환한다.
+	 */
 	async checkIfRoomExist(roomId: number): Promise<boolean> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		if (room == null) {
@@ -69,10 +85,21 @@ export class ChatService {
 		return true;
 	}
 
+	/**
+	 * 유저가 room에 참여하고있는지 확인한다.
+	 * @param participants 확인할 room의 participant목록
+	 * @param user 참여해있는지 확인할 user
+	 * @returns 참여자하면 true, 참여자가 아니라면 false를 반환한다.
+	 */
 	checkUserInParticipant(participants: ChatParticipant[], user: User): boolean {
 		return participants.some((participant) => participant.user.id === user.id);
 	}
 
+	/**
+	 * dm방을 반환한다.
+	 * @param getPrivateChatRoomDto 대화를 나눌 유저의 정보가 담긴 dto
+	 * @returns dm room을 반환한다.
+	 */
 	async getPrivateChatRoom(
 		getPrivateChatRoomDto: GetPrivateChatRoomDto
 	): Promise<ChatRoomDto> {
@@ -94,6 +121,12 @@ export class ChatService {
 		return this.createPrivateChatRoom(user, chatMate);
 	}
 
+	/**
+	 * dm방에 참여 중인 두 유저의 id를 이용해 private방의 제목을 생성한다.
+	 * @param userId
+	 * @param chatMateId
+	 * @returns roomName을 반환한다.
+	 */
 	createChatRoomName(userId: number, chatMateId: number): string {
 		if (userId < chatMateId) {
 			return `DM ${userId}, ${chatMateId}`;
@@ -101,6 +134,12 @@ export class ChatService {
 		return `DM ${chatMateId}, ${userId}`;
 	}
 
+	/**
+	 * 반환할 dm room이 존재하지 않는 경우 새로 생성한다.
+	 * @param user
+	 * @param chatMate
+	 * @returns dm room을 반환한다.
+	 */
 	async createPrivateChatRoom(
 		user: User,
 		chatMate: User
@@ -118,6 +157,11 @@ export class ChatService {
 		return this.roomEntityToDto(room);
 	}
 
+	/**
+	 * 새로운 chat-room을 생성한다.
+	 * @param createChatRoomDto
+	 * @returns 생성된 chat-room을 반환한다.
+	 */
 	async createChatRoom(
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
@@ -132,6 +176,11 @@ export class ChatService {
 		return this.roomEntityToDto(room);
 	}
 
+	/**
+	 * 유저가 참여하고있는 모든 chat-room을 조회한다.
+	 * @param userId
+	 * @returns 참여하고있는 chat-room 리스트를 반환한다.
+	 */
 	async inquireChatRoom(userId: number): Promise<ChatRoomDto[]> {
 		const user = await this.userRepository.findUserById(userId); //temp
 
@@ -140,12 +189,22 @@ export class ChatService {
 		);
 	}
 
+	/**
+	 * 존재하는 오픈 채팅방을 조회한다.
+	 * @returns 존재하는 오픈 채팅방 리스트를 반환한다.
+	 */
 	async inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
 		return this.roomsEntityToDto(
 			await this.chatRoomRepository.inquireOpenedChatRoom()
 		);
 	}
 
+	/**
+	 * 존재하는 채팅방에 새로운 유저를 입장시킨다.
+	 * @param roomId 참여할 방의 id
+	 * @param enterChatRoomDto
+	 * @returns 참여한 chat-room을 반환한다.
+	 */
 	async addParticipant(
 		roomId: number,
 		enterChatRoomDto: EnterChatRoomDto
@@ -168,12 +227,23 @@ export class ChatService {
 		return this.roomEntityToDto(room);
 	}
 
+	/**
+	 * room id에 해당하는 chat-room을 찾는다.
+	 * @param roomId
+	 * @returns chat-room을 리턴한다.
+	 */
 	async getChatRoom(roomId: number): Promise<ChatRoomDto> {
 		return this.roomEntityToDto(
 			await this.chatRoomRepository.getChatRoom(roomId)
 		);
 	}
 
+	/**
+	 * 채팅방의 정보를 수정한다.
+	 * @param roomId
+	 * @param createChatRoomDto
+	 * @returns void
+	 */
 	async setChatRoomInfo(
 		roomId: number,
 		createChatRoomDto: CreateChatRoomDto
@@ -185,14 +255,30 @@ export class ChatService {
 		return this.chatRoomRepository.setChatRoomInfo(roomId, createChatRoomDto);
 	}
 
+	/**
+	 * 존재하는 채팅방을 삭제한다.
+	 * @param roomId
+	 * @returns
+	 */
 	deleteChatRoom(roomId: number): Promise<void> {
 		return this.chatRoomRepository.deleteChatRoom(roomId);
 	}
 
+	/**
+	 * 챗을 조회한다.
+	 * @param roomId
+	 * @returns 챗 리스트를 반환한다.
+	 */
 	getChats(roomId: number): Promise<ChatDto[]> {
 		return this.chatRepository.getChats(roomId);
 	}
 
+	/**
+	 * 새로운 챗을 전송한다.
+	 * @param roomId
+	 * @param createChatDto
+	 * @returns 생성된 챗을 반환한다.
+	 */
 	async createChat(
 		roomId: number,
 		createChatDto: CreateChatDto
@@ -209,10 +295,21 @@ export class ChatService {
 		return this.chatRepository.createChat(room, participant, createChatDto);
 	}
 
+	/**
+	 * 채팅방에 존재하는 참여자들을 조회한다.
+	 * @param roomId
+	 * @returns 참여자 리스트를 반환한다.
+	 */
 	getPariticipants(roomId: number): Promise<ChatParticipantDto[]> {
 		return this.chatParticipantRepository.getPariticipants(roomId);
 	}
 
+	/**
+	 * 참여자를 kick, ban, mute한다.
+	 * @param roomId
+	 * @param setParticipantDto
+	 * @returns void
+	 */
 	async setParticipantStatus(
 		roomId: number,
 		setParticipantDto: SetParticipantStatusDto
@@ -245,6 +342,12 @@ export class ChatService {
 		);
 	}
 
+	/**
+	 * 참여자의 역할을 변경한다.
+	 * @param roomId
+	 * @param setParticipantDto
+	 * @returns
+	 */
 	async setParticipantRole(
 		roomId: number,
 		setParticipantDto: SetParticipantRoleDto
@@ -263,6 +366,12 @@ export class ChatService {
 		);
 	}
 
+	/**
+	 * 유저가 채팅방을 퇴장할 수 있도록 한다.
+	 * @param roomId
+	 * @param userId
+	 * @returns void
+	 */
 	async deleteParticipant(roomId: number, userId: number): Promise<void> {
 		try {
 			return await this.chatParticipantRepository.deleteParticipant(
