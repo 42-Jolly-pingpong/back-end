@@ -34,7 +34,6 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 			.where('room.roomName = :roomName', { roomName })
 			.getOne();
 
-		console.log(room.participants[0].user);
 		return room;
 	}
 
