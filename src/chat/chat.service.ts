@@ -78,6 +78,9 @@ export class ChatService {
 	): Promise<ChatRoomDto> {
 		const user = await this.userRepository.getUserInfobyIdx(1); //temp
 		const chatMateId = getPrivateChatRoomDto.chatMate.id;
+		if (user.id == chatMateId) {
+			throw new ConflictException();
+		}
 		const chatMate = await this.userRepository.getUserInfobyIdx(chatMateId);
 		if (chatMate == null) {
 			throw new NotFoundException();
