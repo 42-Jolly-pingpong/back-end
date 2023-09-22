@@ -105,7 +105,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		roomId: number,
 		setParticipantDto: SetParticipantStatusDto,
 		muteExpirationTime: Date = null
-	) {
+	): Promise<void> {
 		const { user, status } = setParticipantDto;
 		const userId = user.id;
 		const query = this.createQueryBuilder();
@@ -121,7 +121,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 	async setParticipantRole(
 		roomId: number,
 		setParticipantDto: SetParticipantRoleDto
-	) {
+	): Promise<void> {
 		const { user, role } = setParticipantDto;
 		const userId = user.id;
 		const query = this.createQueryBuilder();

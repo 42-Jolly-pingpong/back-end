@@ -233,6 +233,10 @@ export class ChatService {
 	 * @returns chat-room을 리턴한다.
 	 */
 	async getChatRoom(roomId: number): Promise<ChatRoomDto> {
+		const room = await this.chatRoomRepository.getChatRoom(roomId);
+		if (room == null) {
+			throw new NotFoundException();
+		}
 		return this.roomEntityToDto(
 			await this.chatRoomRepository.getChatRoom(roomId)
 		);
@@ -313,7 +317,7 @@ export class ChatService {
 	async setParticipantStatus(
 		roomId: number,
 		setParticipantDto: SetParticipantStatusDto
-	) {
+	): Promise<void> {
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
 			setParticipantDto.user.id
@@ -346,12 +350,12 @@ export class ChatService {
 	 * 참여자의 역할을 변경한다.
 	 * @param roomId
 	 * @param setParticipantDto
-	 * @returns
+	 * @returns void
 	 */
 	async setParticipantRole(
 		roomId: number,
 		setParticipantDto: SetParticipantRoleDto
-	) {
+	): Promise<void> {
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
 			setParticipantDto.user.id
