@@ -106,23 +106,29 @@ export class ChatService {
 		chatMate: User
 	): Promise<ChatRoomDto> {
 		const roomName = this.createChatRoomName(user.id, chatMate.id);
-		console.log(roomName);
-		const room = await this.chatRoomRepository.createPrivateChatRoom(roomName);
-
-		this.chatParticipantRepository.createPrivateChatRoom(room, user, chatMate);
+		const emptyRoom = await this.chatRoomRepository.createPrivateChatRoom(
+			roomName
+		);
+		await this.chatParticipantRepository.createPrivateChatRoom(
+			emptyRoom,
+			user,
+			chatMate
+		);
+		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
 		return this.roomEntityToDto(room);
 	}
 
 	async createChatRoom(
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
-		const room = await this.chatRoomRepository.createChatRoom(
+		const emptyRoom = await this.chatRoomRepository.createChatRoom(
 			createChatRoomDto
 		);
 		const user = await this.userRepository.findUserById(1); //temp
 
-		await this.chatParticipantRepository.createChatRoom(room, user);
+		await this.chatParticipantRepository.createChatRoom(emptyRoom, user);
 
+		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
 		return this.roomEntityToDto(room);
 	}
 
