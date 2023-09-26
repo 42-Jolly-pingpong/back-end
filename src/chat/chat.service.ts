@@ -359,8 +359,8 @@ export class ChatService {
 	 * @param roomId
 	 * @returns 참여자 리스트를 반환한다.
 	 */
-	getPariticipants(roomId: number): Promise<ChatParticipantDto[]> {
-		return this.chatParticipantRepository.getPariticipants(roomId);
+	getParticipants(roomId: number): Promise<ChatParticipantDto[]> {
+		return this.chatParticipantRepository.getParticipants(roomId);
 	}
 
 	/**

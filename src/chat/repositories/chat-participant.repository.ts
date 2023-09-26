@@ -94,7 +94,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		await this.save(participant);
 	}
 
-	async getPariticipants(roomId: number): Promise<ChatParticipantDto[]> {
+	async getParticipants(roomId: number): Promise<ChatParticipantDto[]> {
 		const query = this.createQueryBuilder('participant');
 
 		const participants = await query

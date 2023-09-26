@@ -117,10 +117,10 @@ export class ChatController {
 	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })
 	@Get('/:roomId/members')
 	@UseGuards(RoomGuard)
-	getPariticipants(
+	getParticipants(
 		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatParticipantDto[]> {
-		return this.chatService.getPariticipants(roomId);
+		return this.chatService.getParticipants(roomId);
 	}
 
 	@ApiOperation({ summary: '채팅방 역할 변경' })
