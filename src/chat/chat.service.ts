@@ -265,6 +265,15 @@ export class ChatService {
 				PaticipantStatus.BANNED
 			) {
 				throw new UnauthorizedException();
+			} else if (
+				this.getParticipantStatus(room.participants, user) ==
+				PaticipantStatus.KICKED
+			) {
+				this.chatParticipantRepository.setParticipantStatus(
+					roomId,
+					{ user, status: PaticipantStatus.DEFAULT },
+					null
+				);
 			}
 			throw new ConflictException();
 		}
