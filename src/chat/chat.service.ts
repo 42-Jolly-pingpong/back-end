@@ -258,7 +258,7 @@ export class ChatService {
 				throw new UnauthorizedException();
 			}
 		}
-		const user = await this.userRepository.findUserById(1); //temp
+		const user = await this.userRepository.findUserById(2); //temp
 		if (this.checkUserInParticipant(room.participants, user)) {
 			if (
 				this.getParticipantStatus(room.participants, user) ==
@@ -274,6 +274,7 @@ export class ChatService {
 					{ user, status: PaticipantStatus.DEFAULT },
 					null
 				);
+				return this.roomEntityToDto(room);
 			}
 			throw new ConflictException();
 		}
