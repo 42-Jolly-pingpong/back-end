@@ -15,7 +15,6 @@ export class CreateChatRoomDto {
 
 	@ApiProperty({ description: '채팅방 타입' })
 	@IsEnum(ChatRoomType)
-	@NotEquals(ChatRoomType.PRIVATE)
 	roomType: ChatRoomType;
 
 	@ApiProperty({ description: '비밀번호' })
