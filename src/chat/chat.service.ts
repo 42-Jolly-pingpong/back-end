@@ -96,6 +96,25 @@ export class ChatService {
 	}
 
 	/**
+	 * 채팅방 참가자의 상태를 확인한다.
+	 * @param participants
+	 * @param user
+	 * @returns 참가자의 상태를 반환한다.
+	 */
+	getParticipantStatus(
+		participants: ChatParticipant[],
+		user: User
+	): PaticipantStatus {
+		const participant = participants.find((participant) => {
+			if (participant.user.id == user.id) {
+				return participant;
+			}
+		});
+		//참여자 아닌 경우
+		return participant.status;
+	}
+
+	/**
 	 * dm방을 반환한다.
 	 * @param getPrivateChatRoomDto 대화를 나눌 유저의 정보가 담긴 dto
 	 * @returns dm room을 반환한다.
