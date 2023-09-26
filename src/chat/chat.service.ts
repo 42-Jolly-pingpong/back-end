@@ -100,7 +100,7 @@ export class ChatService {
 	 * 채팅방 참가자의 상태를 확인한다.
 	 * @param participants
 	 * @param user
-	 * @returns 참가자의 상태를 반환한다.
+	 * @returns 참가자의 상태를 반환한다. 참가하지 않은 유저면 null을 반환한다.
 	 */
 	getParticipantStatus(
 		participants: ChatParticipant[],
@@ -111,7 +111,9 @@ export class ChatService {
 				return participant;
 			}
 		});
-		//참여자 아닌 경우
+		if (participant === undefined) {
+			return null;
+		}
 		return participant.status;
 	}
 
@@ -230,15 +232,20 @@ export class ChatService {
 	}
 
 	/**
-	 * 존재하는 오픈 채팅방을 조회한다.
+	 * 존재하는 오픈 채팅방 중 사용자가 밴 당하지 않은 채팅방을 조회한다.
 	 * @returns 존재하는 오픈 채팅방 리스트를 반환한다.
 	 */
 	async inquireOpenedChatRoom(userId: number): Promise<ChatRoomDto[]> {
 		const user = await this.userRepository.findUserById(userId); //temp
 
-		return this.roomsEntityToDto(
-			await this.chatRoomRepository.inquireOpenedChatRoom(user)
+		const allRoom = await this.chatRoomRepository.inquireOpenedChatRoom(user);
+		const roomsWithoutBanned = allRoom.filter(
+			(room) =>
+				this.getParticipantStatus(room.participants, user) !==
+				PaticipantStatus.BANNED
 		);
+
+		return this.roomsEntityToDto(roomsWithoutBanned);
 	}
 
 	/**
