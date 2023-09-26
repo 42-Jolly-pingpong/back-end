@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
+import { UserDto } from 'src/user/dto/user.dto';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
@@ -56,6 +57,18 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 			.leftJoinAndSelect('participant.user', 'user')
 			.where('room.roomType = :open', { open: ChatRoomType.PUBLIC })
 			.orWhere('room.roomType = :open', { open: ChatRoomType.PROTECTED })
+			.getMany();
+
+		return rooms;
+	}
+
+	async inquireChatRoom(user: UserDto): Promise<ChatRoom[]> {
+		const query = this.createQueryBuilder('room');
+
+		const rooms = await query
+			.leftJoinAndSelect('room.participants', 'participant')
+			.leftJoinAndSelect('participant.user', 'user')
+			.where('user.id=:userId', { userId: user.id })
 			.getMany();
 
 		return rooms;

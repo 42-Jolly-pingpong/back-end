@@ -225,7 +225,7 @@ export class ChatService {
 		const user = await this.userRepository.findUserById(userId); //temp
 
 		return this.roomsEntityToDto(
-			await this.chatParticipantRepository.inquireChatRoom(user)
+			await this.chatRoomRepository.inquireChatRoom(user)
 		);
 	}
 

@@ -68,19 +68,6 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		await this.save(participants);
 	}
 
-	async inquireChatRoom(user: UserDto): Promise<ChatRoom[]> {
-		const query = this.createQueryBuilder('participant');
-
-		const users = await query
-			.leftJoinAndSelect('participant.room', 'room')
-			.leftJoinAndSelect('participant.user', 'user')
-			.where('user.id=:userId', { userId: user.id })
-			.getMany();
-
-		const rooms = users.map((user) => user.room);
-		return rooms;
-	}
-
 	async getParticipant(
 		roomId: number,
 		userId: number
