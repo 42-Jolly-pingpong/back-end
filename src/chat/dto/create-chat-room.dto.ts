@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
-import {
-	IsNotEmpty,
-	IsEnum,
-	ValidateIf,
-	IsHash,
-	NotEquals,
-} from 'class-validator';
+import { IsNotEmpty, IsEnum, ValidateIf, IsHash } from 'class-validator';
 
 export class CreateChatRoomDto {
 	@ApiProperty({ description: '채팅방 이름' })
@@ -22,4 +16,7 @@ export class CreateChatRoomDto {
 	@IsNotEmpty()
 	// @IsHash()
 	password: number | null;
+
+	@ApiProperty({ description: '참가할 유저들 리스트' })
+	participants: number[];
 }
