@@ -233,9 +233,11 @@ export class ChatService {
 	 * 존재하는 오픈 채팅방을 조회한다.
 	 * @returns 존재하는 오픈 채팅방 리스트를 반환한다.
 	 */
-	async inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
+	async inquireOpenedChatRoom(userId: number): Promise<ChatRoomDto[]> {
+		const user = await this.userRepository.findUserById(userId); //temp
+
 		return this.roomsEntityToDto(
-			await this.chatRoomRepository.inquireOpenedChatRoom()
+			await this.chatRoomRepository.inquireOpenedChatRoom(user)
 		);
 	}
 

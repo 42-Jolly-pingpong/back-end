@@ -56,7 +56,7 @@ export class ChatController {
 	@ApiOperation({ summary: '오픈 채팅방 목록 조회' })
 	@Get('/opened')
 	inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
-		return this.chatService.inquireOpenedChatRoom();
+		return this.chatService.inquireOpenedChatRoom(2); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 입장' })

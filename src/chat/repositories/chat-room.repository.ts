@@ -50,19 +50,6 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return chatRoom;
 	}
 
-	async inquireOpenedChatRoom(): Promise<ChatRoom[]> {
-		const query = this.createQueryBuilder('room');
-
-		const rooms = await query
-			.leftJoinAndSelect('room.participants', 'participant')
-			.leftJoinAndSelect('participant.user', 'user')
-			.where('room.roomType = :open', { open: ChatRoomType.PUBLIC })
-			.orWhere('room.roomType = :open', { open: ChatRoomType.PROTECTED })
-			.getMany();
-
-		return rooms;
-	}
-
 	async inquireChatRoom(user: UserDto): Promise<ChatRoom[]> {
 		const query = this.createQueryBuilder('room');
 
@@ -73,6 +60,19 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 			.andWhere('participant.status IN (:...types)', {
 				types: [PaticipantStatus.DEFAULT, PaticipantStatus.MUTED],
 			})
+			.getMany();
+
+		return rooms;
+	}
+
+	async inquireOpenedChatRoom(user: UserDto): Promise<ChatRoom[]> {
+		const query = this.createQueryBuilder('room');
+
+		const rooms = await query
+			.leftJoinAndSelect('room.participants', 'participant')
+			.leftJoinAndSelect('participant.user', 'user')
+			.where('room.roomType = :open', { open: ChatRoomType.PUBLIC })
+			.orWhere('room.roomType = :open', { open: ChatRoomType.PROTECTED })
 			.getMany();
 
 		return rooms;
