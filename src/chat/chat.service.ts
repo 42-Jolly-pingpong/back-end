@@ -23,6 +23,7 @@ import { Role } from 'src/chat/enums/role.enum';
 import { ChatParticipantRepository } from 'src/chat/repositories/chat-participant.repository';
 import { ChatRoomRepository } from 'src/chat/repositories/chat-room.repository';
 import { ChatRepository } from 'src/chat/repositories/chat.repository';
+import { UserDto } from 'src/user/dto/user.dto';
 import { User } from 'src/user/entities/user.entity';
 import { UserRepository } from 'src/user/user.repository';
 
@@ -166,7 +167,25 @@ export class ChatService {
 	}
 
 	/**
-	 * 새로운 chat-room을 생성한다.
+	 * user들의 id가 담긴 리스트를 받아 UserDto의 리스트로 변환한다.
+	 * @param ids
+	 * @returns UserDto의 리스트를 반환한다.
+	 */
+	async makeUserList(ids: number[]): Promise<UserDto[]> {
+		const users: UserDto[] = [];
+
+		for (const id of ids) {
+			const user = await this.userRepository.findUserById(id);
+			if (user !== null) {
+				users.push(user);
+			}
+		}
+
+		return users;
+	}
+
+	/**
+	 * 새로운 chat-room을 생성한 후, owner가 초대한 유저들을 참가자로 추가한다.
 	 * @param createChatRoomDto
 	 * @returns 생성된 chat-room을 반환한다.
 	 */
@@ -178,7 +197,20 @@ export class ChatService {
 		);
 		const user = await this.userRepository.findUserById(1); //temp
 
-		await this.chatParticipantRepository.createChatRoom(emptyRoom, user);
+		const participantIds = createChatRoomDto.participants;
+
+		const index = participantIds.indexOf(user.id);
+		if (index !== -1) {
+			participantIds.splice(index, 1);
+		} // 초대를 받은 유저 중 owner와 같은 id를 가진 유저가 있다면 지운다.
+
+		const userList = await this.makeUserList(participantIds);
+
+		await this.chatParticipantRepository.createChatRoom(
+			emptyRoom,
+			user,
+			userList
+		);
 
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
 		return this.roomEntityToDto(room);

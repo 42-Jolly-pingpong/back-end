@@ -36,8 +36,8 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		await this.save([firstParticipant, secondParticipant]);
 	}
 
-	async createChatRoom(room: ChatRoom, user: User): Promise<void> {
-		const participant = this.create({
+	async registerOwner(room: ChatRoom, user: User) {
+		const owner = this.create({
 			room,
 			user,
 			role: Role.OWNER,
@@ -45,7 +45,27 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			muteExpirationTime: null,
 		});
 
-		await this.save(participant);
+		await this.save(owner);
+	}
+
+	async createChatRoom(
+		room: ChatRoom,
+		owner: User,
+		users: UserDto[]
+	): Promise<void> {
+		this.registerOwner(room, owner);
+
+		const participants = users.map((user) => {
+			return this.create({
+				room,
+				user,
+				role: Role.MEMBER,
+				status: PaticipantStatus.DEFAULT,
+				muteExpirationTime: null,
+			});
+		});
+
+		await this.save(participants);
 	}
 
 	async inquireChatRoom(user: UserDto): Promise<ChatRoom[]> {
