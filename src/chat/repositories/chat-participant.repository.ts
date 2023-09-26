@@ -148,7 +148,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.andWhere('participant.roomId = :roomId', { roomId })
 			.getOne();
 
-		if (participant == null) {
+		if (participant === null) {
 			return null;
 		}
 		this.delete(participant.id);

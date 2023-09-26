@@ -80,7 +80,7 @@ export class ChatService {
 	 */
 	async checkIfRoomExist(roomId: number): Promise<boolean> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
-		if (room == null) {
+		if (room === null) {
 			return false;
 		}
 		return true;
@@ -107,7 +107,7 @@ export class ChatService {
 		user: User
 	): PaticipantStatus {
 		const participant = participants.find((participant) => {
-			if (participant.user.id == user.id) {
+			if (participant.user.id === user.id) {
 				return participant;
 			}
 		});
@@ -125,17 +125,17 @@ export class ChatService {
 	async getDM(getDMDto: GetDMDto): Promise<ChatRoomDto> {
 		const user = await this.userRepository.getUserInfobyIdx(1); //temp
 		const chatMateId = getDMDto.chatMate.id;
-		if (user.id == chatMateId) {
+		if (user.id === chatMateId) {
 			throw new ConflictException();
 		}
 		const chatMate = await this.userRepository.getUserInfobyIdx(chatMateId);
-		if (chatMate == null) {
+		if (chatMate === null) {
 			throw new NotFoundException();
 		}
 
 		const roomName = this.createDMName(user.id, chatMateId);
 		const room = await this.chatRoomRepository.getDM(roomName);
-		if (room != null) {
+		if (room !== null) {
 			return this.roomEntityToDto(room);
 		}
 		return this.createDM(user, chatMate);
@@ -260,10 +260,10 @@ export class ChatService {
 	): Promise<ChatRoomDto> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		if (
-			room.roomType == ChatRoomType.PROTECTED &&
-			enterChatRoomDto.password != null
+			room.roomType === ChatRoomType.PROTECTED &&
+			enterChatRoomDto.password !== null
 		) {
-			if (enterChatRoomDto.password != room.password) {
+			if (enterChatRoomDto.password !== room.password) {
 				throw new UnauthorizedException();
 			}
 		}
@@ -299,7 +299,7 @@ export class ChatService {
 	 */
 	async getChatRoom(roomId: number): Promise<ChatRoomDto> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
-		if (room == null) {
+		if (room === null) {
 			throw new NotFoundException();
 		}
 		return this.roomEntityToDto(
@@ -354,7 +354,7 @@ export class ChatService {
 			roomId,
 			1
 		); //userId temp
-		if (participant == null) {
+		if (participant === null) {
 			throw new NotFoundException();
 		}
 
@@ -384,15 +384,15 @@ export class ChatService {
 			roomId,
 			setParticipantDto.user.id
 		);
-		if (participant == null) {
+		if (participant === null) {
 			throw new NotFoundException();
 		}
 
-		if (participant.role == Role.OWNER) {
+		if (participant.role === Role.OWNER) {
 			throw new UnauthorizedException();
 		}
 
-		if (setParticipantDto.status == PaticipantStatus.MUTED) {
+		if (setParticipantDto.status === PaticipantStatus.MUTED) {
 			const mutedTime = new Date();
 			mutedTime.setMinutes(mutedTime.getMinutes() + 5);
 			return this.chatParticipantRepository.setParticipantStatus(
@@ -422,7 +422,7 @@ export class ChatService {
 			roomId,
 			setParticipantDto.user.id
 		);
-		if (participant == null) {
+		if (participant === null) {
 			throw new NotFoundException();
 		}
 
@@ -442,7 +442,7 @@ export class ChatService {
 		const deletedParticipant =
 			await this.chatParticipantRepository.deleteParticipant(roomId, userId);
 
-		if (deletedParticipant == null) {
+		if (deletedParticipant === null) {
 			throw new NotFoundException();
 		}
 	}

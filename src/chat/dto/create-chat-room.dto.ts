@@ -19,7 +19,7 @@ export class CreateChatRoomDto {
 	roomType: ChatRoomType;
 
 	@ApiProperty({ description: '비밀번호' })
-	@ValidateIf((room) => room.roomType == ChatRoomType.PROTECTED)
+	@ValidateIf((room) => room.roomType === ChatRoomType.PROTECTED)
 	@IsNotEmpty()
 	// @IsHash()
 	password: number | null;
