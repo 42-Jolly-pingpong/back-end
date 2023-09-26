@@ -1,4 +1,3 @@
-import { GetPrivateChatRoomDto } from './dto/get-private-chat-room.dto';
 import {
 	ConflictException,
 	Injectable,
@@ -13,6 +12,7 @@ import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
+import { GetDMDto } from 'src/chat/dto/get-DM.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
@@ -100,11 +100,9 @@ export class ChatService {
 	 * @param getPrivateChatRoomDto 대화를 나눌 유저의 정보가 담긴 dto
 	 * @returns dm room을 반환한다.
 	 */
-	async getPrivateChatRoom(
-		getPrivateChatRoomDto: GetPrivateChatRoomDto
-	): Promise<ChatRoomDto> {
+	async getDM(getDMDto: GetDMDto): Promise<ChatRoomDto> {
 		const user = await this.userRepository.getUserInfobyIdx(1); //temp
-		const chatMateId = getPrivateChatRoomDto.chatMate.id;
+		const chatMateId = getDMDto.chatMate.id;
 		if (user.id == chatMateId) {
 			throw new ConflictException();
 		}
@@ -113,12 +111,12 @@ export class ChatService {
 			throw new NotFoundException();
 		}
 
-		const roomName = this.createChatRoomName(user.id, chatMateId);
-		const room = await this.chatRoomRepository.getPrivateChatRoom(roomName);
+		const roomName = this.createDMName(user.id, chatMateId);
+		const room = await this.chatRoomRepository.getDM(roomName);
 		if (room != null) {
 			return this.roomEntityToDto(room);
 		}
-		return this.createPrivateChatRoom(user, chatMate);
+		return this.createDM(user, chatMate);
 	}
 
 	/**
@@ -127,7 +125,7 @@ export class ChatService {
 	 * @param chatMateId
 	 * @returns roomName을 반환한다.
 	 */
-	createChatRoomName(userId: number, chatMateId: number): string {
+	createDMName(userId: number, chatMateId: number): string {
 		if (userId < chatMateId) {
 			return `DM ${userId}, ${chatMateId}`;
 		}
@@ -140,19 +138,10 @@ export class ChatService {
 	 * @param chatMate
 	 * @returns dm room을 반환한다.
 	 */
-	async createPrivateChatRoom(
-		user: User,
-		chatMate: User
-	): Promise<ChatRoomDto> {
-		const roomName = this.createChatRoomName(user.id, chatMate.id);
-		const emptyRoom = await this.chatRoomRepository.createPrivateChatRoom(
-			roomName
-		);
-		await this.chatParticipantRepository.createPrivateChatRoom(
-			emptyRoom,
-			user,
-			chatMate
-		);
+	async createDM(user: User, chatMate: User): Promise<ChatRoomDto> {
+		const roomName = this.createDMName(user.id, chatMate.id);
+		const emptyRoom = await this.chatRoomRepository.createDM(roomName);
+		await this.chatParticipantRepository.createDM(emptyRoom, user, chatMate);
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
 		return this.roomEntityToDto(room);
 	}

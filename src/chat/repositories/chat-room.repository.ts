@@ -25,7 +25,7 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return chatRoom;
 	}
 
-	async getPrivateChatRoom(roomName: string): Promise<ChatRoom> {
+	async getDM(roomName: string): Promise<ChatRoom> {
 		const query = this.createQueryBuilder('room');
 
 		const room = await query
@@ -37,7 +37,7 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return room;
 	}
 
-	async createPrivateChatRoom(roomName: string): Promise<ChatRoom> {
+	async createDM(roomName: string): Promise<ChatRoom> {
 		const chatRoom = this.create({
 			roomName,
 			roomType: ChatRoomType.PRIVATE,
