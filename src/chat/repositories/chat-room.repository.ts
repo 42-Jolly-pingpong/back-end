@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
+import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 import { UserDto } from 'src/user/dto/user.dto';
 import { DataSource, Repository } from 'typeorm';
 
@@ -69,6 +70,9 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 			.leftJoinAndSelect('room.participants', 'participant')
 			.leftJoinAndSelect('participant.user', 'user')
 			.where('user.id=:userId', { userId: user.id })
+			.andWhere('participant.status IN (:...types)', {
+				types: [PaticipantStatus.DEFAULT, PaticipantStatus.MUTED],
+			})
 			.getMany();
 
 		return rooms;
