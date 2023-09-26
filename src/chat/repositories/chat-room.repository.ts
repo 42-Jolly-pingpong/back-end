@@ -40,7 +40,7 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 	async createDM(roomName: string): Promise<ChatRoom> {
 		const chatRoom = this.create({
 			roomName,
-			roomType: ChatRoomType.PRIVATE,
+			roomType: ChatRoomType.DM,
 			password: null,
 		});
 
