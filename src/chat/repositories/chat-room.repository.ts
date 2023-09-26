@@ -71,8 +71,9 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		const rooms = await query
 			.leftJoinAndSelect('room.participants', 'participant')
 			.leftJoinAndSelect('participant.user', 'user')
-			.where('room.roomType = :open', { open: ChatRoomType.PUBLIC })
-			.orWhere('room.roomType = :open', { open: ChatRoomType.PROTECTED })
+			.where('room.roomType IN (:...open)', {
+				open: [ChatRoomType.PUBLIC, ChatRoomType.PROTECTED],
+			})
 			.getMany();
 
 		return rooms;
