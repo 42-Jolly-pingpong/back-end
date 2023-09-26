@@ -21,7 +21,7 @@ import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
-import { GetDMDto } from 'src/chat/dto/get-DM.dto';
+import { GetDMDto } from 'src/chat/dto/get-dm.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { RoomGuard } from 'src/chat/guards/room.guard';
