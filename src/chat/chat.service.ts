@@ -260,6 +260,12 @@ export class ChatService {
 		}
 		const user = await this.userRepository.findUserById(1); //temp
 		if (this.checkUserInParticipant(room.participants, user)) {
+			if (
+				this.getParticipantStatus(room.participants, user) ==
+				PaticipantStatus.BANNED
+			) {
+				throw new UnauthorizedException();
+			}
 			throw new ConflictException();
 		}
 
