@@ -3,7 +3,7 @@ import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 
 export class ChatDto {
 	@ApiProperty({ description: '챗 인덱스' })
-	chatIdx: number;
+	id: number;
 
 	@ApiProperty({ description: '챗 보낸 사람' })
 	user: ChatParticipantDto;

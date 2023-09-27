@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
@@ -11,22 +10,45 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		super(ChatRoom, dataSource.createEntityManager());
 	}
 
-	async createChatRoom(createChatRoomDto: CreateChatRoomDto): Promise<ChatRoomDto> {
-		const { roomName, roomType, password, maxPeople, currentPeople } = createChatRoomDto;
+	async createChatRoom(
+		createChatRoomDto: CreateChatRoomDto
+	): Promise<ChatRoom> {
+		const { roomName, roomType, password } = createChatRoomDto;
 
 		const chatRoom = this.create({
 			roomName,
 			roomType,
 			password,
-			maxPeople,
-			currentPeople,
 		});
 
 		await this.save(chatRoom);
 		return chatRoom;
 	}
 
-	async inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
+	async getPrivateChatRoom(roomName: string): Promise<ChatRoom> {
+		const query = this.createQueryBuilder('room');
+
+		const room = await query
+			.leftJoinAndSelect('room.participants', 'participant')
+			.leftJoinAndSelect('participant.user', 'user')
+			.where('room.roomName = :roomName', { roomName })
+			.getOne();
+
+		return room;
+	}
+
+	async createPrivateChatRoom(roomName: string): Promise<ChatRoom> {
+		const chatRoom = this.create({
+			roomName,
+			roomType: ChatRoomType.PRIVATE,
+			password: null,
+		});
+
+		await this.save(chatRoom);
+		return chatRoom;
+	}
+
+	async inquireOpenedChatRoom(): Promise<ChatRoom[]> {
 		const query = this.createQueryBuilder('room');
 
 		const rooms = await query
@@ -37,33 +59,35 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return rooms;
 	}
 
-	async getChatRoomEntity(roomIdx: number): Promise<ChatRoom> {
-		return await this.findOneBy({ roomIdx });
-	}
-
-	async getChatRoomInfo(roomIdx: number): Promise<ChatRoomDto> {
-		const query = this.createQueryBuilder('room');
-
-		const room = await query.where('room.roomIdx = :roomIdx', { roomIdx }).getOne();
+	async getChatRoom(roomId: number): Promise<ChatRoom> {
+		const room = await this.findOne({
+			where: {
+				id: roomId,
+			},
+			relations: ['participants', 'participants.user'],
+		});
 
 		return room;
 	}
 
-	async setChatRoomInfo(roomIdx: number, createChatRoomDto: CreateChatRoomDto): Promise<void> {
-		const { roomName, roomType, password, maxPeople } = createChatRoomDto;
+	async setChatRoomInfo(
+		roomId: number,
+		createChatRoomDto: CreateChatRoomDto
+	): Promise<void> {
+		const { roomName, roomType, password } = createChatRoomDto;
 
 		const query = this.createQueryBuilder();
 
 		query
 			.update(ChatRoom)
-			.set({ roomName, roomType, password, maxPeople })
-			.where('roomIdx = :roomIdx', { roomIdx })
+			.set({ roomName, roomType, password })
+			.where('id = :roomId', { roomId })
 			.execute();
 	}
 
-	async deleteChatRoom(roomIdx: number): Promise<void> {
+	async deleteChatRoom(roomId: number): Promise<void> {
 		const query = this.createQueryBuilder('room');
 
-		query.delete().where('roomIdx = :roomIdx', { roomIdx }).execute();
+		query.delete().where('id = :roomId', { roomId }).execute();
 	}
 }
