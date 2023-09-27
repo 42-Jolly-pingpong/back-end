@@ -26,13 +26,13 @@ export class AuthController {
 
 		switch (auth) {
 			case AuthType.NOUSER:
-				res.cookie('user-data', [req.user.login, req.user.email]);
+				res.cookie('user-data', JSON.stringify(req.user));
 				res.redirect(
 					`${process.env.DOMAIN}:${process.env.FRONT_PORT}/sign-up`
 				);
 				break;
 			case AuthType.USERWITH2FA:
-				res.cookie('2FA', true);
+				res.cookie('2FA', JSON.stringify(true));
 			case AuthType.USER:
 				const token = await this.authService.createToken(req.user);
 				res.cookie('access-token', token);
