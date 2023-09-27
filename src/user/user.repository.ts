@@ -40,4 +40,14 @@ export class UserRepository extends Repository<User> {
 	async findUserById(id: number): Promise<UserDto> {
 		return await this.findOneBy({ id: id });
 	}
+
+	async findUserByIntraId(id: string): Promise<UserDto> {
+		return await this.findOneBy({ intraId: id });
+	}
+
+	async findUserIdByIntraId(id: string): Promise<number> {
+		const user = await this.findOneBy({ intraId: id });
+
+		return user.id;
+	}
 }
