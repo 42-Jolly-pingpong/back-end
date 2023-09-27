@@ -1,4 +1,12 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	Post,
+	Req,
+	Res,
+	UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthFtGuard } from './guards/ft-guard';
@@ -38,5 +46,15 @@ export class AuthController {
 				res.cookie('access-token', token);
 				res.redirect(`${process.env.DOMAIN}:${process.env.FRONT_PORT}`);
 		}
+	}
+
+	@ApiOperation({ summary: '회원가입' })
+	@Post('/signup')
+	async signup(@Body() formData: any, @Res() res: Response): Promise<void> {
+		await this.authService.signup(formData);
+		const token = await this.authService.createToken(formData.intraId);
+		res.cookie('access-token', token);
+		res.clearCookie('user-data');
+		res.status(200).end();
 	}
 }
