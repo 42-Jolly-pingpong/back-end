@@ -91,8 +91,13 @@ export class ChatService {
 	 * @param user 참여해있는지 확인할 user
 	 * @returns 참여자하면 true, 참여자가 아니라면 false를 반환한다.
 	 */
-	checkUserInParticipant(participants: ChatParticipant[], user: User): boolean {
-		return participants.some((participant) => participant.user.id === user.id);
+	checkUserInParticipant(
+		participants: ChatParticipant[],
+		user: User
+	): boolean {
+		return participants.some(
+			(participant) => participant.user.id === user.id
+		);
 	}
 
 	/**
@@ -103,12 +108,12 @@ export class ChatService {
 	async getPrivateChatRoom(
 		getPrivateChatRoomDto: GetPrivateChatRoomDto
 	): Promise<ChatRoomDto> {
-		const user = await this.userRepository.getUserInfobyIdx(1); //temp
+		const user = await this.userRepository.findUserById(1); //temp
 		const chatMateId = getPrivateChatRoomDto.chatMate.id;
 		if (user.id == chatMateId) {
 			throw new ConflictException();
 		}
-		const chatMate = await this.userRepository.getUserInfobyIdx(chatMateId);
+		const chatMate = await this.userRepository.findUserById(chatMateId);
 		if (chatMate == null) {
 			throw new NotFoundException();
 		}
@@ -256,7 +261,10 @@ export class ChatService {
 		if ((room.roomType = ChatRoomType.PRIVATE)) {
 			throw new UnauthorizedException();
 		}
-		return this.chatRoomRepository.setChatRoomInfo(roomId, createChatRoomDto);
+		return this.chatRoomRepository.setChatRoomInfo(
+			roomId,
+			createChatRoomDto
+		);
 	}
 
 	/**
@@ -378,7 +386,10 @@ export class ChatService {
 	 */
 	async deleteParticipant(roomId: number, userId: number): Promise<void> {
 		const deletedParticipant =
-			await this.chatParticipantRepository.deleteParticipant(roomId, userId);
+			await this.chatParticipantRepository.deleteParticipant(
+				roomId,
+				userId
+			);
 
 		if (deletedParticipant == null) {
 			throw new NotFoundException();
