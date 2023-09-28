@@ -90,7 +90,7 @@ export class ChatService {
 	}
 
 	/**
-	 * 유저가 room에 참여하고있는지 확인한다.
+	 * 유저가 room에 참여하고있는지 확인한다. 밴, 킥, 떠난 유저도 포함한다.
 	 * @param participants 확인할 room의 participant목록
 	 * @param user 참여해있는지 확인할 user
 	 * @returns 참여자하면 true, 참여자가 아니라면 false를 반환한다.
@@ -184,7 +184,14 @@ export class ChatService {
 				roomId,
 				id
 			);
-			if (participant !== null) {
+			if (
+				participant !== null &&
+				[
+					PaticipantStatus.BANNED,
+					PaticipantStatus.DEFAULT,
+					PaticipantStatus.MUTED,
+				].includes(participant.status)
+			) {
 				continue;
 			} //이미 참여하고있는 사람인지 확인한다.
 
@@ -317,7 +324,9 @@ export class ChatService {
 				throw new UnauthorizedException();
 			} else if (
 				this.getParticipantStatus(room.participants, user) ==
-				PaticipantStatus.KICKED
+					PaticipantStatus.KICKED ||
+				this.getParticipantStatus(room.participants, user) ==
+					PaticipantStatus.LEFT
 			) {
 				this.chatParticipantRepository.setParticipantStatus(
 					roomId,
@@ -497,6 +506,7 @@ export class ChatService {
 	 * @returns void
 	 */
 	async deleteParticipant(roomId: number, userId: number): Promise<void> {
+		//owner가 채팅방 나가면?
 		const deletedParticipant =
 			await this.chatParticipantRepository.deleteParticipant(roomId, userId);
 

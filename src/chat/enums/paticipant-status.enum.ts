@@ -3,4 +3,5 @@ export enum PaticipantStatus {
 	KICKED = 'KICKED',
 	BANNED = 'BANNED',
 	MUTED = 'MUTED',
+	LEFT = 'LEFT',
 }

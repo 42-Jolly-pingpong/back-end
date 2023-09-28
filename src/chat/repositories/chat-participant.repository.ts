@@ -138,15 +138,16 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		const query = this.createQueryBuilder('participant');
 
 		const participant = await query
-			.where('participant.userId = :userId', { userId })
-			.andWhere('participant.roomId = :roomId', { roomId })
-			.getOne();
+			.update(ChatParticipant)
+			.set({ status: PaticipantStatus.LEFT })
+			.where('roomId = :roomId', { roomId })
+			.andWhere('userId = :userId', { userId })
+			.execute();
 
-		if (participant === null) {
+		if (participant.raw === null) {
 			return null;
 		}
-		this.delete(participant.id);
 
-		return participant;
+		return participant.raw;
 	}
 }
