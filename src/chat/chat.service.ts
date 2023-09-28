@@ -71,6 +71,7 @@ export class ChatService {
 					participant.status === PaticipantStatus.DEFAULT ||
 					participant.status === PaticipantStatus.MUTED
 			).length,
+			participants: room.participants,
 		};
 		return dto;
 	}
