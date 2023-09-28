@@ -27,7 +27,7 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return chatRoom;
 	}
 
-	async inquireDM(userId: number): Promise<ChatRoom[]> {
+	async inquireDm(userId: number): Promise<ChatRoom[]> {
 		const query = this.createQueryBuilder('room');
 
 		const dms = await query
@@ -42,7 +42,7 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return dms;
 	}
 
-	async getDM(roomName: string): Promise<ChatRoom> {
+	async getDm(roomName: string): Promise<ChatRoom> {
 		const query = this.createQueryBuilder('room');
 
 		const room = await query
@@ -54,7 +54,7 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return room;
 	}
 
-	async createDM(roomName: string): Promise<ChatRoom> {
+	async createDm(roomName: string): Promise<ChatRoom> {
 		const chatRoom = this.create({
 			roomName,
 			roomType: ChatRoomType.DM,

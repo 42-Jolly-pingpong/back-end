@@ -22,7 +22,7 @@ import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { DmDto } from 'src/chat/dto/dm.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
-import { GetDMDto } from 'src/chat/dto/get-dm.dto';
+import { GetDmDto } from 'src/chat/dto/get-dm.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { RoomGuard } from 'src/chat/guards/room.guard';
@@ -50,15 +50,15 @@ export class ChatController {
 	@ApiOperation({ summary: 'dm 채팅방 리스트 조회' })
 	@Get('/dm')
 	@UsePipes(ValidationPipe)
-	inquireDM(): Promise<DmDto[]> {
-		return this.chatService.inquireDM(1); //temp
+	inquireDm(): Promise<DmDto[]> {
+		return this.chatService.inquireDm(1); //temp
 	}
 
 	@ApiOperation({ summary: 'dm 채팅방 입장' })
 	@Post('/dm')
 	@UsePipes(ValidationPipe)
-	getDM(@Body() getDMDto: GetDMDto): Promise<ChatRoomDto> {
-		return this.chatService.getDM(getDMDto);
+	getDm(@Body() getDmDto: GetDmDto): Promise<ChatRoomDto> {
+		return this.chatService.getDm(getDmDto);
 	}
 
 	@ApiOperation({ summary: '오픈 채팅방 목록 조회' })

@@ -13,7 +13,7 @@ import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { DmDto } from 'src/chat/dto/dm.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
-import { GetDMDto } from 'src/chat/dto/get-dm.dto';
+import { GetDmDto } from 'src/chat/dto/get-dm.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
@@ -123,9 +123,9 @@ export class ChatService {
 	 * @param getPrivateChatRoomDto 대화를 나눌 유저의 정보가 담긴 dto
 	 * @returns dm room을 반환한다.
 	 */
-	async getDM(getDMDto: GetDMDto): Promise<ChatRoomDto> {
+	async getDm(getDmDto: GetDmDto): Promise<ChatRoomDto> {
 		const user = await this.userRepository.getUserInfobyIdx(1); //temp
-		const chatMateId = getDMDto.chatMate.id;
+		const chatMateId = getDmDto.chatMate.id;
 		if (user.id === chatMateId) {
 			throw new ConflictException();
 		}
@@ -134,12 +134,12 @@ export class ChatService {
 			throw new NotFoundException();
 		}
 
-		const roomName = this.createDMName(user.id, chatMateId);
-		const room = await this.chatRoomRepository.getDM(roomName);
+		const roomName = this.createDmName(user.id, chatMateId);
+		const room = await this.chatRoomRepository.getDm(roomName);
 		if (room !== null) {
 			return this.roomEntityToDto(room);
 		}
-		return this.createDM(user, chatMate);
+		return this.createDm(user, chatMate);
 	}
 
 	/**
@@ -148,7 +148,7 @@ export class ChatService {
 	 * @param chatMateId
 	 * @returns roomName을 반환한다.
 	 */
-	createDMName(userId: number, chatMateId: number): string {
+	createDmName(userId: number, chatMateId: number): string {
 		if (userId < chatMateId) {
 			return `DM ${userId}, ${chatMateId}`;
 		}
@@ -161,10 +161,10 @@ export class ChatService {
 	 * @param chatMate
 	 * @returns dm room을 반환한다.
 	 */
-	async createDM(user: User, chatMate: User): Promise<ChatRoomDto> {
-		const roomName = this.createDMName(user.id, chatMate.id);
-		const emptyRoom = await this.chatRoomRepository.createDM(roomName);
-		await this.chatParticipantRepository.createDM(emptyRoom, user, chatMate);
+	async createDm(user: User, chatMate: User): Promise<ChatRoomDto> {
+		const roomName = this.createDmName(user.id, chatMate.id);
+		const emptyRoom = await this.chatRoomRepository.createDm(roomName);
+		await this.chatParticipantRepository.createDm(emptyRoom, user, chatMate);
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
 		return this.roomEntityToDto(room);
 	}
@@ -256,8 +256,8 @@ export class ChatService {
 	 * @param userId
 	 * @returns 참여하고있는 dm 리스트를 반환한다.
 	 */
-	async inquireDM(userId: number): Promise<DmDto[]> {
-		const rooms = await this.chatRoomRepository.inquireDM(userId);
+	async inquireDm(userId: number): Promise<DmDto[]> {
+		const rooms = await this.chatRoomRepository.inquireDm(userId);
 
 		return this.roomsToDmDto(rooms, userId);
 	}
