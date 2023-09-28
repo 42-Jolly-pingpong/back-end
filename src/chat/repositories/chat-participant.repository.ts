@@ -107,6 +107,16 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		const userId = user.id;
 		const query = this.createQueryBuilder();
 
+		if (muteExpirationTime === null) {
+			query
+				.update(ChatParticipant)
+				.set({ status, role: Role.MEMBER })
+				.where('roomId = :roomId', { roomId })
+				.andWhere('userId = :userId', { userId })
+				.execute();
+
+			return;
+		}
 		query
 			.update(ChatParticipant)
 			.set({ status, muteExpirationTime })
@@ -139,7 +149,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 
 		const participant = await query
 			.update(ChatParticipant)
-			.set({ status: PaticipantStatus.LEFT })
+			.set({ status: PaticipantStatus.LEFT, role: Role.MEMBER })
 			.where('roomId = :roomId', { roomId })
 			.andWhere('userId = :userId', { userId })
 			.execute();
