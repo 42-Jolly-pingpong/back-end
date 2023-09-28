@@ -11,6 +11,7 @@ import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
+import { DmDto } from 'src/chat/dto/dm.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
 import { GetDMDto } from 'src/chat/dto/get-dm.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
@@ -216,6 +217,49 @@ export class ChatService {
 
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
 		return this.roomEntityToDto(room);
+	}
+
+	/**
+	 * chat-room을 DmDto로 변환한다.
+	 * @param room
+	 * @param userId
+	 * @returns 변환된 DmDto를 반환한다.
+	 */
+	roomToDmDto(room: ChatRoom, userId: number): DmDto {
+		const chatMate = room.participants.filter(
+			(participant) => participant.user.id !== userId
+		)[0].user;
+
+		const dm: DmDto = {
+			id: room.id,
+			chatMate: chatMate,
+			updatedTime: room.updatedTime,
+			status: room.status,
+		};
+		return dm;
+	}
+
+	/**
+	 * chat-room리스트를 전달받아 DmDto리스트로 변환한다.
+	 * @param rooms
+	 * @param userId
+	 * @returns 변한된 DmDto 리스트를 반환한다.
+	 */
+	roomsToDmDto(rooms: ChatRoom[], userId: number): DmDto[] {
+		return rooms.map((room) => {
+			return this.roomToDmDto(room, userId);
+		});
+	}
+
+	/**
+	 * 유저가 참여하고있는 모든 dm을 조회한다.
+	 * @param userId
+	 * @returns 참여하고있는 dm 리스트를 반환한다.
+	 */
+	async inquireDM(userId: number): Promise<DmDto[]> {
+		const rooms = await this.chatRoomRepository.inquireDM(userId);
+
+		return this.roomsToDmDto(rooms, userId);
 	}
 
 	/**

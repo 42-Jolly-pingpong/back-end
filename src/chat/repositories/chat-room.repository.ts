@@ -27,6 +27,21 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return chatRoom;
 	}
 
+	async inquireDM(userId: number): Promise<ChatRoom[]> {
+		const query = this.createQueryBuilder('room');
+
+		const dms = await query
+			.leftJoinAndSelect('room.participants', 'participant')
+			.leftJoinAndSelect('participant.user', 'user')
+			.where('room.roomType = :dm', { dm: ChatRoomType.DM })
+			.andWhere('user.id = :userId', { userId })
+			.leftJoinAndSelect('room.participants', 'all_participant')
+			.leftJoinAndSelect('all_participant.user', 'all_user')
+			.getMany();
+
+		return dms;
+	}
+
 	async getDM(roomName: string): Promise<ChatRoom> {
 		const query = this.createQueryBuilder('room');
 
