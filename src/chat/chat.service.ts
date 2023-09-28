@@ -1,3 +1,4 @@
+import { AddParticipantDto } from './dto/add-participant.dto';
 import {
 	ConflictException,
 	Injectable,
@@ -174,14 +175,22 @@ export class ChatService {
 	 * @param ids
 	 * @returns UserDto의 리스트를 반환한다.
 	 */
-	async makeUserList(ids: number[]): Promise<UserDto[]> {
+	async makeUserList(roomId: number, ids: number[]): Promise<UserDto[]> {
 		const users: UserDto[] = [];
 
 		for (const id of ids) {
+			const participant = await this.chatParticipantRepository.getParticipant(
+				roomId,
+				id
+			);
+			if (participant !== null) {
+				continue;
+			} //이미 참여하고있는 사람인지 확인한다.
+
 			const user = await this.userRepository.findUserById(id);
 			if (user !== null) {
 				users.push(user);
-			}
+			} //존재하는 유저인지 확인 후, 존재하면 추가한다.
 		}
 
 		return users;
@@ -200,20 +209,7 @@ export class ChatService {
 		);
 		const user = await this.userRepository.findUserById(1); //temp
 
-		const participantIds = createChatRoomDto.participants;
-
-		const index = participantIds.indexOf(user.id);
-		if (index !== -1) {
-			participantIds.splice(index, 1);
-		} // 초대를 받은 유저 중 owner와 같은 id를 가진 유저가 있다면 지운다.
-
-		const userList = await this.makeUserList(participantIds);
-
-		await this.chatParticipantRepository.createChatRoom(
-			emptyRoom,
-			user,
-			userList
-		);
+		await this.chatParticipantRepository.createChatRoom(emptyRoom, user);
 
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
 		return this.roomEntityToDto(room);
@@ -412,6 +408,23 @@ export class ChatService {
 	 */
 	getParticipants(roomId: number): Promise<ChatParticipantDto[]> {
 		return this.chatParticipantRepository.getParticipants(roomId);
+	}
+
+	/**
+	 * 채팅방에 유저들을 추가한다.
+	 * @param roomId
+	 * @param addParticipantDto
+	 */
+	async addParticipants(
+		roomId: number,
+		addParticipantDto: AddParticipantDto
+	): Promise<void> {
+		const room = await this.chatRoomRepository.getChatRoom(roomId);
+		const participantIds = addParticipantDto.participants;
+
+		const userList = await this.makeUserList(room.id, participantIds);
+
+		await this.chatParticipantRepository.addParticipants(room, userList);
 	}
 
 	/**
