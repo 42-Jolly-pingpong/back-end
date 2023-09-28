@@ -263,7 +263,7 @@ export class ChatService {
 	}
 
 	/**
-	 * 유저가 참여하고있는 모든 chat-room을 조회한다.
+	 * 유저가 참여하고있는 모든 chat-room을 조회한다(DM제외).
 	 * @param userId
 	 * @returns 참여하고있는 chat-room 리스트를 반환한다.
 	 */

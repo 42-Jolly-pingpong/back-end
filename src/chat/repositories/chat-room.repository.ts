@@ -72,8 +72,15 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 			.leftJoinAndSelect('room.participants', 'participant')
 			.leftJoinAndSelect('participant.user', 'user')
 			.where('user.id=:userId', { userId: user.id })
-			.andWhere('participant.status IN (:...types)', {
-				types: [PaticipantStatus.DEFAULT, PaticipantStatus.MUTED],
+			.andWhere('room.roomType IN (:...types)', {
+				types: [
+					ChatRoomType.PRIVATE,
+					ChatRoomType.PROTECTED,
+					ChatRoomType.PUBLIC,
+				],
+			})
+			.andWhere('participant.status IN (:...status)', {
+				status: [PaticipantStatus.DEFAULT, PaticipantStatus.MUTED],
 			})
 			.getMany();
 
