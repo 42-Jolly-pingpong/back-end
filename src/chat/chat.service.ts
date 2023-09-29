@@ -236,6 +236,7 @@ export class ChatService {
 
 		const dm: DmDto = {
 			id: room.id,
+			roomType: ChatRoomType.DM,
 			chatMate: chatMate,
 			updatedTime: room.updatedTime,
 			status: room.status,
