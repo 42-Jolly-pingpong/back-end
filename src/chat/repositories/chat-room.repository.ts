@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
+import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
+import { UserDto } from 'src/user/dto/user.dto';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
@@ -25,7 +27,22 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return chatRoom;
 	}
 
-	async getPrivateChatRoom(roomName: string): Promise<ChatRoom> {
+	async inquireDm(userId: number): Promise<ChatRoom[]> {
+		const query = this.createQueryBuilder('room');
+
+		const dms = await query
+			.leftJoinAndSelect('room.participants', 'participant')
+			.leftJoinAndSelect('participant.user', 'user')
+			.where('room.roomType = :dm', { dm: ChatRoomType.DM })
+			.andWhere('user.id = :userId', { userId })
+			.leftJoinAndSelect('room.participants', 'all_participant')
+			.leftJoinAndSelect('all_participant.user', 'all_user')
+			.getMany();
+
+		return dms;
+	}
+
+	async getDm(roomName: string): Promise<ChatRoom> {
 		const query = this.createQueryBuilder('room');
 
 		const room = await query
@@ -37,10 +54,10 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return room;
 	}
 
-	async createPrivateChatRoom(roomName: string): Promise<ChatRoom> {
+	async createDm(roomName: string): Promise<ChatRoom> {
 		const chatRoom = this.create({
 			roomName,
-			roomType: ChatRoomType.PRIVATE,
+			roomType: ChatRoomType.DM,
 			password: null,
 		});
 
@@ -48,12 +65,37 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return chatRoom;
 	}
 
-	async inquireOpenedChatRoom(): Promise<ChatRoom[]> {
+	async inquireChatRoom(user: UserDto): Promise<ChatRoom[]> {
 		const query = this.createQueryBuilder('room');
 
 		const rooms = await query
-			.where('room.roomType = :open', { open: ChatRoomType.PUBLIC })
-			.orWhere('room.roomType = :open', { open: ChatRoomType.PROTECTED })
+			.leftJoinAndSelect('room.participants', 'participant')
+			.leftJoinAndSelect('participant.user', 'user')
+			.where('user.id=:userId', { userId: user.id })
+			.andWhere('room.roomType IN (:...types)', {
+				types: [
+					ChatRoomType.PRIVATE,
+					ChatRoomType.PROTECTED,
+					ChatRoomType.PUBLIC,
+				],
+			})
+			.andWhere('participant.status IN (:...status)', {
+				status: [PaticipantStatus.DEFAULT, PaticipantStatus.MUTED],
+			})
+			.getMany();
+
+		return rooms;
+	}
+
+	async inquireOpenedChatRoom(user: UserDto): Promise<ChatRoom[]> {
+		const query = this.createQueryBuilder('room');
+
+		const rooms = await query
+			.leftJoinAndSelect('room.participants', 'participant')
+			.leftJoinAndSelect('participant.user', 'user')
+			.where('room.roomType IN (:...open)', {
+				open: [ChatRoomType.PUBLIC, ChatRoomType.PROTECTED],
+			})
 			.getMany();
 
 		return rooms;
