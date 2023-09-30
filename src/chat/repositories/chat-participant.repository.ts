@@ -16,11 +16,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		super(ChatParticipant, dataSource.createEntityManager());
 	}
 
-	async createPrivateChatRoom(
-		room: ChatRoom,
-		user: User,
-		chatMate: User
-	): Promise<void> {
+	async createDm(room: ChatRoom, user: User, chatMate: User): Promise<void> {
 		const firstParticipant = this.create({
 			room,
 			user,
@@ -40,8 +36,8 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		await this.save([firstParticipant, secondParticipant]);
 	}
 
-	async createChatRoom(room: ChatRoom, user: User): Promise<void> {
-		const participant = this.create({
+	async registerOwner(room: ChatRoom, user: User) {
+		const owner = this.create({
 			room,
 			user,
 			role: Role.OWNER,
@@ -49,20 +45,27 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			muteExpirationTime: null,
 		});
 
-		await this.save(participant);
+		await this.save(owner);
 	}
 
-	async inquireChatRoom(user: UserDto): Promise<ChatRoom[]> {
-		const query = this.createQueryBuilder('participant');
+	async createChatRoom(
+		room: ChatRoom,
+		owner: User,
+		users: UserDto[]
+	): Promise<void> {
+		this.registerOwner(room, owner);
 
-		const users = await query
-			.leftJoinAndSelect('participant.room', 'room')
-			.leftJoinAndSelect('participant.user', 'user')
-			.where('user.id=:userId', { userId: user.id })
-			.getMany();
+		const participants = users.map((user) => {
+			return this.create({
+				room,
+				user,
+				role: Role.MEMBER,
+				status: PaticipantStatus.DEFAULT,
+				muteExpirationTime: null,
+			});
+		});
 
-		const rooms = users.map((user) => user.room);
-		return rooms;
+		await this.save(participants);
 	}
 
 	async getParticipant(
@@ -91,7 +94,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		await this.save(participant);
 	}
 
-	async getPariticipants(roomId: number): Promise<ChatParticipantDto[]> {
+	async getParticipants(roomId: number): Promise<ChatParticipantDto[]> {
 		const query = this.createQueryBuilder('participant');
 
 		const participants = await query
@@ -145,7 +148,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.andWhere('participant.roomId = :roomId', { roomId })
 			.getOne();
 
-		if (participant == null) {
+		if (participant === null) {
 			return null;
 		}
 		this.delete(participant.id);

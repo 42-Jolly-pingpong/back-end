@@ -20,8 +20,9 @@ import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
+import { DmDto } from 'src/chat/dto/dm.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
-import { GetPrivateChatRoomDto } from 'src/chat/dto/get-private-chat-room.dto';
+import { GetDmDto } from 'src/chat/dto/get-dm.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { RoomGuard } from 'src/chat/guards/room.guard';
@@ -46,19 +47,24 @@ export class ChatController {
 		return this.chatService.createChatRoom(createChatRoomDto);
 	}
 
+	@ApiOperation({ summary: 'dm 채팅방 리스트 조회' })
+	@Get('/dm')
+	@UsePipes(ValidationPipe)
+	inquireDm(): Promise<DmDto[]> {
+		return this.chatService.inquireDm(1); //temp
+	}
+
 	@ApiOperation({ summary: 'dm 채팅방 입장' })
 	@Post('/dm')
 	@UsePipes(ValidationPipe)
-	getPrivateChatRoom(
-		@Body() getPrivateChatRoomDto: GetPrivateChatRoomDto
-	): Promise<ChatRoomDto> {
-		return this.chatService.getPrivateChatRoom(getPrivateChatRoomDto);
+	getDm(@Body() getDmDto: GetDmDto): Promise<ChatRoomDto> {
+		return this.chatService.getDm(getDmDto);
 	}
 
 	@ApiOperation({ summary: '오픈 채팅방 목록 조회' })
 	@Get('/opened')
 	inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
-		return this.chatService.inquireOpenedChatRoom();
+		return this.chatService.inquireOpenedChatRoom(2); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 입장' })
@@ -119,10 +125,10 @@ export class ChatController {
 	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })
 	@Get('/:roomId/members')
 	@UseGuards(RoomGuard)
-	getPariticipants(
+	getParticipants(
 		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatParticipantDto[]> {
-		return this.chatService.getPariticipants(roomId);
+		return this.chatService.getParticipants(roomId);
 	}
 
 	@ApiOperation({ summary: '채팅방 역할 변경' })
