@@ -12,7 +12,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthFtGuard } from './guards/ft-guard';
 import { Response } from 'express';
 import { AuthType } from './enums/auth-type.enum';
-import { type } from 'os';
+import { AuthJwtGuard } from './guards/jwt-guard';
 
 @ApiTags('auth-controller')
 @Controller('auth')
@@ -53,18 +53,16 @@ export class AuthController {
 	@Post('/signup')
 	async signup(@Body() formData: any, @Res() res: Response): Promise<void> {
 		await this.authService.signup(formData);
-		//const token = await this.authService.createToken(formData.intraId);
+		const token = await this.authService.createToken(formData.intraId);
 		res.clearCookie('user-data');
-		//res.cookie('access-token', token);
+		res.cookie('access-token', token);
 		res.status(200).end();
-		//res.redirect(`${process.env.DOMAIN}:${process.env.FRONT_PORT}`);
 	}
 
 	@ApiOperation({ summary: 'jwt decode' })
+	@UseGuards(AuthJwtGuard)
 	@Post('/decoded-token')
-	test(@Body() formData: string, @Res() res: Response) {
-		console.log('들어왔어.');
-		console.log(formData);
-		res.status(200).send('hi');
+	test(@Req() request: any, @Res() res: Response) {
+		res.status(200).json(request.user);
 	}
 }
