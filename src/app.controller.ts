@@ -1,12 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('main')
 @Controller()
 export class AppController {
 	constructor(private readonly appService: AppService) {}
 
-	@Get()
-	getHello(): string {
-		return this.appService.getHello();
-	}
+	@ApiOperation({ summary: '루트 페이지' })
+	@Get('/')
+	async root(): Promise<void> {}
 }
