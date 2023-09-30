@@ -77,7 +77,10 @@ export class UserController {
 		);
 
 		if (isDuplicate) {
-			throw new HttpException('이거 나중에 핸들링', HttpStatus.CONFLICT);
+			throw new HttpException(
+				'이거 나중에 핸들링 어케하지 흠',
+				HttpStatus.CONFLICT
+			);
 		}
 	}
 }

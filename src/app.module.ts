@@ -8,7 +8,6 @@ import { ConfigModule } from '@nestjs/config';
 import { FriendModule } from './friend/friend.module';
 import { ChatModule } from './chat/chat.module';
 import { GameModule } from './game/game.module';
-import { AuthModule } from './auth/auth.module';
 
 @Module({
 	imports: [
@@ -27,7 +26,6 @@ import { AuthModule } from './auth/auth.module';
 		FriendModule,
 		ChatModule,
 		GameModule,
-		AuthModule,
 	],
 	controllers: [AppController],
 	providers: [AppService],
