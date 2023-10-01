@@ -8,6 +8,8 @@ import {
 	WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { v4 as uuidv4 } from 'uuid';
+
 
 @WebSocketGateway(4242, { namespace: `game`, cors: { origin: '* ' } })
 export class GameGateway
@@ -50,11 +52,28 @@ export class GameGateway
 		return data;
 	}
 
-	@SubscribeMessage('game-matching')
+	@SubscribeMessage('matching')
 	gameMatchgin(client: Socket) {
-		if (this.waitQueue.length < 0) {
+    console.log(this.waitQueue.length)
+		if (this.waitQueue.length < 1) {
       this.waitQueue.push(client)
+      console.log('대기자 현황', this.waitQueue.forEach(client => {client.id}))
 		}
-    const anotherUser: Socket = this.waitQueue.shift()
+    else {
+      const anotherClient: Socket = this.waitQueue.shift()
+      const roomName: string = uuidv4()
+      client.join(roomName)
+      anotherClient.join(roomName)
+      this.server.to(roomName).emit('roomTest', '들어와잇어요')
+    }
 	}
+
+  @SubscribeMessage('cancel')
+  matchingCancel(client: Socket) {
+    const index = this.waitQueue.indexOf(client)
+    if (index !== -1) {
+      this.waitQueue.splice(index, 1)
+      console.log('대기자 현황', this.waitQueue)
+    }
+  }
 }
