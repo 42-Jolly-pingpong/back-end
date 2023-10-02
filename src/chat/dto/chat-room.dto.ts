@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 
 export class ChatRoomDto {
@@ -19,4 +20,7 @@ export class ChatRoomDto {
 
 	@ApiProperty({ description: '채팅방 현재 인원' })
 	currentPeople: number;
+
+	@ApiProperty({ description: '채팅방 참가자 목록' })
+	participants: ChatParticipant[];
 }

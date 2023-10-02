@@ -36,7 +36,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		await this.save([firstParticipant, secondParticipant]);
 	}
 
-	async registerOwner(room: ChatRoom, user: User) {
+	async createChatRoom(room: ChatRoom, user: User): Promise<void> {
 		const owner = this.create({
 			room,
 			user,
@@ -46,26 +46,6 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		});
 
 		await this.save(owner);
-	}
-
-	async createChatRoom(
-		room: ChatRoom,
-		owner: User,
-		users: UserDto[]
-	): Promise<void> {
-		this.registerOwner(room, owner);
-
-		const participants = users.map((user) => {
-			return this.create({
-				room,
-				user,
-				role: Role.MEMBER,
-				status: PaticipantStatus.DEFAULT,
-				muteExpirationTime: null,
-			});
-		});
-
-		await this.save(participants);
 	}
 
 	async getParticipant(
@@ -80,6 +60,20 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.getOne();
 
 		return user;
+	}
+
+	async addParticipants(room: ChatRoom, users: UserDto[]): Promise<void> {
+		const participants = users.map((user) => {
+			return this.create({
+				room,
+				user,
+				role: Role.MEMBER,
+				status: PaticipantStatus.DEFAULT,
+				muteExpirationTime: null,
+			});
+		});
+
+		await this.save(participants);
 	}
 
 	async addParticipant(room: ChatRoom, user: UserDto): Promise<void> {
@@ -113,6 +107,16 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		const userId = user.id;
 		const query = this.createQueryBuilder();
 
+		if (muteExpirationTime === null) {
+			query
+				.update(ChatParticipant)
+				.set({ status, role: Role.MEMBER })
+				.where('roomId = :roomId', { roomId })
+				.andWhere('userId = :userId', { userId })
+				.execute();
+
+			return;
+		}
 		query
 			.update(ChatParticipant)
 			.set({ status, muteExpirationTime })
@@ -144,15 +148,16 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		const query = this.createQueryBuilder('participant');
 
 		const participant = await query
-			.where('participant.userId = :userId', { userId })
-			.andWhere('participant.roomId = :roomId', { roomId })
-			.getOne();
+			.update(ChatParticipant)
+			.set({ status: PaticipantStatus.LEFT, role: Role.MEMBER })
+			.where('roomId = :roomId', { roomId })
+			.andWhere('userId = :userId', { userId })
+			.execute();
 
-		if (participant === null) {
+		if (participant.raw === null) {
 			return null;
 		}
-		this.delete(participant.id);
 
-		return participant;
+		return participant.raw;
 	}
 }
