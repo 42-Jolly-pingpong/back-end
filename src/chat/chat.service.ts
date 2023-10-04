@@ -64,6 +64,7 @@ export class ChatService {
 			id: room.id,
 			roomName: room.roomName,
 			roomType: room.roomType,
+			createdAt: room.createdAt,
 			updatedTime: room.updatedTime,
 			status: room.status,
 			currentPeople: room.participants.filter(

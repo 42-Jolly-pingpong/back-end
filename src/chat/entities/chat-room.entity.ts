@@ -3,6 +3,7 @@ import { Chat } from 'src/chat/entities/chat.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 import {
 	Column,
+	CreateDateColumn,
 	Entity,
 	OneToMany,
 	PrimaryGeneratedColumn,
@@ -22,6 +23,9 @@ export class ChatRoom {
 
 	@Column({ name: 'password', nullable: true })
 	password: number | null;
+
+	@CreateDateColumn({ name: 'created_at' })
+	createdAt: Date;
 
 	@UpdateDateColumn({ name: 'update_time' })
 	updatedTime: Date;
