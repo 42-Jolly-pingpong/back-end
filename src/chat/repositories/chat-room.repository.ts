@@ -82,6 +82,8 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 			.andWhere('participant.status IN (:...status)', {
 				status: [PaticipantStatus.DEFAULT, PaticipantStatus.MUTED],
 			})
+			.leftJoinAndSelect('room.participants', 'all_participant')
+			.leftJoinAndSelect('all_participant.user', 'all_user')
 			.getMany();
 
 		return rooms;
