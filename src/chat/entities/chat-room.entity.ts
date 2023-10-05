@@ -22,7 +22,7 @@ export class ChatRoom {
 	roomType: ChatRoomType;
 
 	@Column({ name: 'password', nullable: true })
-	password: number | null;
+	password: string | null;
 
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;
