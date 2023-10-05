@@ -25,6 +25,6 @@ export class Chat {
 	@Column({ name: 'content' })
 	content: string;
 
-	@CreateDateColumn({ name: 'time' })
-	time: Date;
+	@CreateDateColumn({ name: 'sent_time' })
+	sentTime: Date;
 }
