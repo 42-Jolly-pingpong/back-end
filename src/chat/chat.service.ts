@@ -126,8 +126,8 @@ export class ChatService {
 	 * @param getPrivateChatRoomDto 대화를 나눌 유저의 정보가 담긴 dto
 	 * @returns dm room을 반환한다.
 	 */
-	async getDm(getDmDto: GetDmDto): Promise<ChatRoomDto> {
-		const user = await this.userRepository.getUserInfobyIdx(1); //temp
+	async getDm(getDmDto: GetDmDto): Promise<DmDto> {
+		const user = await this.userRepository.getUserInfobyIdx(0); //temp
 		const chatMateId = getDmDto.chatMate.id;
 		if (user.id === chatMateId) {
 			throw new ConflictException();
@@ -140,7 +140,7 @@ export class ChatService {
 		const roomName = this.createDmName(user.id, chatMateId);
 		const room = await this.chatRoomRepository.getDm(roomName);
 		if (room !== null) {
-			return this.roomEntityToDto(room);
+			return this.roomToDmDto(room, user.id);
 		}
 		return this.createDm(user, chatMate);
 	}
@@ -164,12 +164,12 @@ export class ChatService {
 	 * @param chatMate
 	 * @returns dm room을 반환한다.
 	 */
-	async createDm(user: User, chatMate: User): Promise<ChatRoomDto> {
+	async createDm(user: User, chatMate: User): Promise<DmDto> {
 		const roomName = this.createDmName(user.id, chatMate.id);
 		const emptyRoom = await this.chatRoomRepository.createDm(roomName);
 		await this.chatParticipantRepository.createDm(emptyRoom, user, chatMate);
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
-		return this.roomEntityToDto(room);
+		return this.roomToDmDto(room, user.id);
 	}
 
 	/**
@@ -216,7 +216,7 @@ export class ChatService {
 		const emptyRoom = await this.chatRoomRepository.createChatRoom(
 			createChatRoomDto
 		);
-		const user = await this.userRepository.findUserById(1); //temp
+		const user = await this.userRepository.findUserById(0); //temp
 
 		await this.chatParticipantRepository.createChatRoom(emptyRoom, user);
 
@@ -317,7 +317,7 @@ export class ChatService {
 				throw new UnauthorizedException();
 			}
 		}
-		const user = await this.userRepository.findUserById(2); //temp
+		const user = await this.userRepository.findUserById(0); //temp
 		if (this.checkUserInParticipant(room.participants, user)) {
 			if (
 				this.getParticipantStatus(room.participants, user) ==
@@ -404,8 +404,8 @@ export class ChatService {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
-			1
-		); //userId temp
+			0
+		); //temp
 		if (participant === null) {
 			throw new NotFoundException();
 		}
