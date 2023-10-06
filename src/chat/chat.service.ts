@@ -222,7 +222,6 @@ export class ChatService {
 					participant.status
 				)
 			) {
-				console.log('MAKE!!!!!!!!!!!!!!!');
 				const user = await this.userRepository.findUserById(id);
 				if (user !== null) {
 					users.push(user);

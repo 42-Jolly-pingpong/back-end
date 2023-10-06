@@ -124,9 +124,7 @@ export class ChatController {
 		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() createChatDto: CreateChatDto
 	): Promise<ChatDto> {
-		const a = await this.chatService.createChat(roomId, 0, createChatDto); //temp
-		console.log(a);
-		return a;
+		return await this.chatService.createChat(roomId, 0, createChatDto); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })
