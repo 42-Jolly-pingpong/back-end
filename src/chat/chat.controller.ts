@@ -75,7 +75,7 @@ export class ChatController {
 		@Param('roomId') roomId: number,
 		@Body() enterChatRoomDto: EnterChatRoomDto
 	): Promise<ChatRoomDto> {
-		return await this.chatService.addParticipant(roomId, enterChatRoomDto);
+		return await this.chatService.addParticipant(roomId, 0, enterChatRoomDto); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 조회' })
@@ -182,7 +182,7 @@ export class ChatController {
 	@UseGuards(RoomGuard)
 	async deleteParticipant(
 		@Param('roomId', ParseIntPipe) roomId: number
-	): Promise<void> {
+	): Promise<ChatRoomDto> {
 		return await this.chatService.deleteParticipant(roomId, 0); //temp
 	}
 }
