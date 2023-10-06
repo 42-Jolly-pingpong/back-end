@@ -1,3 +1,4 @@
+import { MaxLength } from 'class-validator';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
 import { Chat } from 'src/chat/entities/chat.entity';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
@@ -16,6 +17,7 @@ export class ChatRoom {
 	id: number;
 
 	@Column({ name: 'room_name' })
+	@MaxLength(80)
 	roomName: string;
 
 	@Column({ name: 'room_type' })

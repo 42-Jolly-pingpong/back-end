@@ -1,3 +1,4 @@
+import { MaxLength } from 'class-validator';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
 import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import {
@@ -23,6 +24,7 @@ export class Chat {
 	room: ChatRoom;
 
 	@Column({ name: 'content' })
+	@MaxLength(4000)
 	content: string;
 
 	@CreateDateColumn({ name: 'sent_time' })
