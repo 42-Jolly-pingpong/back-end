@@ -337,10 +337,7 @@ export class ChatService {
 		enterChatRoomDto: EnterChatRoomDto
 	): Promise<ChatRoomDto> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
-		if (
-			room.roomType === ChatRoomType.PROTECTED &&
-			enterChatRoomDto.password !== null
-		) {
+		if (room.roomType === ChatRoomType.PROTECTED) {
 			if (enterChatRoomDto.password !== room.password) {
 				throw new UnauthorizedException();
 			}
