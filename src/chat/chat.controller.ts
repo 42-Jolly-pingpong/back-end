@@ -113,9 +113,7 @@ export class ChatController {
 	async getChats(
 		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatDto[]> {
-		const a = await this.chatService.getChats(roomId);
-		console.log(a);
-		return a;
+		return await this.chatService.getChats(roomId);
 	}
 
 	@ApiOperation({ summary: '챗 생성' })
@@ -147,7 +145,7 @@ export class ChatController {
 	async addParticipants(
 		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() addParticipantDto: AddParticipantDto
-	): Promise<void> {
+	): Promise<ChatRoomDto> {
 		return await this.chatService.addParticipants(roomId, addParticipantDto);
 	}
 
@@ -158,7 +156,7 @@ export class ChatController {
 	async setParticipantRole(
 		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() chatParticipantDto: SetParticipantRoleDto
-	): Promise<void> {
+	): Promise<ChatRoomDto> {
 		return await this.chatService.setParticipantRole(
 			roomId,
 			chatParticipantDto
@@ -172,7 +170,7 @@ export class ChatController {
 	async setParticipantStatus(
 		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() chatParticipantDto: SetParticipantStatusDto
-	): Promise<void> {
+	): Promise<ChatRoomDto> {
 		return await this.chatService.setParticipantStatus(
 			roomId,
 			chatParticipantDto

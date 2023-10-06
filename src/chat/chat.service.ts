@@ -174,10 +174,14 @@ export class ChatService {
 
 	/**
 	 * user들의 id가 담긴 리스트를 받아 UserDto의 리스트로 변환한다.
+	 * 방에 들어온 적 없던 사람들만 포함된다.
 	 * @param ids
 	 * @returns UserDto의 리스트를 반환한다.
 	 */
-	async makeUserList(roomId: number, ids: number[]): Promise<UserDto[]> {
+	async makeNewParticipantList(
+		roomId: number,
+		ids: number[]
+	): Promise<UserDto[]> {
 		const users: UserDto[] = [];
 
 		for (const id of ids) {
@@ -185,14 +189,7 @@ export class ChatService {
 				roomId,
 				id
 			);
-			if (
-				participant !== null &&
-				[
-					PaticipantStatus.BANNED,
-					PaticipantStatus.DEFAULT,
-					PaticipantStatus.MUTED,
-				].includes(participant.status)
-			) {
+			if (participant !== null) {
 				continue;
 			} //이미 참여하고있는 사람인지 확인한다.
 
@@ -203,6 +200,39 @@ export class ChatService {
 		}
 
 		return users;
+	}
+
+	/**
+	 * user들의 id가 담긴 리스트를 받아 UserDto의 리스트로 변환한다.
+	 * 방에 들어온 적 있지만 다시 들어올 수 있는 유저들의 목록만 포함한다.
+	 * @param ids
+	 * @returns UserDto의 리스트를 반환한다.
+	 */
+	async makeParticipantList(
+		roomId: number,
+		ids: number[]
+	): Promise<ChatParticipant[]> {
+		const participants: ChatParticipant[] = [];
+
+		for (const id of ids) {
+			const participant = await this.chatParticipantRepository.getParticipant(
+				roomId,
+				id
+			);
+			if (
+				participant !== null &&
+				[PaticipantStatus.KICKED, PaticipantStatus.LEFT].includes(
+					participant.status
+				)
+			) {
+				const user = await this.userRepository.findUserById(id);
+				if (user !== null) {
+					participants.push(participant);
+				} //다시 들어올 수 있는 사람인 지 확인한다.
+			} //존재하는 유저인지 확인 후, 존재하면 추가한다.
+		}
+
+		return participants;
 	}
 
 	/**
@@ -426,17 +456,33 @@ export class ChatService {
 	 * 채팅방에 유저들을 추가한다.
 	 * @param roomId
 	 * @param addParticipantDto
+	 * @returns 업데이트된 채팅방을 반환한다.
 	 */
 	async addParticipants(
 		roomId: number,
 		addParticipantDto: AddParticipantDto
-	): Promise<void> {
+	): Promise<ChatRoomDto> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		const participantIds = addParticipantDto.participants;
 
-		const userList = await this.makeUserList(room.id, participantIds);
+		const userList = await this.makeNewParticipantList(room.id, participantIds);
+		const existUserList = await this.makeParticipantList(
+			room.id,
+			participantIds
+		);
 
 		await this.chatParticipantRepository.addParticipants(room, userList);
+		await Promise.all(
+			existUserList.map(async (user) => {
+				await this.setParticipantStatus(roomId, {
+					user: user.user,
+					status: PaticipantStatus.DEFAULT,
+				});
+				return { ...user, status: PaticipantStatus.DEFAULT };
+			})
+		);
+
+		return this.getChatRoom(roomId);
 	}
 
 	/**
@@ -448,7 +494,7 @@ export class ChatService {
 	async setParticipantStatus(
 		roomId: number,
 		setParticipantDto: SetParticipantStatusDto
-	): Promise<void> {
+	): Promise<ChatRoomDto> {
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
 			setParticipantDto.user.id
@@ -464,17 +510,19 @@ export class ChatService {
 		if (setParticipantDto.status === PaticipantStatus.MUTED) {
 			const mutedTime = new Date();
 			mutedTime.setMinutes(mutedTime.getMinutes() + 5);
-			return this.chatParticipantRepository.setParticipantStatus(
+			await this.chatParticipantRepository.setParticipantStatus(
 				roomId,
 				setParticipantDto,
 				mutedTime
 			);
+			return this.getChatRoom(roomId);
 		}
 
-		return this.chatParticipantRepository.setParticipantStatus(
+		await this.chatParticipantRepository.setParticipantStatus(
 			roomId,
 			setParticipantDto
 		);
+		return this.getChatRoom(roomId);
 	}
 
 	/**
@@ -486,7 +534,7 @@ export class ChatService {
 	async setParticipantRole(
 		roomId: number,
 		setParticipantDto: SetParticipantRoleDto
-	): Promise<void> {
+	): Promise<ChatRoomDto> {
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
 			setParticipantDto.user.id
@@ -495,10 +543,11 @@ export class ChatService {
 			throw new NotFoundException();
 		}
 
-		return this.chatParticipantRepository.setParticipantRole(
+		await this.chatParticipantRepository.setParticipantRole(
 			roomId,
 			setParticipantDto
 		);
+		return this.getChatRoom(roomId);
 	}
 
 	/**
