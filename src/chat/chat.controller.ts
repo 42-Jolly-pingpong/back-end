@@ -118,13 +118,13 @@ export class ChatController {
 
 	@ApiOperation({ summary: '챗 생성' })
 	@Post('/:roomId/chats')
-	// @UseGuards(RoomGuard)
+	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
 	async createChat(
 		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() createChatDto: CreateChatDto
 	): Promise<ChatDto> {
-		const a = await this.chatService.createChat(roomId, createChatDto);
+		const a = await this.chatService.createChat(roomId, 0, createChatDto); //temp
 		console.log(a);
 		return a;
 	}

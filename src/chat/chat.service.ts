@@ -404,17 +404,26 @@ export class ChatService {
 	 */
 	async createChat(
 		roomId: number,
+		userId: number,
 		createChatDto: CreateChatDto
 	): Promise<ChatDto> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
-			0
-		); //temp
+			userId
+		);
 		if (participant === null) {
 			throw new NotFoundException();
 		}
-
+		if (participant.status === PaticipantStatus.MUTED) {
+			if (new Date() < participant.muteExpirationTime) {
+				throw new UnauthorizedException();
+			}
+			await this.setParticipantStatus(roomId, {
+				user: participant.user,
+				status: PaticipantStatus.DEFAULT,
+			});
+		}
 		return this.chatRepository.createChat(room, participant, createChatDto);
 	}
 
