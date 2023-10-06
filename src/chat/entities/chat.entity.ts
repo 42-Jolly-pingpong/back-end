@@ -19,7 +19,7 @@ export class Chat {
 	@JoinColumn({ name: 'userId' })
 	user: ChatParticipant;
 
-	@ManyToOne(() => ChatRoom, (room) => room.chats)
+	@ManyToOne(() => ChatRoom, (room) => room.chats, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'roomId' })
 	room: ChatRoom;
 
