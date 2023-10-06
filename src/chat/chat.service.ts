@@ -383,7 +383,14 @@ export class ChatService {
 	 * @param roomId
 	 * @returns
 	 */
-	deleteChatRoom(roomId: number): Promise<void> {
+	async deleteChatRoom(roomId: number, userId: number): Promise<void> {
+		const participant = await this.chatParticipantRepository.getParticipant(
+			roomId,
+			userId
+		);
+		if (!participant || participant.role !== Role.OWNER) {
+			throw new UnauthorizedException();
+		}
 		return this.chatRoomRepository.deleteChatRoom(roomId);
 	}
 

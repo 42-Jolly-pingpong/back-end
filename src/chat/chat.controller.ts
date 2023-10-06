@@ -104,7 +104,7 @@ export class ChatController {
 	async deleteChatRoom(
 		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<void> {
-		return await this.chatService.deleteChatRoom(roomId);
+		return await this.chatService.deleteChatRoom(roomId, 0); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 내부 챗 조회' })
