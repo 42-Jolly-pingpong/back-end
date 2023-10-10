@@ -41,4 +41,16 @@ export class UserService {
 		}
 		return user;
 	}
+
+	async getUserByIntraId(id: string): Promise<UserDto> {
+		const user: UserDto = await this.userRepository.findUserByIntraId(id);
+		if (!user) {
+			throw new NotFoundException();
+		}
+		return user;
+	}
+
+	async getUserIdByIntraId(id: string): Promise<number> {
+		return await this.userRepository.findUserIdByIntraId(id);
+	}
 }

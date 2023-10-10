@@ -127,12 +127,12 @@ export class ChatService {
 	 * @returns dm room을 반환한다.
 	 */
 	async getDm(getDmDto: GetDmDto): Promise<DmDto> {
-		const user = await this.userRepository.getUserInfobyIdx(0); //temp
+		const user = await this.userRepository.findUserById(0); //temp
 		const chatMateId = getDmDto.chatMate.id;
 		if (user.id === chatMateId) {
 			throw new ConflictException();
 		}
-		const chatMate = await this.userRepository.getUserInfobyIdx(chatMateId);
+		const chatMate = await this.userRepository.findUserById(chatMateId);
 		if (chatMate === null) {
 			throw new NotFoundException();
 		}
