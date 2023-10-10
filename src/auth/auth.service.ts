@@ -4,6 +4,7 @@ import { UserRepository } from 'src/user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { AuthType } from './enums/auth-type.enum';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { UserDto } from '../user/dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -33,5 +34,9 @@ export class AuthService {
 
 	async signup(data: CreateUserDto): Promise<void> {
 		await this.userRepository.createUser(data);
+	}
+
+	async getUserById(id: number): Promise<UserDto | null> {
+		return await this.userRepository.findUserById(id);
 	}
 }

@@ -2,6 +2,8 @@ import {
 	Body,
 	Controller,
 	Get,
+	HttpException,
+	HttpStatus,
 	Post,
 	Req,
 	Res,
@@ -13,6 +15,7 @@ import { AuthFtGuard } from './guards/ft-guard';
 import { Response } from 'express';
 import { AuthType } from './enums/auth-type.enum';
 import { AuthJwtGuard } from './guards/jwt-guard';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @ApiTags('auth-controller')
 @Controller('auth')
@@ -59,10 +62,16 @@ export class AuthController {
 		res.status(200).end();
 	}
 
-	@ApiOperation({ summary: 'jwt decode' })
+	@ApiOperation({ summary: 'jwt token을 사용해 user 반환받기' })
 	@UseGuards(AuthJwtGuard)
-	@Post('/decoded-token')
-	test(@Req() request: any, @Res() res: Response) {
-		res.status(200).json(request.user);
+	@Post('/user')
+	async test(@Req() request: any): Promise<UserDto | null> {
+		const user = await this.authService.getUserById(+request.user.id);
+
+		if (user === null) {
+			throw new HttpException('Invalid User', HttpStatus.BAD_REQUEST);
+		}
+
+		return user;
 	}
 }
