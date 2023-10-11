@@ -1,7 +1,7 @@
 import { DataSource, Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -16,15 +16,10 @@ export class UserRepository extends Repository<User> {
 		await this.save(user);
 	}
 
-	async getUserInfobyIdx(id: number): Promise<UserDto> {
-		return await this.findOneBy({ id });
-	}
-
-	async deleteUserInfobyIdx(id: number): Promise<void> {
-		await this.delete({ id });
-	}
-
-	async updateUser(userDto: UserDto, updateUserDto: UpdateUserDto): Promise<void> {
+	async updateUser(
+		userDto: UserDto,
+		updateUserDto: UpdateUserDto
+	): Promise<void> {
 		const user = { ...userDto, ...updateUserDto };
 		await this.save(user);
 	}
@@ -39,10 +34,20 @@ export class UserRepository extends Repository<User> {
 	}
 
 	async findUsersByKeyword(keyword: string): Promise<UserDto[]> {
-		return await this.find({ where: { nickname: Like(`%${keyword}%`) } });
+		return await this.find({ where: { nickname: Like(`${keyword}%`) } });
 	}
 
 	async findUserById(id: number): Promise<UserDto> {
 		return await this.findOneBy({ id: id });
+	}
+
+	async findUserByIntraId(id: string): Promise<UserDto> {
+		return await this.findOneBy({ intraId: id });
+	}
+
+	async findUserIdByIntraId(id: string): Promise<number> {
+		const user = await this.findOneBy({ intraId: id });
+
+		return user.id;
 	}
 }

@@ -3,21 +3,28 @@ import { Chat } from 'src/chat/entities/chat.entity';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 import { Role } from 'src/chat/enums/role.enum';
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+	Column,
+	Entity,
+	JoinColumn,
+	ManyToOne,
+	OneToMany,
+	PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('ChatParticipant')
 export class ChatParticipant {
-	@PrimaryGeneratedColumn({ name: 'participant_idx' })
-	participantIdx: number;
+	@PrimaryGeneratedColumn({ name: 'id' })
+	id: number;
 
 	@ManyToOne(() => ChatRoom, (room) => room.participants, {
 		onDelete: 'CASCADE',
 	})
-	@JoinColumn({ name: 'roomIdx' })
+	@JoinColumn({ name: 'roomId' })
 	room: ChatRoom;
 
 	@ManyToOne(() => User, (user) => user.id)
-	@JoinColumn({ name: 'userIdx' })
+	@JoinColumn({ name: 'userId' })
 	user: User;
 
 	@Column({ name: 'role' })

@@ -11,15 +11,15 @@ import {
 
 @Entity('Chat')
 export class Chat {
-	@PrimaryGeneratedColumn({ name: 'chat_idx' })
-	chatIdx: number;
+	@PrimaryGeneratedColumn({ name: 'id' })
+	id: number;
 
 	@ManyToOne(() => ChatParticipant, (user) => user.chats)
-	@JoinColumn({ name: 'userIdx' })
+	@JoinColumn({ name: 'userId' })
 	user: ChatParticipant;
 
 	@ManyToOne(() => ChatRoom, (room) => room.chats)
-	@JoinColumn({ name: 'roomIdx' })
+	@JoinColumn({ name: 'roomId' })
 	room: ChatRoom;
 
 	@Column({ name: 'content' })

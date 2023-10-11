@@ -3,12 +3,11 @@ import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 import {
 	IsNotEmpty,
 	IsEnum,
-	IsNumber,
-	Length,
-	Min,
-	Max,
 	ValidateIf,
+	IsHash,
+	NotEquals,
 } from 'class-validator';
+
 export class CreateChatRoomDto {
 	@ApiProperty({ description: '채팅방 이름' })
 	@IsNotEmpty()
@@ -16,21 +15,12 @@ export class CreateChatRoomDto {
 
 	@ApiProperty({ description: '채팅방 타입' })
 	@IsEnum(ChatRoomType)
+	@NotEquals(ChatRoomType.DM)
 	roomType: ChatRoomType;
 
 	@ApiProperty({ description: '비밀번호' })
-	@ValidateIf((room) => room.password != null)
-	@IsNumber()
-	@Min(1)
-	@Max(9999) //
+	@ValidateIf((room) => room.roomType === ChatRoomType.PROTECTED)
+	@IsNotEmpty()
+	// @IsHash()
 	password: number | null;
-
-	@ApiProperty({ description: '최대 인원' })
-	@IsNumber()
-	@Min(2)
-	@Max(30)
-	maxPeople: number;
-
-	@ApiProperty({ description: '현재 인원' })
-	currentPeople: number;
 }

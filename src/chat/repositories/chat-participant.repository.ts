@@ -1,12 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
-import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
-import { SetParticipantDto } from 'src/chat/dto/set-participant.dto';
+import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
+import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
 import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 import { Role } from 'src/chat/enums/role.enum';
 import { UserDto } from 'src/user/dto/user.dto';
+import { User } from 'src/user/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
@@ -15,8 +16,28 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		super(ChatParticipant, dataSource.createEntityManager());
 	}
 
-	async createChatRoom(room: ChatRoomDto, user: UserDto): Promise<void> {
-		const participant = this.create({
+	async createDm(room: ChatRoom, user: User, chatMate: User): Promise<void> {
+		const firstParticipant = this.create({
+			room,
+			user,
+			role: Role.MEMBER,
+			status: PaticipantStatus.DEFAULT,
+			muteExpirationTime: null,
+		});
+
+		const secondParticipant = this.create({
+			room,
+			user: chatMate,
+			role: Role.MEMBER,
+			status: PaticipantStatus.DEFAULT,
+			muteExpirationTime: null,
+		});
+
+		await this.save([firstParticipant, secondParticipant]);
+	}
+
+	async createChatRoom(room: ChatRoom, user: User): Promise<void> {
+		const owner = this.create({
 			room,
 			user,
 			role: Role.OWNER,
@@ -24,34 +45,35 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			muteExpirationTime: null,
 		});
 
-		await this.save(participant);
+		await this.save(owner);
 	}
 
-	async inquireChatRoom(userIdx: number): Promise<ChatRoomDto[]> {
-		const query = this.createQueryBuilder('part');
-
-		const users = await query
-			.leftJoinAndSelect('part.room', 'room')
-			.leftJoinAndSelect('part.user', 'user')
-			.where('user.id=:userIdx', { userIdx })
-			.getMany();
-
-		const rooms = users.map((user) => user.room);
-		return rooms;
-	}
-
-	async getParticipantEntity(
-		roomIdx: number,
-		userIdx: number
+	async getParticipant(
+		roomId: number,
+		userId: number
 	): Promise<ChatParticipant> {
-		const query = this.createQueryBuilder('user');
+		const query = this.createQueryBuilder('participant');
 
 		const user = await query
-			.where('user.roomIdx = :roomIdx', { roomIdx })
-			.andWhere('user.userIdx = :userIdx', { userIdx })
+			.where('participant.roomId = :roomId', { roomId })
+			.andWhere('participant.userId = :userId', { userId })
 			.getOne();
 
 		return user;
+	}
+
+	async addParticipants(room: ChatRoom, users: UserDto[]): Promise<void> {
+		const participants = users.map((user) => {
+			return this.create({
+				room,
+				user,
+				role: Role.MEMBER,
+				status: PaticipantStatus.DEFAULT,
+				muteExpirationTime: null,
+			});
+		});
+
+		await this.save(participants);
 	}
 
 	async addParticipant(room: ChatRoom, user: UserDto): Promise<void> {
@@ -66,55 +88,76 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		await this.save(participant);
 	}
 
-	async getPariticipants(roomIdx: number): Promise<ChatParticipantDto[]> {
-		const query = this.createQueryBuilder('user');
+	async getParticipants(roomId: number): Promise<ChatParticipantDto[]> {
+		const query = this.createQueryBuilder('participant');
 
-		const users = await query
-			.where('user.roomIdx = :roomIdx', { roomIdx })
+		const participants = await query
+			.where('participant.roomId = :roomId', { roomId })
 			.getMany();
 
-		return users;
+		return participants;
 	}
 
 	async setParticipantStatus(
-		roomIdx: number,
-		setParticipantDto: SetParticipantDto
-	) {
-		const { user, status, muteExpirationTime } = setParticipantDto;
-		const userIdx = user.id;
+		roomId: number,
+		setParticipantDto: SetParticipantStatusDto,
+		muteExpirationTime: Date = null
+	): Promise<void> {
+		const { user, status } = setParticipantDto;
+		const userId = user.id;
 		const query = this.createQueryBuilder();
 
+		if (muteExpirationTime === null) {
+			query
+				.update(ChatParticipant)
+				.set({ status, role: Role.MEMBER })
+				.where('roomId = :roomId', { roomId })
+				.andWhere('userId = :userId', { userId })
+				.execute();
+
+			return;
+		}
 		query
 			.update(ChatParticipant)
 			.set({ status, muteExpirationTime })
-			.where('roomIdx = :roomIdx', { roomIdx })
-			.andWhere('userIdx = :userIdx', { userIdx })
+			.where('roomId = :roomId', { roomId })
+			.andWhere('userId = :userId', { userId })
 			.execute();
 	}
 
-	async setParticipantAuth(
-		roomIdx: number,
-		setParticipantDto: SetParticipantDto
-	) {
+	async setParticipantRole(
+		roomId: number,
+		setParticipantDto: SetParticipantRoleDto
+	): Promise<void> {
 		const { user, role } = setParticipantDto;
-		const userIdx = user.id;
+		const userId = user.id;
 		const query = this.createQueryBuilder();
 
 		query
 			.update(ChatParticipant)
 			.set({ role })
-			.where('roomIdx = :roomIdx', { roomIdx })
-			.andWhere('userIdx = :userIdx', { userIdx })
+			.where('roomId = :roomId', { roomId })
+			.andWhere('userId = :userId', { userId })
 			.execute();
 	}
 
-	async deleteParticipant(roomIdx: number, userIdx: number): Promise<void> {
-		const query = this.createQueryBuilder('user');
+	async deleteParticipant(
+		roomId: number,
+		userId: number
+	): Promise<ChatParticipant> {
+		const query = this.createQueryBuilder('participant');
 
-		query
-			.delete()
-			.where('userIdx = :userIdx', { userIdx })
-			.andWhere('roomIdx = :roomIdx', { roomIdx })
+		const participant = await query
+			.update(ChatParticipant)
+			.set({ status: PaticipantStatus.LEFT, role: Role.MEMBER })
+			.where('roomId = :roomId', { roomId })
+			.andWhere('userId = :userId', { userId })
 			.execute();
+
+		if (participant.raw === null) {
+			return null;
+		}
+
+		return participant.raw;
 	}
 }
