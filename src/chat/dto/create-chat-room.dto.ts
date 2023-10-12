@@ -23,7 +23,4 @@ export class CreateChatRoomDto {
 	@IsNotEmpty()
 	// @IsHash()
 	password: number | null;
-
-	@ApiProperty({ description: '참가할 유저들 리스트' })
-	participants: number[];
 }

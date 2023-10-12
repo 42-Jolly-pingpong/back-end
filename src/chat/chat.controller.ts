@@ -15,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChatService } from 'src/chat/chat.service';
+import { AddParticipantDto } from 'src/chat/dto/add-participant.dto';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { ChatDto } from 'src/chat/dto/chat.dto';
@@ -129,6 +130,17 @@ export class ChatController {
 		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatParticipantDto[]> {
 		return this.chatService.getParticipants(roomId);
+	}
+
+	@ApiOperation({ summary: '채팅방 참여자 추가' })
+	@Post('/:roomId/members')
+	@UseGuards(RoomGuard)
+	@UsePipes(ValidationPipe)
+	addParticipants(
+		@Param('roomId', ParseIntPipe) roomId: number,
+		@Body() addParticipantDto: AddParticipantDto
+	): Promise<void> {
+		return this.chatService.addParticipants(roomId, addParticipantDto);
 	}
 
 	@ApiOperation({ summary: '채팅방 역할 변경' })
