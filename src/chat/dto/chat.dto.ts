@@ -12,5 +12,5 @@ export class ChatDto {
 	content: string;
 
 	@ApiProperty({ description: '보낸 시간' })
-	time: Date;
+	sentTime: Date;
 }
