@@ -96,8 +96,13 @@ export class ChatService {
 	 * @param user 참여해있는지 확인할 user
 	 * @returns 참여자하면 true, 참여자가 아니라면 false를 반환한다.
 	 */
-	checkUserInParticipant(participants: ChatParticipant[], user: User): boolean {
-		return participants.some((participant) => participant.user.id === user.id);
+	checkUserInParticipant(
+		participants: ChatParticipant[],
+		user: User
+	): boolean {
+		return participants.some(
+			(participant) => participant.user.id === user.id
+		);
 	}
 
 	/**
@@ -126,8 +131,8 @@ export class ChatService {
 	 * @param getPrivateChatRoomDto 대화를 나눌 유저의 정보가 담긴 dto
 	 * @returns dm room을 반환한다.
 	 */
-	async getDm(getDmDto: GetDmDto): Promise<DmDto> {
-		const user = await this.userRepository.findUserById(0); //temp
+	async getDm(getDmDto: GetDmDto): Promise<ChatRoomDto> {
+		const user = await this.userRepository.findUserById(1); //temp
 		const chatMateId = getDmDto.chatMate.id;
 		if (user.id === chatMateId) {
 			throw new ConflictException();
@@ -167,7 +172,11 @@ export class ChatService {
 	async createDm(user: User, chatMate: User): Promise<DmDto> {
 		const roomName = this.createDmName(user.id, chatMate.id);
 		const emptyRoom = await this.chatRoomRepository.createDm(roomName);
-		await this.chatParticipantRepository.createDm(emptyRoom, user, chatMate);
+		await this.chatParticipantRepository.createDm(
+			emptyRoom,
+			user,
+			chatMate
+		);
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
 		return this.roomToDmDto(room, user.id);
 	}
@@ -185,10 +194,8 @@ export class ChatService {
 		const users: UserDto[] = [];
 
 		for (const id of ids) {
-			const participant = await this.chatParticipantRepository.getParticipant(
-				roomId,
-				id
-			);
+			const participant =
+				await this.chatParticipantRepository.getParticipant(roomId, id);
 			if (participant !== null) {
 				continue;
 			} //이미 참여하고있는 사람인지 확인한다. 아니라면 진행하고 참여하고있다면 continue한다.
@@ -208,14 +215,15 @@ export class ChatService {
 	 * @param ids
 	 * @returns UserDto의 리스트를 반환한다.
 	 */
-	async makeParticipantList(roomId: number, ids: number[]): Promise<UserDto[]> {
+	async makeParticipantList(
+		roomId: number,
+		ids: number[]
+	): Promise<UserDto[]> {
 		const users: UserDto[] = [];
 
 		for (const id of ids) {
-			const participant = await this.chatParticipantRepository.getParticipant(
-				roomId,
-				id
-			);
+			const participant =
+				await this.chatParticipantRepository.getParticipant(roomId, id);
 			if (
 				participant !== null &&
 				[PaticipantStatus.KICKED, PaticipantStatus.LEFT].includes(
@@ -315,7 +323,9 @@ export class ChatService {
 	async inquireOpenedChatRoom(userId: number): Promise<ChatRoomDto[]> {
 		const user = await this.userRepository.findUserById(userId); //temp
 
-		const allRoom = await this.chatRoomRepository.inquireOpenedChatRoom(user);
+		const allRoom = await this.chatRoomRepository.inquireOpenedChatRoom(
+			user
+		);
 		const roomsWithoutBanned = allRoom.filter(
 			(room) =>
 				this.getParticipantStatus(room.participants, user) !==
@@ -371,7 +381,10 @@ export class ChatService {
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
-		return this.chatRoomRepository.setChatRoomInfo(roomId, createChatRoomDto);
+		return this.chatRoomRepository.setChatRoomInfo(
+			roomId,
+			createChatRoomDto
+		);
 	}
 
 	/**
@@ -452,7 +465,10 @@ export class ChatService {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		const participantIds = addParticipantDto.participants;
 
-		const userList = await this.makeNewParticipantList(room.id, participantIds);
+		const userList = await this.makeNewParticipantList(
+			room.id,
+			participantIds
+		);
 		const existUserList = await this.makeParticipantList(
 			room.id,
 			participantIds
@@ -547,7 +563,10 @@ export class ChatService {
 	): Promise<ChatRoomDto> {
 		//owner가 채팅방 나가면?
 		const deletedParticipant =
-			await this.chatParticipantRepository.deleteParticipant(roomId, userId);
+			await this.chatParticipantRepository.deleteParticipant(
+				roomId,
+				userId
+			);
 
 		if (deletedParticipant === null) {
 			throw new NotFoundException();

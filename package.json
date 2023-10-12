@@ -38,6 +38,7 @@
     "Logger": "^0.0.0",
     "passport": "^0.6.0",
     "passport-42": "^1.2.6",
+    "passport-jwt": "^4.0.1",
     "passport-oauth": "^1.0.0",
     "passport-oauth2": "^1.7.0",
     "pg": "^8.11.3",

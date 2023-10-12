@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from 'src/user/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { AuthType } from './enums/auth-type.enum';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { UserDto } from '../user/dto/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,8 +15,8 @@ export class AuthService {
 	) {}
 
 	async validateUser(data: any): Promise<AuthType> {
-		const user = await this.userRepository.findUserByIntraId(data.login);
-
+		const user = await this.userRepository.findUserByIntraId(data.intraId);
+		//console.log(user);
 		if (user) {
 			if (user.auth === true) {
 				return AuthType.USERWITH2FA;
@@ -25,8 +27,17 @@ export class AuthService {
 	}
 
 	async createToken(data: any): Promise<string> {
-		const id = await this.userRepository.findUserIdByIntraId(data.login);
+		//console.log(data);
+		const id = await this.userRepository.findUserIdByIntraId(data.intraId);
 		const payload = { id };
 		return this.jwtService.sign(payload);
+	}
+
+	async signup(data: CreateUserDto): Promise<void> {
+		await this.userRepository.createUser(data);
+	}
+
+	async getUserById(id: number): Promise<UserDto | null> {
+		return await this.userRepository.findUserById(id);
 	}
 }
