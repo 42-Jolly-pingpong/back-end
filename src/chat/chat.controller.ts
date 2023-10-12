@@ -35,142 +35,152 @@ export class ChatController {
 
 	@ApiOperation({ summary: '사용자가 참여하고있는 채팅방 목록 조회' })
 	@Get('')
-	inquireChatRoom(): Promise<ChatRoomDto[]> {
-		return this.chatService.inquireChatRoom(2); //temp
+	async inquireChatRoom(): Promise<ChatRoomDto[]> {
+		return await this.chatService.inquireChatRoom(0); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 생성' })
 	@Post('')
 	@UsePipes(ValidationPipe)
-	createChatRoom(
+	async createChatRoom(
 		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<ChatRoomDto> {
-		return this.chatService.createChatRoom(createChatRoomDto);
+		return await this.chatService.createChatRoom(createChatRoomDto);
 	}
 
 	@ApiOperation({ summary: 'dm 채팅방 리스트 조회' })
 	@Get('/dm')
 	@UsePipes(ValidationPipe)
-	inquireDm(): Promise<DmDto[]> {
-		return this.chatService.inquireDm(1); //temp
+	async inquireDm(): Promise<DmDto[]> {
+		return await this.chatService.inquireDm(0); //temp
 	}
 
 	@ApiOperation({ summary: 'dm 채팅방 입장' })
 	@Post('/dm')
 	@UsePipes(ValidationPipe)
-	getDm(@Body() getDmDto: GetDmDto): Promise<ChatRoomDto> {
-		return this.chatService.getDm(getDmDto);
+	async getDm(@Body() getDmDto: GetDmDto): Promise<DmDto> {
+		return await this.chatService.getDm(getDmDto);
 	}
 
 	@ApiOperation({ summary: '오픈 채팅방 목록 조회' })
 	@Get('/opened')
-	inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
-		return this.chatService.inquireOpenedChatRoom(2); //temp
+	async inquireOpenedChatRoom(): Promise<ChatRoomDto[]> {
+		return await this.chatService.inquireOpenedChatRoom(0); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 입장' })
 	@Post('/:roomId')
 	@UseGuards(RoomGuard)
-	addParticipant(
+	async addParticipant(
 		@Param('roomId') roomId: number,
 		@Body() enterChatRoomDto: EnterChatRoomDto
 	): Promise<ChatRoomDto> {
-		return this.chatService.addParticipant(roomId, enterChatRoomDto);
+		return await this.chatService.addParticipant(roomId, 0, enterChatRoomDto); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 조회' })
 	@Get('/:roomId')
 	@UseGuards(RoomGuard)
-	getChatRoomInfo(
+	async getChatRoomInfo(
 		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatRoomDto> {
-		return this.chatService.getChatRoom(roomId);
+		return await this.chatService.getChatRoom(roomId);
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 수정' })
 	@Put('/:roomId')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
-	setChatRoomInfo(
+	async setChatRoomInfo(
 		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
-		return this.chatService.setChatRoomInfo(roomId, createChatRoomDto);
+		return await this.chatService.setChatRoomInfo(roomId, createChatRoomDto);
 	}
 
 	@ApiOperation({ summary: '채팅방 삭제' })
 	@Delete('/:roomId')
 	@UseGuards(RoomGuard)
-	deleteChatRoom(@Param('roomId', ParseIntPipe) roomId: number): Promise<void> {
-		return this.chatService.deleteChatRoom(roomId);
+	async deleteChatRoom(
+		@Param('roomId', ParseIntPipe) roomId: number
+	): Promise<void> {
+		return await this.chatService.deleteChatRoom(roomId, 0); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 내부 챗 조회' })
 	@Get('/:roomId/chats')
 	@UseGuards(RoomGuard)
-	getChats(@Param('roomId', ParseIntPipe) roomId: number): Promise<ChatDto[]> {
-		return this.chatService.getChats(roomId);
+	async getChats(
+		@Param('roomId', ParseIntPipe) roomId: number
+	): Promise<ChatDto[]> {
+		return await this.chatService.getChats(roomId);
 	}
 
 	@ApiOperation({ summary: '챗 생성' })
 	@Post('/:roomId/chats')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
-	createChat(
+	async createChat(
 		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() createChatDto: CreateChatDto
 	): Promise<ChatDto> {
-		return this.chatService.createChat(roomId, createChatDto);
+		return await this.chatService.createChat(roomId, 0, createChatDto); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })
 	@Get('/:roomId/members')
 	@UseGuards(RoomGuard)
-	getParticipants(
+	async getParticipants(
 		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatParticipantDto[]> {
-		return this.chatService.getParticipants(roomId);
+		return await this.chatService.getParticipants(roomId);
 	}
 
 	@ApiOperation({ summary: '채팅방 참여자 추가' })
 	@Post('/:roomId/members')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
-	addParticipants(
+	async addParticipants(
 		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() addParticipantDto: AddParticipantDto
-	): Promise<void> {
-		return this.chatService.addParticipants(roomId, addParticipantDto);
+	): Promise<ChatRoomDto> {
+		return await this.chatService.addParticipants(roomId, addParticipantDto);
 	}
 
 	@ApiOperation({ summary: '채팅방 역할 변경' })
 	@Patch('/:roomId/members/role')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
-	setParticipantRole(
+	async setParticipantRole(
 		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() chatParticipantDto: SetParticipantRoleDto
-	): Promise<void> {
-		return this.chatService.setParticipantRole(roomId, chatParticipantDto);
+	): Promise<ChatRoomDto> {
+		return await this.chatService.setParticipantRole(
+			roomId,
+			chatParticipantDto
+		);
 	}
 
 	@ApiOperation({ summary: '채팅방 참여자 상태 변경' })
 	@Patch('/:roomId/members/status')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
-	setParticipantStatus(
+	async setParticipantStatus(
 		@Param('roomId', ParseIntPipe) roomId: number,
 		@Body() chatParticipantDto: SetParticipantStatusDto
-	): Promise<void> {
-		return this.chatService.setParticipantStatus(roomId, chatParticipantDto);
+	): Promise<ChatRoomDto> {
+		return await this.chatService.setParticipantStatus(
+			roomId,
+			chatParticipantDto
+		);
 	}
 
 	@ApiOperation({ summary: '참여자 채팅방 퇴장' })
 	@Delete('/:roomId/members')
 	@UseGuards(RoomGuard)
-	deleteParticipant(
+	async deleteParticipant(
 		@Param('roomId', ParseIntPipe) roomId: number
-	): Promise<void> {
-		return this.chatService.deleteParticipant(roomId, 1); //temp
+	): Promise<ChatRoomDto> {
+		return await this.chatService.deleteParticipant(roomId, 0); //temp
 	}
 }
