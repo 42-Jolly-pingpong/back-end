@@ -131,8 +131,8 @@ export class ChatService {
 	 * @param getPrivateChatRoomDto 대화를 나눌 유저의 정보가 담긴 dto
 	 * @returns dm room을 반환한다.
 	 */
-	async getDm(getDmDto: GetDmDto): Promise<ChatRoomDto> {
-		const user = await this.userRepository.findUserById(1); //temp
+	async getDm(getDmDto: GetDmDto): Promise<DmDto> {
+		const user = await this.userRepository.findUserById(0); //temp
 		const chatMateId = getDmDto.chatMate.id;
 		if (user.id === chatMateId) {
 			throw new ConflictException();
