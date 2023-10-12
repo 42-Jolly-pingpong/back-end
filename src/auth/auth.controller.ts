@@ -33,7 +33,7 @@ export class AuthController {
 		@Req() req: any,
 		@Res({ passthrough: true }) res: Response
 	): Promise<void> {
-		console.log('redirection 된 뒤');
+		//console.log('redirection 된 뒤');
 		const auth: AuthType = await this.authService.validateUser(req.user);
 
 		switch (auth) {
@@ -73,7 +73,7 @@ export class AuthController {
 	@UseGuards(AuthJwtGuard)
 	@Post('/user')
 	async user(@GetUser() user: UserDto): Promise<UserDto | null> {
-		console.log(user);
+		//console.log(user);
 		return user;
 	}
 }

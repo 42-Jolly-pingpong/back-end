@@ -27,7 +27,7 @@ export class AuthService {
 	}
 
 	async createToken(data: any): Promise<string> {
-		console.log(data);
+		//console.log(data);
 		const id = await this.userRepository.findUserIdByIntraId(data.intraId);
 		const payload = { id };
 		return this.jwtService.sign(payload);
