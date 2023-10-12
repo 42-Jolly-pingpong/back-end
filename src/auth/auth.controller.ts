@@ -62,11 +62,19 @@ export class AuthController {
 	): Promise<void> {
 		await this.authService.signup(formData);
 		const token = await this.authService.createToken(formData);
-		// [추후 수정할지말지..]
+		console.log('회원가입 중');
+		// [문제]
 		res.clearCookie('user-data');
 		res.cookie('access-token', token);
 		res.redirect(`${process.env.DOMAIN}:${process.env.FRONT_PORT}`);
-		res.status(200).end();
+	}
+
+	@ApiOperation({ summary: '로그아웃' })
+	@Get('/signout')
+	async signout(@Req() req: any, @Res({ passthrough: true }) res: Response) {
+		console.log('로그아웃 로직 들어옴');
+		res.clearCookie('access-token');
+		res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
 	}
 
 	@ApiOperation({ summary: 'jwt token을 사용해 user 반환받기' })
