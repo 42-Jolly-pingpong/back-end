@@ -55,8 +55,9 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 		const query = this.createQueryBuilder('participant');
 
 		const user = await query
+			.leftJoinAndSelect('participant.user', 'user')
 			.where('participant.roomId = :roomId', { roomId })
-			.andWhere('participant.userId = :userId', { userId })
+			.andWhere('user.id = :userId', { userId })
 			.getOne();
 
 		return user;

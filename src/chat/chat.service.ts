@@ -64,6 +64,7 @@ export class ChatService {
 			id: room.id,
 			roomName: room.roomName,
 			roomType: room.roomType,
+			createdAt: room.createdAt,
 			updatedTime: room.updatedTime,
 			status: room.status,
 			currentPeople: room.participants.filter(
@@ -130,8 +131,8 @@ export class ChatService {
 	 * @param getPrivateChatRoomDto 대화를 나눌 유저의 정보가 담긴 dto
 	 * @returns dm room을 반환한다.
 	 */
-	async getDm(getDmDto: GetDmDto): Promise<ChatRoomDto> {
-		const user = await this.userRepository.findUserById(1); //temp
+	async getDm(getDmDto: GetDmDto): Promise<DmDto> {
+		const user = await this.userRepository.findUserById(0); //temp
 		const chatMateId = getDmDto.chatMate.id;
 		if (user.id === chatMateId) {
 			throw new ConflictException();
@@ -144,7 +145,7 @@ export class ChatService {
 		const roomName = this.createDmName(user.id, chatMateId);
 		const room = await this.chatRoomRepository.getDm(roomName);
 		if (room !== null) {
-			return this.roomEntityToDto(room);
+			return this.roomToDmDto(room, user.id);
 		}
 		return this.createDm(user, chatMate);
 	}
@@ -168,7 +169,7 @@ export class ChatService {
 	 * @param chatMate
 	 * @returns dm room을 반환한다.
 	 */
-	async createDm(user: User, chatMate: User): Promise<ChatRoomDto> {
+	async createDm(user: User, chatMate: User): Promise<DmDto> {
 		const roomName = this.createDmName(user.id, chatMate.id);
 		const emptyRoom = await this.chatRoomRepository.createDm(roomName);
 		await this.chatParticipantRepository.createDm(
@@ -177,36 +178,62 @@ export class ChatService {
 			chatMate
 		);
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
-		return this.roomEntityToDto(room);
+		return this.roomToDmDto(room, user.id);
 	}
 
 	/**
 	 * user들의 id가 담긴 리스트를 받아 UserDto의 리스트로 변환한다.
+	 * 방에 들어온 적 없던 사람들만 포함된다.
 	 * @param ids
 	 * @returns UserDto의 리스트를 반환한다.
 	 */
-	async makeUserList(roomId: number, ids: number[]): Promise<UserDto[]> {
+	async makeNewParticipantList(
+		roomId: number,
+		ids: number[]
+	): Promise<UserDto[]> {
 		const users: UserDto[] = [];
 
 		for (const id of ids) {
-			const participant = await this.chatParticipantRepository.getParticipant(
-				roomId,
-				id
-			);
-			if (
-				participant !== null &&
-				[
-					PaticipantStatus.BANNED,
-					PaticipantStatus.DEFAULT,
-					PaticipantStatus.MUTED,
-				].includes(participant.status)
-			) {
+			const participant =
+				await this.chatParticipantRepository.getParticipant(roomId, id);
+			if (participant !== null) {
 				continue;
-			} //이미 참여하고있는 사람인지 확인한다.
+			} //이미 참여하고있는 사람인지 확인한다. 아니라면 진행하고 참여하고있다면 continue한다.
 
 			const user = await this.userRepository.findUserById(id);
 			if (user !== null) {
 				users.push(user);
+			} //존재하는 유저인지 확인 후, 존재하면 추가한다.
+		}
+
+		return users;
+	}
+
+	/**
+	 * user들의 id가 담긴 리스트를 받아 UserDto의 리스트로 변환한다.
+	 * 방에 들어온 적 있지만 다시 들어올 수 있는 유저들의 목록만 포함한다.
+	 * @param ids
+	 * @returns UserDto의 리스트를 반환한다.
+	 */
+	async makeParticipantList(
+		roomId: number,
+		ids: number[]
+	): Promise<UserDto[]> {
+		const users: UserDto[] = [];
+
+		for (const id of ids) {
+			const participant =
+				await this.chatParticipantRepository.getParticipant(roomId, id);
+			if (
+				participant !== null &&
+				[PaticipantStatus.KICKED, PaticipantStatus.LEFT].includes(
+					participant.status
+				)
+			) {
+				const user = await this.userRepository.findUserById(id);
+				if (user !== null) {
+					users.push(user);
+				} //다시 들어올 수 있는 사람인 지 확인한다.
 			} //존재하는 유저인지 확인 후, 존재하면 추가한다.
 		}
 
@@ -224,7 +251,7 @@ export class ChatService {
 		const emptyRoom = await this.chatRoomRepository.createChatRoom(
 			createChatRoomDto
 		);
-		const user = await this.userRepository.findUserById(1); //temp
+		const user = await this.userRepository.findUserById(0); //temp
 
 		await this.chatParticipantRepository.createChatRoom(emptyRoom, user);
 
@@ -316,42 +343,16 @@ export class ChatService {
 	 */
 	async addParticipant(
 		roomId: number,
+		userId: number,
 		enterChatRoomDto: EnterChatRoomDto
 	): Promise<ChatRoomDto> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
-		if (
-			room.roomType === ChatRoomType.PROTECTED &&
-			enterChatRoomDto.password !== null
-		) {
+		if (room.roomType === ChatRoomType.PROTECTED) {
 			if (enterChatRoomDto.password !== room.password) {
 				throw new UnauthorizedException();
 			}
 		}
-		const user = await this.userRepository.findUserById(2); //temp
-		if (this.checkUserInParticipant(room.participants, user)) {
-			if (
-				this.getParticipantStatus(room.participants, user) ==
-				PaticipantStatus.BANNED
-			) {
-				throw new UnauthorizedException();
-			} else if (
-				this.getParticipantStatus(room.participants, user) ==
-					PaticipantStatus.KICKED ||
-				this.getParticipantStatus(room.participants, user) ==
-					PaticipantStatus.LEFT
-			) {
-				this.chatParticipantRepository.setParticipantStatus(
-					roomId,
-					{ user, status: PaticipantStatus.DEFAULT },
-					null
-				);
-				return this.roomEntityToDto(room);
-			}
-			throw new ConflictException();
-		}
-
-		await this.chatParticipantRepository.addParticipant(room, user);
-		return this.roomEntityToDto(room);
+		return this.addParticipants(roomId, { participants: [userId] });
 	}
 
 	/**
@@ -391,7 +392,14 @@ export class ChatService {
 	 * @param roomId
 	 * @returns
 	 */
-	deleteChatRoom(roomId: number): Promise<void> {
+	async deleteChatRoom(roomId: number, userId: number): Promise<void> {
+		const participant = await this.chatParticipantRepository.getParticipant(
+			roomId,
+			userId
+		);
+		if (!participant || participant.role !== Role.OWNER) {
+			throw new UnauthorizedException();
+		}
 		return this.chatRoomRepository.deleteChatRoom(roomId);
 	}
 
@@ -412,17 +420,26 @@ export class ChatService {
 	 */
 	async createChat(
 		roomId: number,
+		userId: number,
 		createChatDto: CreateChatDto
 	): Promise<ChatDto> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
-			1
-		); //userId temp
+			userId
+		);
 		if (participant === null) {
 			throw new NotFoundException();
 		}
-
+		if (participant.status === PaticipantStatus.MUTED) {
+			if (new Date() < participant.muteExpirationTime) {
+				throw new UnauthorizedException();
+			}
+			await this.setParticipantStatus(roomId, {
+				user: participant.user,
+				status: PaticipantStatus.DEFAULT,
+			});
+		}
 		return this.chatRepository.createChat(room, participant, createChatDto);
 	}
 
@@ -439,17 +456,34 @@ export class ChatService {
 	 * 채팅방에 유저들을 추가한다.
 	 * @param roomId
 	 * @param addParticipantDto
+	 * @returns 업데이트된 채팅방을 반환한다.
 	 */
 	async addParticipants(
 		roomId: number,
 		addParticipantDto: AddParticipantDto
-	): Promise<void> {
+	): Promise<ChatRoomDto> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		const participantIds = addParticipantDto.participants;
 
-		const userList = await this.makeUserList(room.id, participantIds);
+		const userList = await this.makeNewParticipantList(
+			room.id,
+			participantIds
+		);
+		const existUserList = await this.makeParticipantList(
+			room.id,
+			participantIds
+		);
 
 		await this.chatParticipantRepository.addParticipants(room, userList);
+		existUserList.map(
+			async (user) =>
+				await this.setParticipantStatus(roomId, {
+					user,
+					status: PaticipantStatus.DEFAULT,
+				})
+		);
+
+		return this.getChatRoom(roomId);
 	}
 
 	/**
@@ -461,7 +495,7 @@ export class ChatService {
 	async setParticipantStatus(
 		roomId: number,
 		setParticipantDto: SetParticipantStatusDto
-	): Promise<void> {
+	): Promise<ChatRoomDto> {
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
 			setParticipantDto.user.id
@@ -477,17 +511,19 @@ export class ChatService {
 		if (setParticipantDto.status === PaticipantStatus.MUTED) {
 			const mutedTime = new Date();
 			mutedTime.setMinutes(mutedTime.getMinutes() + 5);
-			return this.chatParticipantRepository.setParticipantStatus(
+			await this.chatParticipantRepository.setParticipantStatus(
 				roomId,
 				setParticipantDto,
 				mutedTime
 			);
+			return this.getChatRoom(roomId);
 		}
 
-		return this.chatParticipantRepository.setParticipantStatus(
+		await this.chatParticipantRepository.setParticipantStatus(
 			roomId,
 			setParticipantDto
 		);
+		return this.getChatRoom(roomId);
 	}
 
 	/**
@@ -499,7 +535,7 @@ export class ChatService {
 	async setParticipantRole(
 		roomId: number,
 		setParticipantDto: SetParticipantRoleDto
-	): Promise<void> {
+	): Promise<ChatRoomDto> {
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
 			setParticipantDto.user.id
@@ -508,10 +544,11 @@ export class ChatService {
 			throw new NotFoundException();
 		}
 
-		return this.chatParticipantRepository.setParticipantRole(
+		await this.chatParticipantRepository.setParticipantRole(
 			roomId,
 			setParticipantDto
 		);
+		return this.getChatRoom(roomId);
 	}
 
 	/**
@@ -520,7 +557,10 @@ export class ChatService {
 	 * @param userId
 	 * @returns void
 	 */
-	async deleteParticipant(roomId: number, userId: number): Promise<void> {
+	async deleteParticipant(
+		roomId: number,
+		userId: number
+	): Promise<ChatRoomDto> {
 		//owner가 채팅방 나가면?
 		const deletedParticipant =
 			await this.chatParticipantRepository.deleteParticipant(
@@ -531,5 +571,6 @@ export class ChatService {
 		if (deletedParticipant === null) {
 			throw new NotFoundException();
 		}
+		return this.getChatRoom(roomId);
 	}
 }

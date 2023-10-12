@@ -1,3 +1,4 @@
+import { MaxLength } from 'class-validator';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
 import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 import {
@@ -18,13 +19,14 @@ export class Chat {
 	@JoinColumn({ name: 'userId' })
 	user: ChatParticipant;
 
-	@ManyToOne(() => ChatRoom, (room) => room.chats)
+	@ManyToOne(() => ChatRoom, (room) => room.chats, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'roomId' })
 	room: ChatRoom;
 
 	@Column({ name: 'content' })
+	@MaxLength(4000)
 	content: string;
 
-	@CreateDateColumn({ name: 'time' })
-	time: Date;
+	@CreateDateColumn({ name: 'sent_time' })
+	sentTime: Date;
 }
