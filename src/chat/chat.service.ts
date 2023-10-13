@@ -287,25 +287,38 @@ export class ChatService {
 	/**
 	 * 유저가 참여하고있는 모든 dm을 조회한다.
 	 * @param userId
-	 * @returns 참여하고있는 dm 리스트를 반환한다.
+	 * @returns 참여하고있는 dm(dto) 리스트를 반환한다.
 	 */
-	async inquireDm(userId: number): Promise<DmDto[]> {
-		const rooms = await this.chatRoomRepository.inquireDm(userId);
+	async inquireDms(userId: number): Promise<DmDto[]> {
+		const allRooms = await this.inquireAllJoinedChatRooms(userId);
+		const allChannels = allRooms.filter(
+			(room) => room.roomType === ChatRoomType.DM
+		);
 
-		return this.roomsToDmDto(rooms, userId);
+		return this.roomsToDmDto(allChannels, userId);
 	}
 
 	/**
-	 * 유저가 참여하고있는 모든 chat-room을 조회한다(DM제외).
+	 * 유저가 참여하고있는 모든 channel을 조회한다(DM제외).
+	 * @param userId
+	 * @returns 참여하고있는 channel(dto) 리스트를 반환한다.
+	 */
+	async inquireJoinedChannels(userId: number): Promise<ChatRoomDto[]> {
+		const allRooms = await this.inquireAllJoinedChatRooms(userId);
+		const allChannels = allRooms.filter(
+			(room) => room.roomType !== ChatRoomType.DM
+		);
+
+		return this.roomsEntityToDto(allChannels);
+	}
+
+	/**
+	 * 유저가 참여하고있는 모든 chat-room을 조회한다.
 	 * @param userId
 	 * @returns 참여하고있는 chat-room 리스트를 반환한다.
 	 */
-	async inquireChatRoom(userId: number): Promise<ChatRoomDto[]> {
-		const user = await this.userRepository.findUserById(userId); //temp
-
-		return this.roomsEntityToDto(
-			await this.chatRoomRepository.inquireChatRoom(user)
-		);
+	async inquireAllJoinedChatRooms(userId: number): Promise<ChatRoom[]> {
+		return await this.chatRoomRepository.inquireAllJoinedChatRooms(userId);
 	}
 
 	/**

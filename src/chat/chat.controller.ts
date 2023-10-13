@@ -35,8 +35,8 @@ export class ChatController {
 
 	@ApiOperation({ summary: '사용자가 참여하고있는 채팅방 목록 조회' })
 	@Get('')
-	async inquireChatRoom(): Promise<ChatRoomDto[]> {
-		return await this.chatService.inquireChatRoom(0); //temp
+	async inquireJoinedChannels(): Promise<ChatRoomDto[]> {
+		return await this.chatService.inquireJoinedChannels(0); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 생성' })
@@ -51,8 +51,8 @@ export class ChatController {
 	@ApiOperation({ summary: 'dm 채팅방 리스트 조회' })
 	@Get('/dm')
 	@UsePipes(ValidationPipe)
-	async inquireDm(): Promise<DmDto[]> {
-		return await this.chatService.inquireDm(0); //temp
+	async inquireDms(): Promise<DmDto[]> {
+		return await this.chatService.inquireDms(0); //temp
 	}
 
 	@ApiOperation({ summary: 'dm 채팅방 입장' })
