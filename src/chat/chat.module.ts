@@ -9,6 +9,7 @@ import { ChatParticipantRepository } from 'src/chat/repositories/chat-participan
 import { ChatRoomRepository } from 'src/chat/repositories/chat-room.repository';
 import { ChatRepository } from 'src/chat/repositories/chat.repository';
 import { UserRepository } from 'src/user/user.repository';
+import { ChatGateway } from './chat.gateway';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([ChatRoom, ChatParticipant, Chat])],
@@ -19,6 +20,7 @@ import { UserRepository } from 'src/user/user.repository';
 		ChatParticipantRepository,
 		ChatRepository,
 		UserRepository,
+		ChatGateway,
 	],
 })
 export class ChatModule {}
