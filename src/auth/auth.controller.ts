@@ -57,16 +57,17 @@ export class AuthController {
 	@ApiOperation({ summary: '회원가입' })
 	@Post('/signup')
 	async signup(
+		@Req() req: any,
 		@Body() formData: any,
 		@Res({ passthrough: true }) res: Response
 	): Promise<void> {
+		console.log('회원가입 중');
 		await this.authService.signup(formData);
 		const token = await this.authService.createToken(formData);
-		console.log('회원가입 중');
-		// [문제]
+
 		res.clearCookie('user-data');
 		res.cookie('access-token', token);
-		res.redirect(`${process.env.DOMAIN}:${process.env.FRONT_PORT}`);
+		res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
 	}
 
 	@ApiOperation({ summary: '로그아웃' })
