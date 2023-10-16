@@ -12,6 +12,8 @@ import { GetDmDto } from 'src/chat/dto/get-dm.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import e from 'express';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
+import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
+import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 
 @WebSocketGateway({
 	namespace: 'chat',
@@ -61,5 +63,28 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		this.server.emit('updateChatRoom', room);
 
 		return room;
+	}
+
+	@SubscribeMessage('manageParticipantRole')
+	async manageParticipantRole(
+		client: Socket,
+		chatParticipantDto: SetParticipantRoleDto
+	): Promise<void> {
+		const room = await this.chatService.setParticipantRole(chatParticipantDto);
+
+		this.server.emit('updateChatRoom', room);
+	}
+
+	@SubscribeMessage('manageParticipantStatus')
+	async manageParticipantStatus(
+		client: Socket,
+		chatParticipantDto: SetParticipantStatusDto
+	): Promise<void> {
+		console.log('kick');
+		const room = await this.chatService.setParticipantStatus(
+			chatParticipantDto
+		);
+
+		this.server.emit('updateChatRoom', room);
 	}
 }

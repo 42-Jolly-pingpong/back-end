@@ -136,34 +136,6 @@ export class ChatController {
 		return await this.chatService.addParticipants(roomId, addParticipantDto);
 	}
 
-	@ApiOperation({ summary: '채팅방 역할 변경' })
-	@Patch('/:roomId/members/role')
-	@UseGuards(RoomGuard)
-	@UsePipes(ValidationPipe)
-	async setParticipantRole(
-		@Param('roomId', ParseIntPipe) roomId: number,
-		@Body() chatParticipantDto: SetParticipantRoleDto
-	): Promise<ChatRoomDto> {
-		return await this.chatService.setParticipantRole(
-			roomId,
-			chatParticipantDto
-		);
-	}
-
-	@ApiOperation({ summary: '채팅방 참여자 상태 변경' })
-	@Patch('/:roomId/members/status')
-	@UseGuards(RoomGuard)
-	@UsePipes(ValidationPipe)
-	async setParticipantStatus(
-		@Param('roomId', ParseIntPipe) roomId: number,
-		@Body() chatParticipantDto: SetParticipantStatusDto
-	): Promise<ChatRoomDto> {
-		return await this.chatService.setParticipantStatus(
-			roomId,
-			chatParticipantDto
-		);
-	}
-
 	@ApiOperation({ summary: '참여자 채팅방 퇴장' })
 	@Delete('/:roomId/members')
 	@UseGuards(RoomGuard)
