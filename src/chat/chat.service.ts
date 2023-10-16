@@ -419,10 +419,10 @@ export class ChatService {
 	 * @returns 생성된 챗을 반환한다.
 	 */
 	async createChat(
-		roomId: number,
 		userId: number,
 		createChatDto: CreateChatDto
 	): Promise<ChatDto> {
+		const { roomId, content } = createChatDto;
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
@@ -440,7 +440,7 @@ export class ChatService {
 				status: PaticipantStatus.DEFAULT,
 			});
 		}
-		return this.chatRepository.createChat(room, participant, createChatDto);
+		return this.chatRepository.createChat(room, participant, content);
 	}
 
 	/**

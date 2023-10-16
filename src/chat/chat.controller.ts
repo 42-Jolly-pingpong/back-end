@@ -116,17 +116,6 @@ export class ChatController {
 		return await this.chatService.getChats(roomId);
 	}
 
-	@ApiOperation({ summary: '챗 생성' })
-	@Post('/:roomId/chats')
-	@UseGuards(RoomGuard)
-	@UsePipes(ValidationPipe)
-	async createChat(
-		@Param('roomId', ParseIntPipe) roomId: number,
-		@Body() createChatDto: CreateChatDto
-	): Promise<ChatDto> {
-		return await this.chatService.createChat(roomId, 0, createChatDto); //temp
-	}
-
 	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })
 	@Get('/:roomId/members')
 	@UseGuards(RoomGuard)
