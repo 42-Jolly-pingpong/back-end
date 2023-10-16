@@ -60,10 +60,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('participantLeave')
 	@UseGuards(RoomGuard)
-	async participantLeave(client: Socket, roomId: number): Promise<ChatRoomDto> {
+	async participantLeave(
+		client: Socket,
+		data: { roomId: number }
+	): Promise<ChatRoomDto> {
 		const userId = client.handshake.auth.userId; //temp
 
-		const room = await this.chatService.deleteParticipant(roomId, userId);
+		const room = await this.chatService.deleteParticipant(data.roomId, userId);
 
 		this.server.emit('updateChatRoom', room);
 
@@ -119,12 +122,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('deleteChatRoom')
 	@UseGuards(RoomGuard)
-	async deleteChatRoom(client: Socket, roomId: number): Promise<void> {
+	async deleteChatRoom(
+		client: Socket,
+		data: { roomId: number }
+	): Promise<void> {
 		const userId = client.handshake.auth.userId; //temp
 
-		await this.chatService.deleteChatRoom(roomId, userId);
+		await this.chatService.deleteChatRoom(data.roomId, userId);
 
-		this.server.emit('chatRoomDeleted', roomId);
+		this.server.emit('chatRoomDeleted', data.roomId);
 	}
 
 	@SubscribeMessage('enterChatRoom')
