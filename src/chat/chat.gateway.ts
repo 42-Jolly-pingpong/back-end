@@ -159,10 +159,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		try {
 			await this.chatService.setChatRoomInfo(userId, setChatRoomDto);
 
-			this.server.emit(
-				'updateChatRoom',
-				await this.chatService.getChatRoom(setChatRoomDto.roomId)
-			);
+			const newRoom = await this.chatService.getChatRoom(setChatRoomDto.roomId);
+			this.server.emit('updateChatRoom', newRoom);
+			this.server.emit('updateChatRoomOnList', newRoom);
 
 			return HttpStatus.OK;
 		} catch (e) {
