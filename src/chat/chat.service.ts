@@ -346,10 +346,10 @@ export class ChatService {
 	 * @returns 참여한 chat-room을 반환한다.
 	 */
 	async addParticipant(
-		roomId: number,
 		userId: number,
 		enterChatRoomDto: EnterChatRoomDto
 	): Promise<ChatRoomDto> {
+		const { roomId } = enterChatRoomDto;
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		if (room.roomType === ChatRoomType.PROTECTED) {
 			if (enterChatRoomDto.password !== room.password) {
