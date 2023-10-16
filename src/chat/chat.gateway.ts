@@ -16,7 +16,12 @@ import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { AddParticipantDto } from 'src/chat/dto/add-participant.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
-import { HttpStatus, UseGuards } from '@nestjs/common';
+import {
+	HttpStatus,
+	UseGuards,
+	UsePipes,
+	ValidationPipe,
+} from '@nestjs/common';
 import { RoomGuard } from 'src/chat/guards/room.guard';
 
 @WebSocketGateway({
@@ -43,6 +48,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('sendChat')
+	@UsePipes(ValidationPipe)
 	async sendChat(client: Socket, createChatDto: CreateChatDto): Promise<void> {
 		const userId = client.handshake.auth.userId; //temp
 		const { roomId } = createChatDto;
@@ -54,52 +60,84 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('createNewDm')
-	async createNewDm(client: Socket, getDmDto: GetDmDto): Promise<DmDto> {
-		return await this.chatService.getDm(getDmDto);
+	@UsePipes(ValidationPipe)
+	async createNewDm(
+		client: Socket,
+		getDmDto: GetDmDto
+	): Promise<{ response: number; dm: DmDto | null }> {
+		try {
+			const dm = await this.chatService.getDm(getDmDto);
+			return { response: HttpStatus.OK, dm };
+		} catch (e) {
+			return { response: HttpStatus.NOT_FOUND, dm: null };
+		}
 	}
 
 	@SubscribeMessage('participantLeave')
 	@UseGuards(RoomGuard)
+	@UsePipes(ValidationPipe)
 	async participantLeave(
 		client: Socket,
 		data: { roomId: number }
-	): Promise<ChatRoomDto> {
+	): Promise<{ response: number; chatRoom: ChatRoomDto | null }> {
 		const userId = client.handshake.auth.userId; //temp
 
-		const room = await this.chatService.deleteParticipant(data.roomId, userId);
+		try {
+			const room = await this.chatService.deleteParticipant(
+				data.roomId,
+				userId
+			);
+			this.server.emit('updateChatRoom', room);
 
-		this.server.emit('updateChatRoom', room);
-
-		return room;
+			return { response: HttpStatus.OK, chatRoom: room };
+		} catch (e) {
+			return { response: HttpStatus.NOT_FOUND, chatRoom: null };
+		}
 	}
 
 	@SubscribeMessage('manageParticipantRole')
 	@UseGuards(RoomGuard)
+	@UsePipes(ValidationPipe)
 	async manageParticipantRole(
 		client: Socket,
 		chatParticipantDto: SetParticipantRoleDto
-	): Promise<void> {
-		const room = await this.chatService.setParticipantRole(chatParticipantDto);
+	): Promise<number> {
+		try {
+			const room = await this.chatService.setParticipantRole(
+				chatParticipantDto
+			);
 
-		this.server.emit('updateChatRoom', room);
+			this.server.emit('updateChatRoom', room);
+
+			return HttpStatus.OK;
+		} catch (e) {
+			return HttpStatus.NOT_FOUND;
+		}
 	}
 
 	@SubscribeMessage('manageParticipantStatus')
 	@UseGuards(RoomGuard)
+	@UsePipes(ValidationPipe)
 	async manageParticipantStatus(
 		client: Socket,
 		chatParticipantDto: SetParticipantStatusDto
-	): Promise<void> {
-		console.log('kick');
-		const room = await this.chatService.setParticipantStatus(
-			chatParticipantDto
-		);
+	): Promise<number> {
+		try {
+			const room = await this.chatService.setParticipantStatus(
+				chatParticipantDto
+			);
 
-		this.server.emit('updateChatRoom', room);
+			this.server.emit('updateChatRoom', room);
+
+			return HttpStatus.OK;
+		} catch (e) {
+			return HttpStatus.UNAUTHORIZED;
+		}
 	}
 
 	@SubscribeMessage('inviteUser')
 	@UseGuards(RoomGuard)
+	@UsePipes(ValidationPipe)
 	async inviteUser(
 		client: Socket,
 		addParticipantDto: AddParticipantDto
@@ -111,6 +149,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('setChatRoom')
 	@UseGuards(RoomGuard)
+	@UsePipes(ValidationPipe)
 	async setChatRoom(
 		client: Socket,
 		setChatRoomDto: SetChatRoomDto
@@ -122,19 +161,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('deleteChatRoom')
 	@UseGuards(RoomGuard)
+	@UsePipes(ValidationPipe)
 	async deleteChatRoom(
 		client: Socket,
 		data: { roomId: number }
-	): Promise<void> {
+	): Promise<number> {
 		const userId = client.handshake.auth.userId; //temp
+		try {
+			await this.chatService.deleteChatRoom(data.roomId, userId);
 
-		await this.chatService.deleteChatRoom(data.roomId, userId);
+			this.server.emit('chatRoomDeleted', data.roomId);
 
-		this.server.emit('chatRoomDeleted', data.roomId);
+			return HttpStatus.OK;
+		} catch (e) {
+			return HttpStatus.UNAUTHORIZED;
+		}
 	}
 
 	@SubscribeMessage('enterChatRoom')
 	@UseGuards(RoomGuard)
+	@UsePipes(ValidationPipe)
 	async enterChatRoom(
 		client: Socket,
 		enterChatRoomDto: EnterChatRoomDto
