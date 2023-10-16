@@ -355,7 +355,7 @@ export class ChatService {
 				throw new UnauthorizedException();
 			}
 		}
-		return this.addParticipants(roomId, { participants: [userId] });
+		return this.addParticipants({ roomId, participants: [userId] });
 	}
 
 	/**
@@ -460,9 +460,9 @@ export class ChatService {
 	 * @returns 업데이트된 채팅방을 반환한다.
 	 */
 	async addParticipants(
-		roomId: number,
 		addParticipantDto: AddParticipantDto
 	): Promise<ChatRoomDto> {
+		const { roomId } = addParticipantDto;
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
 		const participantIds = addParticipantDto.participants;
 
