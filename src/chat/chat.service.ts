@@ -15,6 +15,7 @@ import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { DmDto } from 'src/chat/dto/dm.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
 import { GetDmDto } from 'src/chat/dto/get-dm.dto';
+import { SetChatRoomDto } from 'src/chat/dto/set-chat-room.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { ChatParticipant } from 'src/chat/entities/chat-participant.entity';
@@ -379,12 +380,9 @@ export class ChatService {
 	 * @param createChatRoomDto
 	 * @returns void
 	 */
-	async setChatRoomInfo(
-		roomId: number,
-		createChatRoomDto: CreateChatRoomDto
-	): Promise<void> {
-		const room = await this.chatRoomRepository.getChatRoom(roomId);
-		return this.chatRoomRepository.setChatRoomInfo(roomId, createChatRoomDto);
+	async setChatRoomInfo(setChatRoomDto: SetChatRoomDto): Promise<void> {
+		const { roomId } = setChatRoomDto;
+		return this.chatRoomRepository.setChatRoomInfo(roomId, setChatRoomDto);
 	}
 
 	/**
