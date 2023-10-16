@@ -125,17 +125,6 @@ export class ChatController {
 		return await this.chatService.getParticipants(roomId);
 	}
 
-	@ApiOperation({ summary: '채팅방 참여자 추가' })
-	@Post('/:roomId/members')
-	@UseGuards(RoomGuard)
-	@UsePipes(ValidationPipe)
-	async addParticipants(
-		@Param('roomId', ParseIntPipe) roomId: number,
-		@Body() addParticipantDto: AddParticipantDto
-	): Promise<ChatRoomDto> {
-		return await this.chatService.addParticipants(roomId, addParticipantDto);
-	}
-
 	@ApiOperation({ summary: '참여자 채팅방 퇴장' })
 	@Delete('/:roomId/members')
 	@UseGuards(RoomGuard)

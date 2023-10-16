@@ -10,10 +10,10 @@ import {
 import { ChatService } from 'src/chat/chat.service';
 import { GetDmDto } from 'src/chat/dto/get-dm.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
-import e from 'express';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
+import { AddParticipantDto } from 'src/chat/dto/add-participant.dto';
 
 @WebSocketGateway({
 	namespace: 'chat',
@@ -84,6 +84,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const room = await this.chatService.setParticipantStatus(
 			chatParticipantDto
 		);
+
+		this.server.emit('updateChatRoom', room);
+	}
+
+	@SubscribeMessage('inviteUser')
+	async inviteUser(
+		client: Socket,
+		addParticipantDto: AddParticipantDto
+	): Promise<void> {
+		const room = await this.chatService.addParticipants(addParticipantDto);
 
 		this.server.emit('updateChatRoom', room);
 	}
