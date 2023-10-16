@@ -6,9 +6,13 @@ export class RoomGuard implements CanActivate {
 	constructor(private chatService: ChatService) {}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
-		const roomId = parseInt(
-			context.switchToHttp().getRequest().params['roomId']
-		);
+		if (context.getType() === 'http') {
+			const roomId = parseInt(
+				context.switchToHttp().getRequest().params['roomId']
+			);
+			return this.validate(roomId) && this.chatService.checkIfRoomExist(roomId);
+		}
+		const { roomId } = context.switchToWs().getData();
 		return this.validate(roomId) && this.chatService.checkIfRoomExist(roomId);
 	}
 

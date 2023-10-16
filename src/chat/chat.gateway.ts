@@ -16,7 +16,8 @@ import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { AddParticipantDto } from 'src/chat/dto/add-participant.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, UseGuards } from '@nestjs/common';
+import { RoomGuard } from 'src/chat/guards/room.guard';
 
 @WebSocketGateway({
 	namespace: 'chat',
@@ -58,6 +59,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('participantLeave')
+	@UseGuards(RoomGuard)
 	async participantLeave(client: Socket, roomId: number): Promise<ChatRoomDto> {
 		const userId = client.handshake.auth.userId; //temp
 
@@ -69,6 +71,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('manageParticipantRole')
+	@UseGuards(RoomGuard)
 	async manageParticipantRole(
 		client: Socket,
 		chatParticipantDto: SetParticipantRoleDto
@@ -79,6 +82,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('manageParticipantStatus')
+	@UseGuards(RoomGuard)
 	async manageParticipantStatus(
 		client: Socket,
 		chatParticipantDto: SetParticipantStatusDto
@@ -92,6 +96,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('inviteUser')
+	@UseGuards(RoomGuard)
 	async inviteUser(
 		client: Socket,
 		addParticipantDto: AddParticipantDto
@@ -102,6 +107,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('setChatRoom')
+	@UseGuards(RoomGuard)
 	async setChatRoom(
 		client: Socket,
 		setChatRoomDto: SetChatRoomDto
@@ -112,6 +118,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('deleteChatRoom')
+	@UseGuards(RoomGuard)
 	async deleteChatRoom(client: Socket, roomId: number): Promise<void> {
 		const userId = client.handshake.auth.userId; //temp
 
@@ -121,6 +128,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('enterChatRoom')
+	@UseGuards(RoomGuard)
 	async enterChatRoom(
 		client: Socket,
 		enterChatRoomDto: EnterChatRoomDto
