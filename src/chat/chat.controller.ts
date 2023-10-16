@@ -1,31 +1,22 @@
 import {
 	Body,
 	Controller,
-	Delete,
 	Get,
-	Logger,
 	Param,
 	ParseIntPipe,
-	Patch,
 	Post,
-	Put,
 	UseGuards,
 	UsePipes,
 	ValidationPipe,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ChatService } from 'src/chat/chat.service';
-import { AddParticipantDto } from 'src/chat/dto/add-participant.dto';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { ChatDto } from 'src/chat/dto/chat.dto';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
-import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
 import { DmDto } from 'src/chat/dto/dm.dto';
-import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
 import { GetDmDto } from 'src/chat/dto/get-dm.dto';
-import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
-import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { RoomGuard } from 'src/chat/guards/room.guard';
 
 @ApiTags('chat-controller')
@@ -93,14 +84,5 @@ export class ChatController {
 		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatParticipantDto[]> {
 		return await this.chatService.getParticipants(roomId);
-	}
-
-	@ApiOperation({ summary: '참여자 채팅방 퇴장' })
-	@Delete('/:roomId/members')
-	@UseGuards(RoomGuard)
-	async deleteParticipant(
-		@Param('roomId', ParseIntPipe) roomId: number
-	): Promise<ChatRoomDto> {
-		return await this.chatService.deleteParticipant(roomId, 0); //temp
 	}
 }
