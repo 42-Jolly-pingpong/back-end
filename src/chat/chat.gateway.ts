@@ -64,7 +64,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async createNewDm(
 		client: Socket,
 		getDmDto: GetDmDto
-	): Promise<{ response: number; dm: DmDto | null }> {
+	): Promise<{ status: number; dm: DmDto | null }> {
 		try {
 			const dm = await this.chatService.getDm(getDmDto);
 
@@ -73,9 +73,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				userId: getDmDto.chatMate.id,
 			});
 
-			return { response: HttpStatus.OK, dm };
+			return { status: HttpStatus.OK, dm };
 		} catch (e) {
-			return { response: HttpStatus.NOT_FOUND, dm: null };
+			return { status: HttpStatus.NOT_FOUND, dm: null };
 		}
 	}
 
@@ -85,7 +85,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async participantLeave(
 		client: Socket,
 		data: { roomId: number }
-	): Promise<{ response: number; chatRoom: ChatRoomDto | null }> {
+	): Promise<{ status: number; chatRoom: ChatRoomDto | null }> {
 		const userId = client.handshake.auth.userId; //temp
 
 		try {
@@ -94,10 +94,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				userId
 			);
 			this.server.emit('updateChatRoom', room);
-
-			return { response: HttpStatus.OK, chatRoom: room };
+			return { status: HttpStatus.OK, chatRoom: room };
 		} catch (e) {
-			return { response: HttpStatus.NOT_FOUND, chatRoom: null };
+			return { status: HttpStatus.NOT_FOUND, chatRoom: null };
 		}
 	}
 
@@ -204,7 +203,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async enterChatRoom(
 		client: Socket,
 		enterChatRoomDto: EnterChatRoomDto
-	): Promise<{ response: number; chatRoom: ChatRoomDto | null }> {
+	): Promise<{ status: number; chatRoom: ChatRoomDto | null }> {
 		const userId = client.handshake.auth.userId; //temp
 
 		try {
@@ -214,9 +213,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			);
 			this.server.emit('updateChatRoom', room);
 
-			return { response: HttpStatus.OK, chatRoom: room };
+			return { status: HttpStatus.OK, chatRoom: room };
 		} catch (e) {
-			return { response: HttpStatus.UNAUTHORIZED, chatRoom: null };
+			return { status: HttpStatus.UNAUTHORIZED, chatRoom: null };
 		}
 	}
 }
