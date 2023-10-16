@@ -153,10 +153,21 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async setChatRoom(
 		client: Socket,
 		setChatRoomDto: SetChatRoomDto
-	): Promise<void> {
-		const room = await this.chatService.setChatRoomInfo(setChatRoomDto);
+	): Promise<number> {
+		const userId = client.handshake.auth.userId; //temp
 
-		this.server.emit('updateChatRoom', room);
+		try {
+			await this.chatService.setChatRoomInfo(userId, setChatRoomDto);
+
+			this.server.emit(
+				'updateChatRoom',
+				await this.chatService.getChatRoom(setChatRoomDto.roomId)
+			);
+
+			return HttpStatus.OK;
+		} catch (e) {
+			return HttpStatus.UNAUTHORIZED;
+		}
 	}
 
 	@SubscribeMessage('deleteChatRoom')

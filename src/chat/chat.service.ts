@@ -380,8 +380,21 @@ export class ChatService {
 	 * @param createChatRoomDto
 	 * @returns void
 	 */
-	async setChatRoomInfo(setChatRoomDto: SetChatRoomDto): Promise<void> {
+	async setChatRoomInfo(
+		userId: number,
+		setChatRoomDto: SetChatRoomDto
+	): Promise<void> {
 		const { roomId } = setChatRoomDto;
+
+		const participant = await this.chatParticipantRepository.getParticipant(
+			roomId,
+			userId
+		);
+
+		if (participant === null || participant.role !== Role.OWNER) {
+			throw new UnauthorizedException();
+		}
+
 		return this.chatRoomRepository.setChatRoomInfo(roomId, setChatRoomDto);
 	}
 
