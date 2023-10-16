@@ -1,3 +1,4 @@
+import { SetChatRoomDto } from './dto/set-chat-room.dto';
 import { DmDto } from './dto/dm.dto';
 import { Server, Socket } from 'socket.io';
 import {
@@ -94,6 +95,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		addParticipantDto: AddParticipantDto
 	): Promise<void> {
 		const room = await this.chatService.addParticipants(addParticipantDto);
+
+		this.server.emit('updateChatRoom', room);
+	}
+
+	@SubscribeMessage('setChatRoom')
+	async setChatRoom(
+		client: Socket,
+		setChatRoomDto: SetChatRoomDto
+	): Promise<void> {
+		const room = await this.chatService.setChatRoomInfo(setChatRoomDto);
 
 		this.server.emit('updateChatRoom', room);
 	}

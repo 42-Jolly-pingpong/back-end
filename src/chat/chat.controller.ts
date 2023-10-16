@@ -87,17 +87,6 @@ export class ChatController {
 		return await this.chatService.getChatRoom(roomId);
 	}
 
-	@ApiOperation({ summary: '채팅방 정보 수정' })
-	@Put('/:roomId')
-	@UseGuards(RoomGuard)
-	@UsePipes(ValidationPipe)
-	async setChatRoomInfo(
-		@Param('roomId', ParseIntPipe) roomId: number,
-		@Body() createChatRoomDto: CreateChatRoomDto
-	): Promise<void> {
-		return await this.chatService.setChatRoomInfo(roomId, createChatRoomDto);
-	}
-
 	@ApiOperation({ summary: '채팅방 삭제' })
 	@Delete('/:roomId')
 	@UseGuards(RoomGuard)
