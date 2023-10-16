@@ -67,6 +67,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	): Promise<{ response: number; dm: DmDto | null }> {
 		try {
 			const dm = await this.chatService.getDm(getDmDto);
+
+			this.server.emit('addNewDm', {
+				dm: dm,
+				userId: getDmDto.chatMate.id,
+			});
+
 			return { response: HttpStatus.OK, dm };
 		} catch (e) {
 			return { response: HttpStatus.NOT_FOUND, dm: null };
@@ -145,6 +151,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const room = await this.chatService.addParticipants(addParticipantDto);
 
 		this.server.emit('updateChatRoom', room);
+		this.server.emit('addNewChatRoom', {
+			chatRoom: room,
+			userId: addParticipantDto.participants,
+		});
 	}
 
 	@SubscribeMessage('setChatRoom')
