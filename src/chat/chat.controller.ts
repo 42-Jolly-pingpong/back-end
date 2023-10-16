@@ -87,15 +87,6 @@ export class ChatController {
 		return await this.chatService.getChatRoom(roomId);
 	}
 
-	@ApiOperation({ summary: '채팅방 삭제' })
-	@Delete('/:roomId')
-	@UseGuards(RoomGuard)
-	async deleteChatRoom(
-		@Param('roomId', ParseIntPipe) roomId: number
-	): Promise<void> {
-		return await this.chatService.deleteChatRoom(roomId, 0); //temp
-	}
-
 	@ApiOperation({ summary: '채팅방 내부 챗 조회' })
 	@Get('/:roomId/chats')
 	@UseGuards(RoomGuard)

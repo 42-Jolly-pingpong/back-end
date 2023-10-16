@@ -108,4 +108,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 		this.server.emit('updateChatRoom', room);
 	}
+
+	@SubscribeMessage('deleteChatRoom')
+	async deleteChatRoom(client: Socket, roomId: number): Promise<void> {
+		const userId = client.handshake.auth.userId; //temp
+
+		await this.chatService.deleteChatRoom(roomId, userId);
+
+		this.server.emit('chatRoomDeleted', roomId);
+	}
 }
