@@ -1,3 +1,4 @@
+import { DmDto } from './dto/dm.dto';
 import { Server, Socket } from 'socket.io';
 import {
 	OnGatewayConnection,
@@ -9,6 +10,8 @@ import {
 import { ChatService } from 'src/chat/chat.service';
 import { GetDmDto } from 'src/chat/dto/get-dm.dto';
 import { CreateChatDto } from 'src/chat/dto/create-chat.dto';
+import e from 'express';
+import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 
 @WebSocketGateway({
 	namespace: 'chat',
@@ -36,13 +39,27 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@SubscribeMessage('sendChat')
 	async sendChat(client: Socket, createChatDto: CreateChatDto): Promise<void> {
 		const userId = client.handshake.auth.userId; //temp
-		const { content, roomId } = createChatDto;
-		console.log(String(roomId), content, userId);
+		const { roomId } = createChatDto;
 
 		const newChat = await this.chatService.createChat(userId, createChatDto);
 
-		client.to(String(roomId)).emit('getNewChat', { newChat, roomId });
+		client.to(String(roomId)).emit('getNewChat', { newChat, roomId }); //temp 룸에 있는 사람들에게만 이벤트 가도록 수정
 		client.emit('getNewChat', { newChat, roomId });
 	}
 
+	@SubscribeMessage('createNewDm')
+	async createNewDm(client: Socket, getDmDto: GetDmDto): Promise<DmDto> {
+		return await this.chatService.getDm(getDmDto);
+	}
+
+	@SubscribeMessage('participantLeave')
+	async participantLeave(client: Socket, roomId: number): Promise<ChatRoomDto> {
+		const userId = client.handshake.auth.userId; //temp
+
+		const room = await this.chatService.deleteParticipant(roomId, userId);
+
+		this.server.emit('updateChatRoom', room);
+
+		return room;
+	}
 }
