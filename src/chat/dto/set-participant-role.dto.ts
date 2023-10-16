@@ -4,6 +4,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserDto } from 'src/user/dto/user.dto';
 
 export class SetParticipantRoleDto {
+	@ApiProperty({ description: '챗룸 아이디' })
+	@IsNotEmpty()
+	roomId: number;
+
 	@ApiProperty({ description: '참여자 정보' })
 	@IsNotEmpty()
 	user: UserDto;

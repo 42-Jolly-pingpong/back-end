@@ -435,7 +435,8 @@ export class ChatService {
 			if (new Date() < participant.muteExpirationTime) {
 				throw new UnauthorizedException();
 			}
-			await this.setParticipantStatus(roomId, {
+			await this.setParticipantStatus({
+				roomId,
 				user: participant.user,
 				status: PaticipantStatus.DEFAULT,
 			});
@@ -474,7 +475,8 @@ export class ChatService {
 		await this.chatParticipantRepository.addParticipants(room, userList);
 		existUserList.map(
 			async (user) =>
-				await this.setParticipantStatus(roomId, {
+				await this.setParticipantStatus({
+					roomId,
 					user,
 					status: PaticipantStatus.DEFAULT,
 				})
@@ -490,9 +492,9 @@ export class ChatService {
 	 * @returns void
 	 */
 	async setParticipantStatus(
-		roomId: number,
 		setParticipantDto: SetParticipantStatusDto
 	): Promise<ChatRoomDto> {
+		const { roomId } = setParticipantDto;
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
 			setParticipantDto.user.id
@@ -530,9 +532,9 @@ export class ChatService {
 	 * @returns void
 	 */
 	async setParticipantRole(
-		roomId: number,
 		setParticipantDto: SetParticipantRoleDto
 	): Promise<ChatRoomDto> {
+		const { roomId } = setParticipantDto;
 		const participant = await this.chatParticipantRepository.getParticipant(
 			roomId,
 			setParticipantDto.user.id
