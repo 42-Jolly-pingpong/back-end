@@ -68,16 +68,6 @@ export class ChatController {
 		return await this.chatService.inquireOpenedChatRoom(0); //temp
 	}
 
-	@ApiOperation({ summary: '채팅방 입장' })
-	@Post('/:roomId')
-	@UseGuards(RoomGuard)
-	async addParticipant(
-		@Param('roomId') roomId: number,
-		@Body() enterChatRoomDto: EnterChatRoomDto
-	): Promise<ChatRoomDto> {
-		return await this.chatService.addParticipant(roomId, 0, enterChatRoomDto); //temp
-	}
-
 	@ApiOperation({ summary: '채팅방 정보 조회' })
 	@Get('/:roomId')
 	@UseGuards(RoomGuard)

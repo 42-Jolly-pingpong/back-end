@@ -15,6 +15,8 @@ import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { SetParticipantStatusDto } from 'src/chat/dto/set-participant-status.dto';
 import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { AddParticipantDto } from 'src/chat/dto/add-participant.dto';
+import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
+import { HttpStatus } from '@nestjs/common';
 
 @WebSocketGateway({
 	namespace: 'chat',
@@ -116,5 +118,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		await this.chatService.deleteChatRoom(roomId, userId);
 
 		this.server.emit('chatRoomDeleted', roomId);
+	}
+
+	@SubscribeMessage('enterChatRoom')
+	async enterChatRoom(
+		client: Socket,
+		enterChatRoomDto: EnterChatRoomDto
+	): Promise<{ response: number; chatRoom: ChatRoomDto | null }> {
+		const userId = client.handshake.auth.userId; //temp
+
+		try {
+			const room = await this.chatService.addParticipant(
+				userId,
+				enterChatRoomDto
+			);
+			this.server.emit('updateChatRoom', room);
+
+			return { response: HttpStatus.OK, chatRoom: room };
+		} catch (e) {
+			return { response: HttpStatus.UNAUTHORIZED, chatRoom: null };
+		}
 	}
 }
