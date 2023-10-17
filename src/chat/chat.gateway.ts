@@ -23,6 +23,7 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import { RoomGuard } from 'src/chat/guards/room.guard';
+import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 
 @WebSocketGateway({
 	namespace: 'chat',
@@ -53,11 +54,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async sendChat(client: Socket, createChatDto: CreateChatDto): Promise<void> {
 		const userId = client.handshake.auth.userId; //temp
 		const { roomId } = createChatDto;
+		const room = await this.chatService.getChatRoom(roomId);
 
 		const newChat = await this.chatService.createChat(userId, createChatDto);
 
-		client.to(String(roomId)).emit('getNewChat', { newChat, roomId }); //temp 룸에 있는 사람들에게만 이벤트 가도록 수정
-		client.emit('getNewChat', { newChat, roomId });
+		if (room.roomType === ChatRoomType.DM) {
+			this.server
+				.to(String(roomId))
+				.emit('getNewChatOnDm', { newChat, roomId });
+			return;
+		}
+		this.server.emit('getNewChat', { newChat, roomId });
 	}
 
 	@SubscribeMessage('createNewDm')
