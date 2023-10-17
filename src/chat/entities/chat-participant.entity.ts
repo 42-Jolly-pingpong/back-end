@@ -40,5 +40,5 @@ export class ChatParticipant {
 	chats: Chat[];
 
 	@Column({ name: 'last_read_time' })
-	LastReadTime: Date;
+	lastReadTime: Date;
 }
