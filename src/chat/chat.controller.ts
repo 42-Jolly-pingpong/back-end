@@ -30,15 +30,6 @@ export class ChatController {
 		return await this.chatService.inquireJoinedChannels(0); //temp
 	}
 
-	@ApiOperation({ summary: '채팅방 생성' })
-	@Post('')
-	@UsePipes(ValidationPipe)
-	async createChatRoom(
-		@Body() createChatRoomDto: CreateChatRoomDto
-	): Promise<ChatRoomDto> {
-		return await this.chatService.createChatRoom(createChatRoomDto);
-	}
-
 	@ApiOperation({ summary: 'dm 채팅방 리스트 조회' })
 	@Get('/dm')
 	@UsePipes(ValidationPipe)

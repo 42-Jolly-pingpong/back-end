@@ -24,6 +24,7 @@ import {
 } from '@nestjs/common';
 import { RoomGuard } from 'src/chat/guards/room.guard';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
+import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 
 @WebSocketGateway({
 	namespace: 'chat',
@@ -64,7 +65,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				.emit('getNewChatOnDm', { newChat, roomId });
 			return;
 		}
-		this.server.emit('getNewChat', { newChat, roomId });
+		this.server.to(String(roomId)).emit('getNewChat', { newChat, roomId });
 	}
 
 	@SubscribeMessage('createNewDm')
@@ -101,7 +102,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				data.roomId,
 				userId
 			);
-			this.server.emit('updateChatRoom', room);
+			client.leave(String(data.roomId));
+			this.server.to(String(data.roomId)).emit('updateChatRoom', room);
 			return { status: HttpStatus.OK, chatRoom: room };
 		} catch (e) {
 			return { status: HttpStatus.NOT_FOUND, chatRoom: null };
@@ -120,7 +122,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				chatParticipantDto
 			);
 
-			this.server.emit('updateChatRoom', room);
+			this.server
+				.to(String(chatParticipantDto.roomId))
+				.emit('updateChatRoom', room);
 
 			return HttpStatus.OK;
 		} catch (e) {
@@ -140,7 +144,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				chatParticipantDto
 			);
 
-			this.server.emit('updateChatRoom', room);
+			this.server
+				.to(String(chatParticipantDto.roomId))
+				.emit('updateChatRoom', room);
 
 			return HttpStatus.OK;
 		} catch (e) {
@@ -157,7 +163,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	): Promise<void> {
 		const room = await this.chatService.addParticipants(addParticipantDto);
 
-		this.server.emit('updateChatRoom', room);
+		client.join(String(addParticipantDto.roomId));
+		this.server
+			.to(String(addParticipantDto.roomId))
+			.emit('updateChatRoom', room);
 		this.server.emit('addNewChatRoom', {
 			chatRoom: room,
 			userId: addParticipantDto.participants,
@@ -177,12 +186,33 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			await this.chatService.setChatRoomInfo(userId, setChatRoomDto);
 
 			const newRoom = await this.chatService.getChatRoom(setChatRoomDto.roomId);
-			this.server.emit('updateChatRoom', newRoom);
-			this.server.emit('updateChatRoomOnList', newRoom);
+			this.server
+				.to(String(setChatRoomDto.roomId))
+				.emit('updateChatRoom', newRoom);
+			this.server
+				.to(String(setChatRoomDto.roomId))
+				.emit('updateChatRoomOnList', newRoom);
 
 			return HttpStatus.OK;
 		} catch (e) {
 			return HttpStatus.UNAUTHORIZED;
+		}
+	}
+
+	@SubscribeMessage('createChatRoom')
+	@UsePipes(ValidationPipe)
+	async createChatRoom(
+		client: Socket,
+		createChatRoomDto: CreateChatRoomDto
+	): Promise<{ status: number; chatRoom: ChatRoomDto | null }> {
+		try {
+			const room = await this.chatService.createChatRoom(createChatRoomDto);
+
+			client.join(String(room.id));
+
+			return { status: HttpStatus.OK, chatRoom: room };
+		} catch (e) {
+			return { status: HttpStatus.BAD_REQUEST, chatRoom: null };
 		}
 	}
 
@@ -197,7 +227,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		try {
 			await this.chatService.deleteChatRoom(data.roomId, userId);
 
-			this.server.emit('chatRoomDeleted', data.roomId);
+			this.server.to(String(data.roomId)).emit('chatRoomDeleted', data.roomId);
 
 			return HttpStatus.OK;
 		} catch (e) {
@@ -219,7 +249,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				userId,
 				enterChatRoomDto
 			);
-			this.server.emit('updateChatRoom', room);
+
+			client.join(String(enterChatRoomDto.roomId));
+
+			this.server
+				.to(String(enterChatRoomDto.roomId))
+				.emit('updateChatRoom', room);
 
 			return { status: HttpStatus.OK, chatRoom: room };
 		} catch (e) {
