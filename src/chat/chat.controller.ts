@@ -1,10 +1,8 @@
 import {
-	Body,
 	Controller,
 	Get,
 	Param,
 	ParseIntPipe,
-	Post,
 	UseGuards,
 	UsePipes,
 	ValidationPipe,
@@ -14,9 +12,7 @@ import { ChatService } from 'src/chat/chat.service';
 import { ChatParticipantDto } from 'src/chat/dto/chat-participant.dto';
 import { ChatRoomDto } from 'src/chat/dto/chat-room.dto';
 import { ChatDto } from 'src/chat/dto/chat.dto';
-import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { DmDto } from 'src/chat/dto/dm.dto';
-import { GetDmDto } from 'src/chat/dto/get-dm.dto';
 import { RoomGuard } from 'src/chat/guards/room.guard';
 
 @ApiTags('chat-controller')
@@ -35,13 +31,6 @@ export class ChatController {
 	@UsePipes(ValidationPipe)
 	async inquireDms(): Promise<DmDto[]> {
 		return await this.chatService.inquireDms(0); //temp
-	}
-
-	@ApiOperation({ summary: 'dm 채팅방 입장' })
-	@Post('/dm')
-	@UsePipes(ValidationPipe)
-	async getDm(@Body() getDmDto: GetDmDto): Promise<DmDto> {
-		return await this.chatService.getDm(getDmDto);
 	}
 
 	@ApiOperation({ summary: '오픈 채팅방 목록 조회' })
