@@ -48,6 +48,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	}
 
 	@SubscribeMessage('sendChat')
+	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
 	async sendChat(client: Socket, createChatDto: CreateChatDto): Promise<void> {
 		const userId = client.handshake.auth.userId; //temp
