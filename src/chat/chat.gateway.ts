@@ -261,4 +261,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			return { status: HttpStatus.UNAUTHORIZED, chatRoom: null };
 		}
 	}
+
+	@SubscribeMessage('requestJoin')
+	@UseGuards(RoomGuard)
+	async requestJoin(client: Socket, data: { roomId: number }): Promise<void> {
+		client.join(String(data.roomId));
+	}
 }
