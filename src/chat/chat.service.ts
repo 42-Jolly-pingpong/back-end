@@ -46,6 +46,7 @@ export class ChatService {
 	/**
 	 * roomEntityToDto() 함수를 사용해 ChatRoom entity배열을 ChatRoomDto로 변환한다.
 	 * @param rooms 변환할 엔티티 배열.
+	 * @param userId 마지막으로 읽을 시간을 확인하기 위해 필요한 user id
 	 * @returns 변환된 Dto 배열을 반환한다.
 	 */
 	async roomsEntityToDto(
@@ -66,7 +67,9 @@ export class ChatService {
 	 * entity에는 없지만 dto에는 존재하는 currentPeople값을 생성한 후 dto로 변환한다.
 	 * participants리스트를 이용해 currentPeople을 계산한다.
 	 * @param room dto로 변경할 ChatRoom entity.
+	 * @param participant 마지막으로 읽을 시간을 확인하기 위해 필요한 참가자 정보
 	 * @returns 변경된 dto를 반환한다.
+	 * @returns
 	 */
 	roomEntityToDto(room: ChatRoom, participant: ChatParticipant): ChatRoomDto {
 		const dto: ChatRoomDto = {
@@ -194,6 +197,7 @@ export class ChatService {
 	/**
 	 * user들의 id가 담긴 리스트를 받아 UserDto의 리스트로 변환한다.
 	 * 방에 들어온 적 없던 사람들만 포함된다.
+	 * @param roomId
 	 * @param ids
 	 * @returns UserDto의 리스트를 반환한다.
 	 */
@@ -224,6 +228,7 @@ export class ChatService {
 	/**
 	 * user들의 id가 담긴 리스트를 받아 UserDto의 리스트로 변환한다.
 	 * 방에 들어온 적 있지만 다시 들어올 수 있는 유저들의 목록만 포함한다.
+	 * @param roomId
 	 * @param ids
 	 * @returns UserDto의 리스트를 반환한다.
 	 */
@@ -352,6 +357,7 @@ export class ChatService {
 
 	/**
 	 * 존재하는 오픈 채팅방 중 사용자가 밴 당하지 않은 채팅방을 조회한다.
+	 * @param userId
 	 * @returns 존재하는 오픈 채팅방 리스트를 반환한다.
 	 */
 	async inquireOpenedChatRoom(userId: number): Promise<ChatRoomDto[]> {
@@ -406,7 +412,7 @@ export class ChatService {
 	/**
 	 * 채팅방의 정보를 수정한다.
 	 * @param roomId
-	 * @param createChatRoomDto
+	 * @param setChatRoomDto
 	 * @returns void
 	 */
 	async setChatRoomInfo(
@@ -430,6 +436,7 @@ export class ChatService {
 	/**
 	 * 존재하는 채팅방을 삭제한다.
 	 * @param roomId
+	 * @param userIds
 	 * @returns
 	 */
 	async deleteChatRoom(roomId: number, userId: number): Promise<void> {
@@ -450,6 +457,7 @@ export class ChatService {
 	/**
 	 * 챗을 조회한다.
 	 * @param roomId
+	 * @param userIds
 	 * @returns 챗 리스트를 반환한다.
 	 */
 	async getChats(roomId: number, userId: number): Promise<ChatDto[]> {
@@ -501,7 +509,6 @@ export class ChatService {
 
 	/**
 	 * 채팅방에 유저들을 추가한다.
-	 * @param roomId
 	 * @param addParticipantDto
 	 * @returns 업데이트된 채팅방을 반환한다.
 	 */
@@ -533,7 +540,6 @@ export class ChatService {
 
 	/**
 	 * 참여자를 kick, ban, mute한다.
-	 * @param roomId
 	 * @param setParticipantDto
 	 * @returns void
 	 */
@@ -573,7 +579,6 @@ export class ChatService {
 
 	/**
 	 * 참여자의 역할을 변경한다.
-	 * @param roomId
 	 * @param setParticipantDto
 	 * @returns void
 	 */
