@@ -26,4 +26,7 @@ export class ChatRoomDto {
 
 	@ApiProperty({ description: '채팅방 참가자 목록' })
 	participants: ChatParticipant[];
+
+	@ApiProperty({ description: '읽어야하는 챗 있는 지 유무' })
+	leftToRead: boolean;
 }

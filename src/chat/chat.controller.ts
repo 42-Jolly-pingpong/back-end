@@ -74,7 +74,7 @@ export class ChatController {
 	async getChats(
 		@Param('roomId', ParseIntPipe) roomId: number
 	): Promise<ChatDto[]> {
-		return await this.chatService.getChats(roomId);
+		return await this.chatService.getChats(roomId, 0); //temp
 	}
 
 	@ApiOperation({ summary: '채팅방 참여자 목록 조회' })

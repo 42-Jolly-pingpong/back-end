@@ -48,10 +48,18 @@ export class ChatService {
 	 * @param rooms 변환할 엔티티 배열.
 	 * @returns 변환된 Dto 배열을 반환한다.
 	 */
-	roomsEntityToDto(rooms: ChatRoom[]): ChatRoomDto[] {
-		return rooms.map((room) => {
-			return this.roomEntityToDto(room);
+	async roomsEntityToDto(
+		rooms: ChatRoom[],
+		userId: number
+	): Promise<ChatRoomDto[]> {
+		const promises = rooms.map(async (room) => {
+			return this.roomEntityToDto(
+				room,
+				await this.chatParticipantRepository.getParticipant(room.id, userId)
+			);
 		});
+
+		return Promise.all(promises);
 	}
 
 	/**
@@ -60,7 +68,7 @@ export class ChatService {
 	 * @param room dto로 변경할 ChatRoom entity.
 	 * @returns 변경된 dto를 반환한다.
 	 */
-	roomEntityToDto(room: ChatRoom): ChatRoomDto {
+	roomEntityToDto(room: ChatRoom, participant: ChatParticipant): ChatRoomDto {
 		const dto: ChatRoomDto = {
 			id: room.id,
 			roomName: room.roomName,
@@ -74,6 +82,10 @@ export class ChatService {
 					participant.status === PaticipantStatus.MUTED
 			).length,
 			participants: room.participants,
+			leftToRead:
+				participant === null || room.updatedTime <= participant.lastReadTime
+					? false
+					: true,
 		};
 		return dto;
 	}
@@ -246,10 +258,14 @@ export class ChatService {
 		);
 		const user = await this.userRepository.findUserById(0); //temp
 
-		await this.chatParticipantRepository.createChatRoom(emptyRoom, user);
+		const participant = await this.chatParticipantRepository.createChatRoom(
+			emptyRoom,
+			user
+		);
 
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
-		return this.roomEntityToDto(room);
+
+		return this.roomEntityToDto(room, participant);
 	}
 
 	/**
@@ -310,7 +326,7 @@ export class ChatService {
 			(room) => room.roomType !== ChatRoomType.DM
 		);
 
-		return this.roomsEntityToDto(allChannels);
+		return this.roomsEntityToDto(allChannels, userId);
 	}
 
 	/**
@@ -336,7 +352,7 @@ export class ChatService {
 				PaticipantStatus.BANNED
 		);
 
-		return this.roomsEntityToDto(roomsWithoutBanned);
+		return this.roomsEntityToDto(roomsWithoutBanned, userId);
 	}
 
 	/**
@@ -370,7 +386,8 @@ export class ChatService {
 			throw new NotFoundException();
 		}
 		return this.roomEntityToDto(
-			await this.chatRoomRepository.getChatRoom(roomId)
+			await this.chatRoomRepository.getChatRoom(roomId),
+			null
 		);
 	}
 
@@ -414,12 +431,18 @@ export class ChatService {
 		return this.chatRoomRepository.deleteChatRoom(roomId);
 	}
 
+	async updateReadTime(roomId: number, userId: number): Promise<void> {
+		return this.chatParticipantRepository.updateReadTime(roomId, userId);
+	}
+
 	/**
 	 * 챗을 조회한다.
 	 * @param roomId
 	 * @returns 챗 리스트를 반환한다.
 	 */
-	getChats(roomId: number): Promise<ChatDto[]> {
+	async getChats(roomId: number, userId: number): Promise<ChatDto[]> {
+		await this.updateReadTime(roomId, userId);
+
 		return this.chatRepository.getChats(roomId);
 	}
 
