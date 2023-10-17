@@ -38,4 +38,7 @@ export class ChatParticipant {
 
 	@OneToMany(() => Chat, (chat) => chat.user)
 	chats: Chat[];
+
+	@Column({ name: 'last_read_time' })
+	LastReadTime: Date;
 }
