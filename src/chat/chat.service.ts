@@ -153,7 +153,10 @@ export class ChatService {
 		const roomName = this.createDmName(user.id, chatMateId);
 		const room = await this.chatRoomRepository.getDm(roomName);
 		if (room !== null) {
-			return this.roomToDmDto(room, user.id);
+			return this.roomToDmDto(
+				room,
+				await this.chatParticipantRepository.getParticipant(room.id, user.id)
+			);
 		}
 		return this.createDm(user, chatMate);
 	}
@@ -182,7 +185,10 @@ export class ChatService {
 		const emptyRoom = await this.chatRoomRepository.createDm(roomName);
 		await this.chatParticipantRepository.createDm(emptyRoom, user, chatMate);
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
-		return this.roomToDmDto(room, user.id);
+		return this.roomToDmDto(
+			room,
+			await this.chatParticipantRepository.getParticipant(room.id, user.id)
+		);
 	}
 
 	/**
@@ -274,9 +280,9 @@ export class ChatService {
 	 * @param userId
 	 * @returns 변환된 DmDto를 반환한다.
 	 */
-	roomToDmDto(room: ChatRoom, userId: number): DmDto {
+	roomToDmDto(room: ChatRoom, user: ChatParticipant): DmDto {
 		const chatMate = room.participants.filter(
-			(participant) => participant.user.id !== userId
+			(participant) => participant.user.id !== user.user.id
 		)[0].user;
 
 		const dm: DmDto = {
@@ -285,6 +291,7 @@ export class ChatService {
 			chatMate: chatMate,
 			updatedTime: room.updatedTime,
 			status: room.status,
+			leftToRead: room.updatedTime <= user.lastReadTime ? false : true,
 		};
 		return dm;
 	}
@@ -295,10 +302,15 @@ export class ChatService {
 	 * @param userId
 	 * @returns 변한된 DmDto 리스트를 반환한다.
 	 */
-	roomsToDmDto(rooms: ChatRoom[], userId: number): DmDto[] {
-		return rooms.map((room) => {
-			return this.roomToDmDto(room, userId);
+	async roomsToDmDto(rooms: ChatRoom[], userId: number): Promise<DmDto[]> {
+		const dms = rooms.map(async (room) => {
+			return this.roomToDmDto(
+				room,
+				await this.chatParticipantRepository.getParticipant(room.id, userId)
+			);
 		});
+
+		return Promise.all(dms);
 	}
 
 	/**
