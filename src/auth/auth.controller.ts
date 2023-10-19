@@ -61,12 +61,11 @@ export class AuthController {
 		@Body() formData: any,
 		@Res({ passthrough: true }) res: Response
 	): Promise<void> {
-		console.log('회원가입 중');
 		await this.authService.signup(formData);
 		const token = await this.authService.createToken(formData);
-
-		res.clearCookie('user-data');
+		console.log('회원가입 중');
 		res.cookie('access-token', token);
+		res.clearCookie('user-data');
 		res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
 	}
 
