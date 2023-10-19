@@ -130,7 +130,6 @@ export class ChatService {
 	 * @param getPrivateChatRoomDto 대화를 나눌 유저의 정보가 담긴 dto
 	 * @returns dm room을 반환한다.
 	 */
-
 	async getDm(getDmDto: GetDmDto): Promise<ChatRoomDto> {
 		const user = await this.userRepository.findUserById(1); //temp
 		const chatMateId = getDmDto.chatMate.id;
@@ -172,7 +171,11 @@ export class ChatService {
 	async createDm(user: User, chatMate: User): Promise<ChatRoomDto> {
 		const roomName = this.createDmName(user.id, chatMate.id);
 		const emptyRoom = await this.chatRoomRepository.createDm(roomName);
-		await this.chatParticipantRepository.createDm(emptyRoom, user, chatMate);
+		await this.chatParticipantRepository.createDm(
+			emptyRoom,
+			user,
+			chatMate
+		);
 		const room = await this.chatRoomRepository.getChatRoom(emptyRoom.id);
 		return this.roomEntityToDto(room);
 	}
@@ -293,7 +296,9 @@ export class ChatService {
 	async inquireOpenedChatRoom(userId: number): Promise<ChatRoomDto[]> {
 		const user = await this.userRepository.findUserById(userId); //temp
 
-		const allRoom = await this.chatRoomRepository.inquireOpenedChatRoom(user);
+		const allRoom = await this.chatRoomRepository.inquireOpenedChatRoom(
+			user
+		);
 		const roomsWithoutBanned = allRoom.filter(
 			(room) =>
 				this.getParticipantStatus(room.participants, user) !==
@@ -375,7 +380,10 @@ export class ChatService {
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<void> {
 		const room = await this.chatRoomRepository.getChatRoom(roomId);
-		return this.chatRoomRepository.setChatRoomInfo(roomId, createChatRoomDto);
+		return this.chatRoomRepository.setChatRoomInfo(
+			roomId,
+			createChatRoomDto
+		);
 	}
 
 	/**

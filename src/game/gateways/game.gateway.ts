@@ -1,4 +1,3 @@
-import { ConsoleLogger } from '@nestjs/common';
 import {
 	MessageBody,
 	OnGatewayConnection,
@@ -10,6 +9,11 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
+import { Game } from '../interfaces/game.interface';
+import { Ball } from '../interfaces/Ball.interface';
+import { DIRECTION } from './enums/direction.enum';
+import { Paddle } from '../interfaces/paddle.interface';
+import { initGame, update } from './gameUtils';
 
 @WebSocketGateway(4242, { namespace: `game`, cors: { origin: '* ' } })
 export class GameGateway
@@ -17,9 +21,11 @@ export class GameGateway
 {
 	constructor() {}
 
-	// 클라이언트의 정보를 보관해야할지 모르겠음
-	// private clientList: Map<string, Socket> = new Map<string, Socket>();
+	private paddleHeight: number = 20;
+	private paddleWidth: number = 2;
+	private ballRadius: number = 10;
 	private waitQueue: Socket[] = [];
+	private gameRoomData: Map<string, Game> = new Map();
 
 	@WebSocketServer()
 	server: Server;
@@ -59,14 +65,17 @@ export class GameGateway
 			console.log('매칭 등록');
 			client.emit('gameMatching', 'success');
 			this.waitQueue.push(client);
-			this.waitQueue.forEach((client: Socket) => console.log(client.id))
+			this.waitQueue.forEach((client: Socket) => console.log(client.id));
 		} else {
-			console.log('game success')
 			const anotherClient: Socket = this.waitQueue.shift();
 			const roomName: string = uuidv4();
 			// 상대 클라이언트 소켓 접속 유무 확인하는 로직 필요
 			client.join(roomName);
 			anotherClient.join(roomName);
+			const clinet1 = { roomName, position: 1 };
+			const client2 = { roomName, position: 2 };
+			client.emit('getPlayerInfo', clinet1);
+			anotherClient.emit('getPlayerInfo', client2);
 			this.server.to(roomName).emit('gameStart');
 		}
 	}
@@ -76,8 +85,41 @@ export class GameGateway
 		const index = this.waitQueue.indexOf(client);
 		if (index !== -1) {
 			this.waitQueue.splice(index, 1);
-			client.emit('matchingCancel', 'success')
+			client.emit('matchingCancel', 'success');
 			console.log('대기자 현황', this.waitQueue);
 		}
+	}
+
+	// 게임 로직
+	@SubscribeMessage('getGameData')
+	sendInitialPositions(client: Socket, roomName: string) {
+		console.log(roomName);
+		// 서버에서 초기 위치 정보를 생성
+
+		this.gameRoomData.set(roomName, initGame);
+		setInterval(() => {
+			// 공이 캔버스 경계와 충돌 확인
+			const game: Game = update(this.gameRoomData.get(roomName));
+			this.gameRoomData.set(roomName, game);
+			this.server
+				.to(roomName)
+				.emit('getGameData', game.ball, game.paddle1, game.paddle2);
+		}, 1000 / 60); // 60 FPS
+	}
+
+	@SubscribeMessage('movePaddle')
+	async movePaddle(client: Socket, message: string) {
+		const [roomName, player, key] = message;
+
+		console.log(player);
+		const game = this.gameRoomData.get(roomName);
+		if (key === 'ArrowUp') {
+			if (player == '1') game.paddle1.move = DIRECTION.UP;
+			else game.paddle2.move = DIRECTION.UP;
+		} else {
+			if (player == '1') game.paddle1.move = DIRECTION.DOWN;
+			else game.paddle2.move = DIRECTION.DOWN;
+		}
+		this.gameRoomData.set(roomName, game);
 	}
 }

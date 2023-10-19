@@ -1,9 +1,21 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	HttpException,
+	HttpStatus,
+	Post,
+	Req,
+	Res,
+	UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthFtGuard } from './guards/ft-guard';
 import { Response } from 'express';
 import { AuthType } from './enums/auth-type.enum';
+import { AuthJwtGuard } from './guards/jwt-guard';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @ApiTags('auth-controller')
 @Controller('auth')
@@ -38,5 +50,28 @@ export class AuthController {
 				res.cookie('access-token', token);
 				res.redirect(`${process.env.DOMAIN}:${process.env.FRONT_PORT}`);
 		}
+	}
+
+	@ApiOperation({ summary: '회원가입' })
+	@Post('/signup')
+	async signup(@Body() formData: any, @Res() res: Response): Promise<void> {
+		await this.authService.signup(formData);
+		const token = await this.authService.createToken(formData.intraId);
+		res.clearCookie('user-data');
+		res.cookie('access-token', token);
+		res.status(200).end();
+	}
+
+	@ApiOperation({ summary: 'jwt token을 사용해 user 반환받기' })
+	@UseGuards(AuthJwtGuard)
+	@Post('/user')
+	async test(@Req() request: any): Promise<UserDto | null> {
+		const user = await this.authService.getUserById(+request.user.id);
+
+		if (user === null) {
+			throw new HttpException('Invalid User', HttpStatus.BAD_REQUEST);
+		}
+
+		return user;
 	}
 }
