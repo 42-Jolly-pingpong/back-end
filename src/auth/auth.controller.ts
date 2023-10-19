@@ -33,7 +33,6 @@ export class AuthController {
 		@Req() req: any,
 		@Res({ passthrough: true }) res: Response
 	): Promise<void> {
-		//console.log('redirection 된 뒤');
 		const auth: AuthType = await this.authService.validateUser(req.user);
 
 		switch (auth) {
@@ -77,7 +76,7 @@ export class AuthController {
 		res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
 	}
 
-	@ApiOperation({ summary: 'jwt token을 사용해 user 반환받기' })
+	@ApiOperation({ summary: 'jwt token을 사용해 user 반환' })
 	@UseGuards(AuthJwtGuard)
 	@Post('/user')
 	async user(@GetUser() user: UserDto): Promise<UserDto | null> {
