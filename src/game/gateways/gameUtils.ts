@@ -37,6 +37,7 @@ export function initGame(): Game {
 		paddle2: initPaddle(2),
 		turn: 1,
 		isOver: true,
+		isEnd: false,
 	};
 }
 

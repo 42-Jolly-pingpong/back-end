@@ -97,18 +97,22 @@ export class GameGateway
 		// 서버에서 초기 위치 정보를 생성
 
 		this.gameRoomData.set(roomName, initGame());
-		setInterval(() => {
-			// 공이 캔버스 경계와 충돌 확인
-			const game: Game = update(this.gameRoomData.get(roomName));
-			this.gameRoomData.set(roomName, game);
+		const intervalId = setInterval(() => {
+			const CurGame: Game = this.gameRoomData.get(roomName);
+			if (CurGame.isEnd) {
+				this.gameRoomData.delete(roomName);
+				return clearInterval(intervalId);
+			}
+			const updateGame = update(CurGame);
+			this.gameRoomData.set(roomName, updateGame);
 			this.server
 				.to(roomName)
-				.emit('getGameData', game.ball, game.paddle1, game.paddle2);
+				.emit('getGameData', updateGame.ball, updateGame.paddle1, updateGame.paddle2);
 		}, 1000 / 60); // 60 FPS
 	}
 
 	@SubscribeMessage('movePaddle')
-	async movePaddle(client: Socket, message: string) {
+	movePaddle(client: Socket, message: string) {
 		const [roomName, player, key] = message;
 
 		const game = this.gameRoomData.get(roomName);
@@ -123,7 +127,7 @@ export class GameGateway
 	}
 
 	@SubscribeMessage('stopPaddle')
-	async stopPaddle(client: Socket, message: string) {
+	stopPaddle(client: Socket, message: string) {
 		const [roomName, player, key] = message;
 
 		const game = this.gameRoomData.get(roomName);
@@ -133,4 +137,16 @@ export class GameGateway
 		}
 		this.gameRoomData.set(roomName, game);
 	}
+
+
+	@SubscribeMessage('exitGame')
+	ExitEvent(client: Socket, message: string) {
+		const [roomName, position] = message;
+		const game = this.gameRoomData.get(roomName);
+		if (game) {
+			game.isEnd = true;
+			this.gameRoomData.set(roomName, game);
+		}
+	}
+
 }
