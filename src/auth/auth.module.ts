@@ -5,6 +5,7 @@ import { AuthFtStrategy } from './strategies/ft-strategy';
 import { UserRepository } from 'src/user/user.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { AuthJwtStrategy } from './strategies/jwt-strategy';
 
 @Module({
 	imports: [
@@ -17,7 +18,7 @@ import { ConfigService } from '@nestjs/config';
 		}),
 	],
 	controllers: [AuthController],
-	providers: [AuthService, AuthFtStrategy, UserRepository],
+	providers: [AuthService, AuthFtStrategy, AuthJwtStrategy, UserRepository],
 	exports: [JwtModule],
 })
 export class AuthModule {}
