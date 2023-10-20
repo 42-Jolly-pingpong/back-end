@@ -15,8 +15,8 @@ export class AuthService {
 	) {}
 
 	async validateUser(data: any): Promise<AuthType> {
-		const user = await this.userRepository.findUserByIntraId(data.login);
-
+		const user = await this.userRepository.findUserByIntraId(data.intraId);
+		//console.log(user);
 		if (user) {
 			if (user.auth === true) {
 				return AuthType.USERWITH2FA;
@@ -27,7 +27,8 @@ export class AuthService {
 	}
 
 	async createToken(data: any): Promise<string> {
-		const id = await this.userRepository.findUserIdByIntraId(data.login);
+		//console.log(data);
+		const id = await this.userRepository.findUserIdByIntraId(data.intraId);
 		const payload = { id };
 		return this.jwtService.sign(payload);
 	}

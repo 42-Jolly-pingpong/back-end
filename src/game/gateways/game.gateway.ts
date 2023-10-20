@@ -96,7 +96,7 @@ export class GameGateway
 		console.log(roomName);
 		// 서버에서 초기 위치 정보를 생성
 
-		this.gameRoomData.set(roomName, initGame);
+		this.gameRoomData.set(roomName, initGame());
 		setInterval(() => {
 			// 공이 캔버스 경계와 충돌 확인
 			const game: Game = update(this.gameRoomData.get(roomName));
@@ -111,7 +111,6 @@ export class GameGateway
 	async movePaddle(client: Socket, message: string) {
 		const [roomName, player, key] = message;
 
-		console.log(player);
 		const game = this.gameRoomData.get(roomName);
 		if (key === 'ArrowUp') {
 			if (player == '1') game.paddle1.move = DIRECTION.UP;
@@ -119,6 +118,18 @@ export class GameGateway
 		} else {
 			if (player == '1') game.paddle1.move = DIRECTION.DOWN;
 			else game.paddle2.move = DIRECTION.DOWN;
+		}
+		this.gameRoomData.set(roomName, game);
+	}
+
+	@SubscribeMessage('stopPaddle')
+	async stopPaddle(client: Socket, message: string) {
+		const [roomName, player, key] = message;
+
+		const game = this.gameRoomData.get(roomName);
+		if (key === 'ArrowUp' || key === 'ArrowDown') {
+			if (player == '1') game.paddle1.move = DIRECTION.IDLE;
+			else game.paddle2.move = DIRECTION.IDLE;
 		}
 		this.gameRoomData.set(roomName, game);
 	}

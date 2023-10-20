@@ -3,15 +3,15 @@ import { Game } from '../interfaces/game.interface';
 import { Paddle } from '../interfaces/paddle.interface';
 import { DIRECTION } from './enums/direction.enum';
 
-const canvasWidth = 1400;
-const canvasHeight = 1000;
+const canvasWidth = 1000;
+const canvasHeight = 600;
 
 export function initBall(): Ball {
 	return {
-		width: 18,
-		height: 18,
-		x: canvasWidth / 2 - 9,
-		y: canvasHeight / 2 - 9,
+		width: 13,
+		height: 13,
+		x: canvasWidth / 2,
+		y: canvasHeight / 2,
 		moveX: DIRECTION.IDLE,
 		moveY: DIRECTION.IDLE,
 		speed: 7,
@@ -20,27 +20,28 @@ export function initBall(): Ball {
 
 export function initPaddle(position: number): Paddle {
 	return {
-		width: 18,
-		height: 180,
-		x: position === 1 ? 150 : canvasWidth - 150,
-		y: canvasHeight / 2 - 35,
+		width: 12,
+		height: 100,
+		x: position === 1 ? 70 : canvasWidth - 70 - 12,
+		y: canvasHeight / 2,
 		score: 0,
 		move: DIRECTION.IDLE,
 		speed: 8,
 	};
 }
 
-export const initGame: Game = {
-	ball: initBall(),
-	paddle1: initPaddle(1),
-	paddle2: initPaddle(2),
-	turn: 1,
-	isOver: true,
-};
+export function initGame(): Game {
+	return {
+		ball: initBall(),
+		paddle1: initPaddle(1),
+		paddle2: initPaddle(2),
+		turn: 1,
+		isOver: true,
+	};
+}
 
 export function update(game: Game): Game {
 	if (game.isOver === true) {
-		console.log(1)
 		game.ball = initBall();
 		game.paddle1 = initPaddle(1);
 		game.paddle2 = initPaddle(2);
@@ -48,7 +49,7 @@ export function update(game: Game): Game {
 		game.ball.moveY = [DIRECTION.UP, DIRECTION.DOWN][
 			Math.round(Math.random())
 		];
-		game.ball.y = canvasHeight / 2 - 9;
+		game.ball.y = canvasHeight / 2;
 		game.isOver = false;
 	} else {
 		if (game.ball.y <= 0) game.ball.moveY = DIRECTION.DOWN;
@@ -116,8 +117,7 @@ export function update(game: Game): Game {
 		if (game.ball.x <= 0) {
 			game.isOver = true;
 		}
-		if (game.ball.x >= canvasWidth - game.ball.width)
-			game.isOver = true;
+		if (game.ball.x >= canvasWidth - game.ball.width) game.isOver = true;
 	}
 	return game;
 }

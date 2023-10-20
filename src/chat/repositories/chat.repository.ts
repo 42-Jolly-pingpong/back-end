@@ -17,6 +17,9 @@ export class ChatRepository extends Repository<Chat> {
 		const query = this.createQueryBuilder('chat');
 
 		const chats = await query
+			.leftJoinAndSelect('chat.user', 'participant')
+			.leftJoinAndSelect('participant.user', 'user')
+			.leftJoinAndSelect('chat.room', 'room')
 			.where('chat.roomId = :roomId', { roomId })
 			.getMany();
 

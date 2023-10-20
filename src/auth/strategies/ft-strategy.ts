@@ -22,6 +22,7 @@ export class AuthFtStrategy extends PassportStrategy(Strategy, 'ft') {
 					Authorization: `Bearer ${accessToken}`,
 				},
 			}).then((res) => res.json());
+
 			//const data = [userData.login, userData.email];
 			return { intraId: userData.login, email: userData.email };
 		} catch (e) {
