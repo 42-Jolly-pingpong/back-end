@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { UserDto } from 'src/user/dto/user.dto';
-import { Friend } from '../entities/friend.entity';
-import { FriendDto } from '../dto/friend.dto';
+import { FriendDto } from 'src/friend/dto/friend.dto';
+import { Friend } from 'src/friend/entities/friend.entity';
 
 @Injectable()
 export class FriendRepository extends Repository<Friend> {

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FriendRepository } from './repositories/friend.repository';
-import { BlockedFriendRepository } from './repositories/blocked-friend.repository';
-import { FriendRequestDto } from './dto/friend-request.dto';
-import { FriendRequestRepository } from './repositories/friend-request.repository';
 import { UserDto } from 'src/user/dto/user.dto';
+import { FriendRequestDto } from 'src/friend/dto/friend-request.dto';
+import { FriendRepository } from 'src/friend/repositories/friend.repository';
+import { BlockedFriendRepository } from 'src/friend/repositories/blocked-friend.repository';
+import { FriendRequestRepository } from 'src/friend/repositories/friend-request.repository';
 
 @Injectable()
 export class FriendService {

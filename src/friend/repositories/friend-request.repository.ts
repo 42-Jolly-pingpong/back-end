@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { FriendRequest } from '../entities/friend-request.entity';
-import { FriendRequestDto } from '../dto/friend-request.dto';
+import { FriendRequestDto } from 'src/friend/dto/friend-request.dto';
+import { FriendRequest } from 'src/friend/entities/friend-request.entity';
 
 @Injectable()
 export class FriendRequestRepository extends Repository<FriendRequest> {

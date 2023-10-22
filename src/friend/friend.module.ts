@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { FriendController } from './friend.controller';
-import { FriendService } from './friend.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Friend } from './entities/friend.entity';
-import { FriendRepository } from './repositories/friend.repository';
-import { BlockedFriendRepository } from './repositories/blocked-friend.repository';
-import { FriendRequestRepository } from './repositories/friend-request.repository';
+import { FriendService } from 'src/friend/friend.service';
+import { Friend } from 'src/friend/entities/friend.entity';
+import { FriendController } from 'src/friend/friend.controller';
+import { FriendRepository } from 'src/friend/repositories/friend.repository';
+import { BlockedFriendRepository } from 'src/friend/repositories/blocked-friend.repository';
+import { FriendRequestRepository } from 'src/friend/repositories/friend-request.repository';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Friend])],

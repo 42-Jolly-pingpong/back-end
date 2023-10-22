@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { FriendService } from './friend.service';
 import { ApiOperation, ApiProperty } from '@nestjs/swagger';
-import { FriendRequestDto } from './dto/friend-request.dto';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { UserDto } from 'src/user/dto/user.dto';
+import { FriendService } from 'src/friend/friend.service';
+import { FriendRequestDto } from 'src/friend/dto/friend-request.dto';
 
 @Controller('friends')
 export class FriendController {
