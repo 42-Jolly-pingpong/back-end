@@ -10,11 +10,19 @@ export class BlockedFriendRepository extends Repository<BlockedFriend> {
 		super(BlockedFriend, dataSource.createEntityManager());
 	}
 
-	async findBlackList(userId: number): Promise<UserDto[]> {
-		const blackList: FriendDto[] = await this.find({
-			relations: { user: true, friend: true },
-			where: { userId },
+	async updateBlockedFriend(id: number, blockId: number): Promise<void> {
+		const blocked = this.create({
+			userId: id,
+			blockId: blockId,
 		});
-		return blackList.map((item) => item.friend);
+		await this.save(blocked);
 	}
+
+	//async findBlackList(userId: number): Promise<UserDto[]> {
+	//	const blackList: FriendDto[] = await this.find({
+	//		relations: { user: true, block: true },
+	//		where: { userId },
+	//	});
+	//	return blackList.map((item) => item.friend);
+	//}
 }

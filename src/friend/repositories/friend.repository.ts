@@ -38,4 +38,17 @@ export class FriendRepository extends Repository<Friend> {
 
 		return filteredFriendList;
 	}
+
+	async deleteFriend(id: number, friendId: number): Promise<void> {
+		const friendData = await this.findOne({
+			where: [
+				{ userId: id, friendId },
+				{ userId: friendId, friendId: id },
+			],
+		});
+
+		if (friendData) {
+			await this.delete(friendData);
+		}
+	}
 }

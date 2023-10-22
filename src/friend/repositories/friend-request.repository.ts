@@ -9,6 +9,18 @@ export class FriendRequestRepository extends Repository<FriendRequest> {
 		super(FriendRequest, dataSource.createEntityManager());
 	}
 
+	async deleteFriendRequest(id: number, friendId: number): Promise<void> {
+		const requestData = await this.findOne({
+			where: [
+				{ senderId: id, receiverId: friendId },
+				{ senderId: friendId, receiverId: id },
+			],
+		});
+		if (requestData) {
+			await this.delete(requestData);
+		}
+	}
+
 	async updateFriendRequest(requestInfo: FriendRequestDto): Promise<void> {
 		console.log(requestInfo);
 		await this.save(requestInfo);

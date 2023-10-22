@@ -28,9 +28,19 @@ export class FriendService {
 		return await this.friendRepository.findFriendListByKeyword(id, keyword);
 	}
 
-	async getBlackList(userIdx: number): Promise<UserDto[]> {
-		return await this.blockedFriendRepository.findBlackList(userIdx);
+	async deleteFriend(id: number, friendId: number): Promise<void> {
+		return await this.friendRepository.deleteFriend(id, friendId);
 	}
+
+	async updateBlockFriend(id: number, blockId: number): Promise<void> {
+		await this.friendRepository.deleteFriend(id, blockId);
+		await this.friendRequestRepository.deleteFriendRequest(id, blockId);
+		await this.blockedFriendRepository.updateBlockedFriend(id, blockId);
+	}
+	////
+	//async getBlackList(userIdx: number): Promise<UserDto[]> {
+	//	return await this.blockedFriendRepository.findBlackList(userIdx);
+	//}
 
 	async updateFriendRequest(requestInfo: FriendRequestDto): Promise<void> {
 		return await this.friendRequestRepository.updateFriendRequest(
@@ -38,7 +48,3 @@ export class FriendService {
 		);
 	}
 }
-
-//async findAllFriendList(userIdx: number): Promise<UserDto[]> {
-//	return await this.friendRepository.findAllFriend(userIdx);
-//}
