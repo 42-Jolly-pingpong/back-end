@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserStatus } from 'src/user/enums/user-status.enum';
 
 export class UserDto {
 	@ApiProperty({ description: '유저 아이디' })
@@ -17,7 +18,7 @@ export class UserDto {
 	avatarPath: string;
 
 	@ApiProperty({ description: '접속 유무' })
-	status: boolean;
+	status: UserStatus;
 
 	@ApiProperty({ description: '상태 메시지' })
 	bio: string;

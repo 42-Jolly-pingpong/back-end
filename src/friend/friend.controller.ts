@@ -1,17 +1,30 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { FriendService } from './friend.service';
 import { ApiOperation, ApiProperty } from '@nestjs/swagger';
-import { FriendRequestDTO } from './dto/friendRequest.DTO';
+import { FriendRequestDto } from './dto/friend-request.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 
 @Controller('friends')
 export class FriendController {
 	constructor(private readonly friendService: FriendService) {}
 
-	@ApiOperation({ summary: '유저 id를 이용한 친구 목록 찾기' })
-	@Get('/')
-	async getFriendList(@Param('id') userIdx: number): Promise<UserDto[]> {
-		return await this.friendService.findAllFriendList(userIdx);
+	@ApiOperation({ summary: '유저 id를 이용한 친구 목록 불러오기' })
+	@Get('/:id')
+	async getFriendList(@Param('id') id: number): Promise<UserDto[]> {
+		return await this.friendService.getFriendList(+id);
+	}
+
+	@ApiOperation({ summary: '키워드를 통한 친구 목록 불러오기' })
+	@Get('/:id/search/:keyword')
+	async getFriendListByKeyword(
+		@Param('id') id: number,
+		@Param('keyword') keyword: string
+	): Promise<UserDto[]> {
+		const friends = await this.friendService.getFriendListByKeyword(
+			+id,
+			keyword
+		);
+		return friends;
 	}
 
 	@ApiOperation({ summary: '유저 id를 이용한 차단 친구 목록 찾기' })
@@ -32,7 +45,16 @@ export class FriendController {
 		required: true,
 	})
 	@Post('/')
-	async SendFriendRequest(@Body() requestInfo: FriendRequestDTO): Promise<void> {
+	async SendFriendRequest(
+		@Body() requestInfo: FriendRequestDto
+	): Promise<void> {
 		return await this.friendService.updateFriendRequest(requestInfo);
 	}
 }
+
+// [삭제 예정] : API 명세와 다름
+//@ApiOperation({ summary: '유저 id를 이용한 친구 목록 찾기' })
+//@Get('/')
+//async getFriendList(@Param('id') userIdx: number): Promise<UserDto[]> {
+//	return await this.friendService.findAllFriendList(userIdx);
+//}

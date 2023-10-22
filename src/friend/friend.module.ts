@@ -4,8 +4,8 @@ import { FriendService } from './friend.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Friend } from './entities/friend.entity';
 import { FriendRepository } from './repositories/friend.repository';
-import { BlockedFriendRepository } from './repositories/blockedFriend.repository';
-import { FriendRequestRepository } from './repositories/friendRequest.repository';
+import { BlockedFriendRepository } from './repositories/blocked-friend.repository';
+import { FriendRequestRepository } from './repositories/friend-request.repository';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Friend])],
@@ -14,7 +14,7 @@ import { FriendRequestRepository } from './repositories/friendRequest.repository
 		FriendService,
 		FriendRepository,
 		BlockedFriendRepository,
-		FriendRequestRepository
+		FriendRequestRepository,
 	],
 })
 export class FriendModule {}

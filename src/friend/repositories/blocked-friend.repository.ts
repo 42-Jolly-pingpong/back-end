@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { BlockedFriend } from '../entities/blockedFriend.entity';
-import { FriendDTO } from '../dto/friend.DTO';
+import { BlockedFriend } from '../entities/blocked-friend.entity';
+import { FriendDto } from '../dto/friend.dto';
 import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class BlockedFriendRepository extends Repository<BlockedFriend> {
 	}
 
 	async findBlackList(userId: number): Promise<UserDto[]> {
-		const blackList: FriendDTO[] = await this.find({
+		const blackList: FriendDto[] = await this.find({
 			relations: { user: true, friend: true },
 			where: { userId },
 		});
