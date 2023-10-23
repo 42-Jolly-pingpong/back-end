@@ -36,7 +36,6 @@ export class FriendController {
 		@GetUser() user: User,
 		@Param('id') friendId: number
 	): Promise<void> {
-		console.log(user);
 		await this.friendService.deleteFriend(user.id, friendId);
 	}
 
