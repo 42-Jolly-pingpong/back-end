@@ -6,6 +6,7 @@ import {
 	Get,
 	Param,
 	Post,
+	Res,
 	UseGuards,
 } from '@nestjs/common';
 import { UserDto } from 'src/user/dto/user.dto';
@@ -14,6 +15,7 @@ import { FriendRequestDto } from 'src/friend/dto/friend-request.dto';
 import { AuthJwtGuard } from 'src/auth/guards/jwt-guard';
 import { GetUser } from 'src/auth/decorators/user-info';
 import { User } from 'src/user/entities/user.entity';
+import { ProfileStatus } from 'src/friend/enums/profile-status.enum';
 
 @Controller('friends')
 export class FriendController {
@@ -70,6 +72,21 @@ export class FriendController {
 	 * friend-request.repository 메서드
 	 */
 	//@ApiOperation({summary: ''})
+	// 어떤기능
+
+	/**
+	 *	공통 repository 메서드
+	 */
+
+	@ApiOperation({ summary: '상대 유저와의 관계 조회' })
+	@UseGuards(AuthJwtGuard)
+	@Get('/:id/state')
+	async getFriendState(
+		@GetUser() user: User,
+		@Param('id') otherId: number
+	): Promise<ProfileStatus> {
+		return await this.friendService.getFriendState(user.id, otherId);
+	}
 }
 
 /**

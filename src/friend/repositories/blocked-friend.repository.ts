@@ -1,13 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { UserDto } from 'src/user/dto/user.dto';
-import { FriendDto } from 'src/friend/dto/friend.dto';
+import { FriendDto } from 'src/friend/dto/friend.DTO';
 import { BlockedFriend } from 'src/friend/entities/blocked-friend.entity';
 
 @Injectable()
 export class BlockedFriendRepository extends Repository<BlockedFriend> {
 	constructor(private dataSource: DataSource) {
 		super(BlockedFriend, dataSource.createEntityManager());
+	}
+
+	async hasBlockedByMe(id: number, blockId: number): Promise<boolean> {
+		const blocked = await this.findOne({
+			where: { userId: id, blockId },
+		});
+		return !!blocked;
+	}
+
+	async hasBlockedByOther(id: number, blockId: number): Promise<boolean> {
+		const blocked = await this.findOne({
+			where: { userId: blockId, blockId: id },
+		});
+		return !!blocked;
 	}
 
 	async updateBlockedFriend(id: number, blockId: number): Promise<void> {

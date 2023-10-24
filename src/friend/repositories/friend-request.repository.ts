@@ -21,6 +21,14 @@ export class FriendRequestRepository extends Repository<FriendRequest> {
 		}
 	}
 
+	async hasRequest(id: number, requestedId: number): Promise<boolean> {
+		const requested = await this.findOne({
+			where: { senderId: id, receiverId: requestedId },
+		});
+
+		return !!requested;
+	}
+
 	async updateFriendRequest(requestInfo: FriendRequestDto): Promise<void> {
 		console.log(requestInfo);
 		await this.save(requestInfo);
