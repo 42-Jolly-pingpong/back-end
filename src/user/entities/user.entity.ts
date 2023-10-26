@@ -15,7 +15,7 @@ export class User {
 	@Column({ name: 'nickname', type: 'text' })
 	nickname: string;
 
-	@Column({ name: 'avatar_path', type: 'text', default: 'test' })
+	@Column({ name: 'avatar_path', type: 'text', nullable: true })
 	avatarPath: string;
 
 	@Column({

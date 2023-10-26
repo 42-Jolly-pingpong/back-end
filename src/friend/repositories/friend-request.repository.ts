@@ -2,11 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { FriendRequestDto } from 'src/friend/dto/friend-request.dto';
 import { FriendRequest } from 'src/friend/entities/friend-request.entity';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class FriendRequestRepository extends Repository<FriendRequest> {
 	constructor(private dataSource: DataSource) {
 		super(FriendRequest, dataSource.createEntityManager());
+	}
+
+	async getFriendRequestList(id: number): Promise<UserDto[]> {
+		const requestList: FriendRequestDto[] = await this.find({
+			where: { receiverId: id },
+			relations: { receiver: true },
+		});
+
+		if (requestList) {
+			return requestList.map((item) => item.receiver);
+		}
+		return [];
 	}
 
 	async deleteFriendRequest(id: number, friendId: number): Promise<void> {

@@ -1,17 +1,15 @@
-import { ApiOperation, ApiProperty } from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
 import {
-	Body,
 	Controller,
 	Delete,
 	Get,
 	Param,
 	Post,
-	Res,
+	Query,
 	UseGuards,
 } from '@nestjs/common';
 import { UserDto } from 'src/user/dto/user.dto';
 import { FriendService } from 'src/friend/friend.service';
-import { FriendRequestDto } from 'src/friend/dto/friend-request.dto';
 import { AuthJwtGuard } from 'src/auth/guards/jwt-guard';
 import { GetUser } from 'src/auth/decorators/user-info';
 import { User } from 'src/user/entities/user.entity';
@@ -28,7 +26,7 @@ export class FriendController {
 	@ApiOperation({ summary: '유저 id를 이용한 친구 목록 불러오기' })
 	@Get('/:id')
 	async getFriendList(@Param('id') id: number): Promise<UserDto[]> {
-		return await this.friendService.getFriendList(+id);
+		return await this.friendService.getFriendList(id);
 	}
 
 	@ApiOperation({ summary: '친구 삭제' })
@@ -48,7 +46,7 @@ export class FriendController {
 		@Param('keyword') keyword: string
 	): Promise<UserDto[]> {
 		const friends = await this.friendService.getFriendListByKeyword(
-			+id,
+			id,
 			keyword
 		);
 		return friends;
@@ -57,6 +55,13 @@ export class FriendController {
 	/**
 	 *	blocked-friend.repository 메서드
 	 */
+
+	@ApiOperation({ summary: '차단해둔 유저 목록 조회' })
+	@UseGuards(AuthJwtGuard)
+	@Get('/blocked/:id')
+	async getBlockList(@GetUser() user: User): Promise<UserDto[]> {
+		return await this.friendService.getBlockList(user.id);
+	}
 
 	@ApiOperation({ summary: '블랙리스트에 추가하기' })
 	@UseGuards(AuthJwtGuard)
@@ -71,13 +76,36 @@ export class FriendController {
 	/**
 	 * friend-request.repository 메서드
 	 */
-	//@ApiOperation({summary: ''})
-	// 어떤기능
+	@ApiOperation({ summary: '유저의 친구 신청 목록 조회' })
+	@UseGuards(AuthJwtGuard)
+	@Get('/request/:id')
+	async getFriendRequestList(@Param('id') id: number): Promise<UserDto[]> {
+		return await this.friendService.getFriendRequestList(id);
+	}
+
+	@ApiOperation({ summary: '친구 신청 승락' })
+	@UseGuards(AuthJwtGuard)
+	@Post('/request/:id')
+	async acceptFriendRequest(
+		@GetUser() user: User,
+		@Param('id') otherId: number
+	): Promise<void> {
+		return await this.friendService.acceptFriendRequest(user.id, otherId);
+	}
+
+	@ApiOperation({ summary: '친구 신청 거절' })
+	@UseGuards(AuthJwtGuard)
+	@Delete('/request/:id')
+	async denyFriendRequest(
+		@GetUser() user: User,
+		@Param('id') otherId: number
+	): Promise<void> {
+		return await this.friendService.denyFriendRequest(user.id, otherId);
+	}
 
 	/**
 	 *	공통 repository 메서드
 	 */
-
 	@ApiOperation({ summary: '상대 유저와의 관계 조회' })
 	@UseGuards(AuthJwtGuard)
 	@Get('/:id/state')

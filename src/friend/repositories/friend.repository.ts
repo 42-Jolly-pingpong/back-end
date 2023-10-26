@@ -17,7 +17,7 @@ export class FriendRepository extends Repository<Friend> {
 		});
 
 		const friendList: UserDto[] = friends.map((item) => {
-			if (item.user.id === id) {
+			if (item.user.id == id) {
 				return item.friend;
 			} else {
 				return item.user;
@@ -60,5 +60,9 @@ export class FriendRepository extends Repository<Friend> {
 			],
 		});
 		return !!friend;
+	}
+
+	async updateFriend(id: number, otherId: number): Promise<void> {
+		await this.save({ userId: id, friendId: otherId });
 	}
 }

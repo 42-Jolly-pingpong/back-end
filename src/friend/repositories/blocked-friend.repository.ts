@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { BlockedFriend } from 'src/friend/entities/blocked-friend.entity';
+import { BlockedFriendDto } from 'src/friend/dto/blocked-friend.dto';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @Injectable()
 export class BlockedFriendRepository extends Repository<BlockedFriend> {
@@ -30,11 +32,11 @@ export class BlockedFriendRepository extends Repository<BlockedFriend> {
 		await this.save(blocked);
 	}
 
-	//async findBlackList(userId: number): Promise<UserDto[]> {
-	//	const blackList: FriendDto[] = await this.find({
-	//		relations: { user: true, block: true },
-	//		where: { userId },
-	//	});
-	//	return blackList.map((item) => item.friend);
-	//}
+	async findBlockList(id: number): Promise<UserDto[]> {
+		const blackList: BlockedFriendDto[] = await this.find({
+			relations: { user: true, block: true },
+			where: { userId: id },
+		});
+		return blackList.map((item) => item.block);
+	}
 }

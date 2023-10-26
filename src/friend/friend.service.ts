@@ -6,6 +6,7 @@ import { FriendRepository } from 'src/friend/repositories/friend.repository';
 import { BlockedFriendRepository } from 'src/friend/repositories/blocked-friend.repository';
 import { FriendRequestRepository } from 'src/friend/repositories/friend-request.repository';
 import { ProfileStatus } from 'src/friend/enums/profile-status.enum';
+import { UserRepository } from 'src/user/user.repository';
 
 @Injectable()
 export class FriendService {
@@ -15,7 +16,9 @@ export class FriendService {
 		@InjectRepository(BlockedFriendRepository)
 		private blockedFriendRepository: BlockedFriendRepository,
 		@InjectRepository(FriendRequestRepository)
-		private friendRequestRepository: FriendRequestRepository
+		private friendRequestRepository: FriendRequestRepository,
+		@InjectRepository(UserRepository)
+		private userRepository: UserRepository
 	) {}
 
 	async getFriendList(id: number): Promise<UserDto[]> {
@@ -43,6 +46,7 @@ export class FriendService {
 		if (await this.friendRepository.hasFriend(id, otherId)) {
 			return ProfileStatus.FRIEND;
 		}
+
 		if (await this.friendRequestRepository.hasRequest(id, otherId)) {
 			return ProfileStatus.REQUESTED;
 		}
@@ -55,7 +59,23 @@ export class FriendService {
 			return ProfileStatus.BLOCKEDBYOTHER;
 		}
 
+		if (await this.userRepository.hasLeave(id)) {
+			return ProfileStatus.UNKNOWN;
+		}
 		return ProfileStatus.UNDEFINED;
+	}
+
+	async getFriendRequestList(id: number): Promise<UserDto[]> {
+		return await this.friendRequestRepository.getFriendRequestList(id);
+	}
+
+	async acceptFriendRequest(id: number, otherId: number): Promise<void> {
+		await this.friendRequestRepository.deleteFriendRequest(id, otherId);
+		await this.friendRepository.updateFriend(id, otherId);
+	}
+
+	async denyFriendRequest(id: number, otherId: number): Promise<void> {
+		await this.friendRequestRepository.deleteFriendRequest(id, otherId);
 	}
 
 	async updateFriendRequest(requestInfo: FriendRequestDto): Promise<void> {
@@ -63,8 +83,8 @@ export class FriendService {
 			requestInfo
 		);
 	}
-	////
-	//async getBlackList(userIdx: number): Promise<UserDto[]> {
-	//	return await this.blockedFriendRepository.findBlackList(userIdx);
-	//}
+	//
+	async getBlockList(id: number): Promise<UserDto[]> {
+		return await this.blockedFriendRepository.findBlockList(id);
+	}
 }
