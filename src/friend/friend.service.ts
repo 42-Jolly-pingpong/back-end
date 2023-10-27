@@ -65,8 +65,10 @@ export class FriendService {
 		return ProfileStatus.UNDEFINED;
 	}
 
-	async getFriendRequestList(id: number): Promise<UserDto[]> {
-		return await this.friendRequestRepository.getFriendRequestList(id);
+	async getFriendRequestList(receiverId: number): Promise<UserDto[]> {
+		return await this.friendRequestRepository.getFriendRequestList(
+			receiverId
+		);
 	}
 
 	async acceptFriendRequest(id: number, otherId: number): Promise<void> {
@@ -78,13 +80,27 @@ export class FriendService {
 		await this.friendRequestRepository.deleteFriendRequest(id, otherId);
 	}
 
-	async updateFriendRequest(requestInfo: FriendRequestDto): Promise<void> {
-		return await this.friendRequestRepository.updateFriendRequest(
-			requestInfo
+	async updateFriendRequest(
+		senderId: number,
+		receiverId: number
+	): Promise<void> {
+		await this.friendRequestRepository.updateFriendRequest(
+			senderId,
+			receiverId
 		);
 	}
-	//
 	async getBlockList(id: number): Promise<UserDto[]> {
 		return await this.blockedFriendRepository.findBlockList(id);
 	}
+
+	async deleteBlockFriend(userId: number, blockId: number): Promise<void> {
+		await this.blockedFriendRepository.deleteBlockFriend(userId, blockId);
+	}
 }
+
+//async updateFriendRequest(requestInfo: FriendRequestDto): Promise<void> {
+//	return await this.friendRequestRepository.updateFriendRequest(
+//		requestInfo
+//	);
+//}
+//

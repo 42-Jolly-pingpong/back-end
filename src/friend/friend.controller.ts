@@ -5,7 +5,6 @@ import {
 	Get,
 	Param,
 	Post,
-	Query,
 	UseGuards,
 } from '@nestjs/common';
 import { UserDto } from 'src/user/dto/user.dto';
@@ -27,6 +26,16 @@ export class FriendController {
 	@Get('/:id')
 	async getFriendList(@Param('id') id: number): Promise<UserDto[]> {
 		return await this.friendService.getFriendList(id);
+	}
+
+	@ApiOperation({ summary: '친구 신청' })
+	@UseGuards(AuthJwtGuard)
+	@Post('/:id')
+	async updateFriend(
+		@GetUser() user: User,
+		@Param('id') receiverId: number
+	): Promise<void> {
+		await this.friendService.updateFriendRequest(user.id, receiverId);
 	}
 
 	@ApiOperation({ summary: '친구 삭제' })
@@ -63,7 +72,7 @@ export class FriendController {
 		return await this.friendService.getBlockList(user.id);
 	}
 
-	@ApiOperation({ summary: '블랙리스트에 추가하기' })
+	@ApiOperation({ summary: '유저 차단' })
 	@UseGuards(AuthJwtGuard)
 	@Post('/blocked/:id')
 	async updateBlockFriend(
@@ -73,14 +82,26 @@ export class FriendController {
 		await this.friendService.updateBlockFriend(user.id, blockId);
 	}
 
+	@ApiOperation({ summary: '차단 해제' })
+	@UseGuards(AuthJwtGuard)
+	@Delete('/blocked/:id')
+	async deleteBlockFriend(
+		@GetUser() user: User,
+		@Param('id') blockId: number
+	): Promise<void> {
+		await this.friendService.deleteBlockFriend(user.id, blockId);
+	}
+
 	/**
 	 * friend-request.repository 메서드
 	 */
 	@ApiOperation({ summary: '유저의 친구 신청 목록 조회' })
 	@UseGuards(AuthJwtGuard)
 	@Get('/request/:id')
-	async getFriendRequestList(@Param('id') id: number): Promise<UserDto[]> {
-		return await this.friendService.getFriendRequestList(id);
+	async getFriendRequestList(
+		@Param('id') recieverId: number
+	): Promise<UserDto[]> {
+		return await this.friendService.getFriendRequestList(recieverId);
 	}
 
 	@ApiOperation({ summary: '친구 신청 승락' })

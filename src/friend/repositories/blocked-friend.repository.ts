@@ -32,6 +32,16 @@ export class BlockedFriendRepository extends Repository<BlockedFriend> {
 		await this.save(blocked);
 	}
 
+	async deleteBlockFriend(userId: number, blockId: number): Promise<void> {
+		const blocked = await this.findOne({
+			where: { userId, blockId },
+		});
+
+		if (blocked) {
+			await this.delete(blocked);
+		}
+	}
+
 	async findBlockList(id: number): Promise<UserDto[]> {
 		const blackList: BlockedFriendDto[] = await this.find({
 			relations: { user: true, block: true },

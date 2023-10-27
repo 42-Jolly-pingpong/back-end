@@ -10,14 +10,16 @@ export class FriendRequestRepository extends Repository<FriendRequest> {
 		super(FriendRequest, dataSource.createEntityManager());
 	}
 
-	async getFriendRequestList(id: number): Promise<UserDto[]> {
+	async getFriendRequestList(receiverId: number): Promise<UserDto[]> {
 		const requestList: FriendRequestDto[] = await this.find({
-			where: { receiverId: id },
-			relations: { receiver: true },
+			where: { receiverId },
+			relations: { receiver: true, sender: true },
 		});
 
+		console.log(requestList);
+
 		if (requestList) {
-			return requestList.map((item) => item.receiver);
+			return requestList.map((item) => item.sender);
 		}
 		return [];
 	}
@@ -42,8 +44,15 @@ export class FriendRequestRepository extends Repository<FriendRequest> {
 		return !!requested;
 	}
 
-	async updateFriendRequest(requestInfo: FriendRequestDto): Promise<void> {
-		console.log(requestInfo);
-		await this.save(requestInfo);
+	async updateFriendRequest(
+		senderId: number,
+		requestedId: number
+	): Promise<void> {
+		await this.save({ senderId, requestedId });
 	}
 }
+
+//async updateFriendRequest(requestInfo: FriendRequestDto): Promise<void> {
+//	console.log(requestInfo);
+//	await this.save(requestInfo);
+//}
