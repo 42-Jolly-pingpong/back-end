@@ -1,6 +1,7 @@
 import { DIRECTION } from "../gateways/enums/direction.enum";
 
-export interface Paddle {
+export interface Player {
+	id: number,
 	width: number,
 	height: number,
 	x: number,
