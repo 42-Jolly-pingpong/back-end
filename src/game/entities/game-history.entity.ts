@@ -28,5 +28,5 @@ export class GameHistory {
 	playTime: Date;
 
 	@Column({ name: 'mode', type: 'enum', enum: GameMode })
-	mode!: GameMode;
+	mode: GameMode;
 }
