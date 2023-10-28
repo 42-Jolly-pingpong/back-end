@@ -7,6 +7,7 @@ import {
 	Param,
 	HttpException,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,6 +16,9 @@ import { GameHistoryDto } from 'src/game/dto/game-history.dto';
 import { GameService } from 'src/game/game.service';
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthJwtGuard } from 'src/auth/guards/jwt-guard';
+import { GetUser } from 'src/auth/decorators/user-info';
+import { UpdateStatusDto } from './dto/update-status.dto';
 
 @ApiTags('user-controller')
 @Controller('user')
@@ -49,6 +53,13 @@ export class UserController {
 	@Patch('/:id/leave')
 	async withdrawUser(@Param('id') id: number): Promise<void> {
 		return await this.userService.withdrawUser(+id);
+	}
+
+	@ApiOperation({summary: '유저 상태 업데이트'})
+	@UseGuards(AuthJwtGuard)
+	@Patch('/update-Status/:status')
+	updateUserStatus(@GetUser() user: UserDto, @Body() body: UpdateStatusDto) {
+		
 	}
 
 	@ApiOperation({ summary: '게임 전적 불러오기 ' })

@@ -15,6 +15,8 @@ import { initGame, update } from './gameUtils';
 import { GameMode } from '../enums/game-mode.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GameHistoryRepository } from '../repositories/game-history.repository';
+import { UserRepository } from 'src/user/user.repository';
+import { UserStatus } from 'src/user/enums/user-status.enum';
 
 @WebSocketGateway(4242, { namespace: `game`, cors: { origin: '* ' } })
 export class GameGateway
@@ -22,12 +24,14 @@ export class GameGateway
 {
 	@InjectRepository(GameHistoryRepository)
 	private gameHistoryRepository: GameHistoryRepository;
+	@InjectRepository(UserRepository) private userRepository: UserRepository;
 	constructor() {}
 
 	private speedQueue: number[] = [];
 	private normalQueue: number[] = [];
 	private gameRoomData: Map<string, Game> = new Map();
-	private clientList: Map<number, Socket> = new Map();
+	private clientListById: Map<number, Socket> = new Map();
+	private clientListBySocekt: Map<Socket, number> = new Map();
 
 	@WebSocketServer()
 	server: Server;
@@ -41,17 +45,24 @@ export class GameGateway
 		console.log('웹소켓 서버 초기화');
 	}
 
-	async handleConnection(client: Socket, ...args: any[]) {
+	handleConnection(client: Socket, ...args: any[]) {
 		console.log(`클라이언트 연결됨 : ${client.id}`);
 	}
 
 	handleDisconnect(client: Socket) {
+		const userId: number = this.clientListBySocekt.get(client);
+		this.userRepository.updateUserStatus(userId, UserStatus.OFFLINE);
+		this.clientListById.delete(userId);
+		this.clientListBySocekt.delete(client)
+		
 		console.log(`클라이언트 연결 끊김 : ${client.id}`);
 	}
 
-	@SubscribeMessage('setId')
+	@SubscribeMessage('setClient')
 	handleEvent(client: Socket, id: number) {
-		this.clientList.set(id, client);
+		this.clientListById.set(id, client);
+		this.clientListBySocekt.set(client, id)
+		this.userRepository.updateUserStatus(id, UserStatus.ONLINE);
 	}
 
 	@SubscribeMessage('speedMatching')
@@ -59,22 +70,14 @@ export class GameGateway
 		if (this.speedQueue.length < 1) {
 			this.speedQueue.push(id);
 		} else {
-			const oppenentId: number = this.speedQueue.shift()
-			const oppenentClient: Socket = this.clientList.get(oppenentId);
+			const oppenentId: number = this.speedQueue.shift();
+			const oppenentClient: Socket = this.clientListById.get(oppenentId);
 			const roomName: string = uuidv4();
 			client.join(roomName);
 			oppenentClient.join(roomName);
 			this.gameRoomData.set(
 				roomName,
-				initGame(
-					GameMode.SPEED,
-					1,
-					0,
-					0,
-					0,
-					id,
-					oppenentId
-				)
+				initGame(GameMode.SPEED, 1, 0, 0, 0, id, oppenentId)
 			);
 			const clinet1 = {
 				roomName,
@@ -97,23 +100,15 @@ export class GameGateway
 		if (this.normalQueue.length < 1) {
 			this.normalQueue.push(id);
 		} else {
-			const oppenentId: number = this.normalQueue.shift()
-			const oppenentClient: Socket = this.clientList.get(oppenentId);
+			const oppenentId: number = this.normalQueue.shift();
+			const oppenentClient: Socket = this.clientListById.get(oppenentId);
 			const roomName: string = uuidv4();
 			// 상대 클라이언트 소켓 접속 유무 확인하는 로직 필요
 			client.join(roomName);
 			oppenentClient.join(roomName);
 			this.gameRoomData.set(
 				roomName,
-				initGame(
-					GameMode.NORMAL,
-					1,
-					0,
-					0,
-					0,
-					id,
-					oppenentId
-				)
+				initGame(GameMode.NORMAL, 1, 0, 0, 0, id, oppenentId)
 			);
 			const clinet1 = {
 				roomName,
@@ -146,8 +141,7 @@ export class GameGateway
 	@SubscribeMessage('getGameData')
 	sendInitialPositions(client: Socket, roomName: string) {
 		let curGame: Game = this.gameRoomData.get(roomName);
-		if (curGame == undefined ||curGame.run)
-			return ;
+		if (curGame == undefined || curGame.run) return;
 		curGame.run = true;
 		this.gameRoomData.set(roomName, curGame);
 		const intervalId: NodeJS.Timeout = setInterval(() => {
@@ -232,13 +226,11 @@ export class GameGateway
 	@SubscribeMessage('playerDesertion')
 	ExitEvent(client: Socket, message: string) {
 		const [roomName, position] = message;
-		console.log(roomName, position)
+		console.log(roomName, position);
 		const game = this.gameRoomData.get(roomName);
 		if (game != undefined && !game.isEnd) {
-			if (position == '1')
-				game.winner = 2;
-			else
-				game.winner = 1;
+			if (position == '1') game.winner = 2;
+			else game.winner = 1;
 			game.isEnd = true;
 			this.gameRoomData.set(roomName, game);
 		}
