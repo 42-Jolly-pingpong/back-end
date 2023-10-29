@@ -1,3 +1,4 @@
+import { UserStatus } from 'src/user/enums/user-status.enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('User')
@@ -8,7 +9,7 @@ export class User {
 	@Column({ name: 'intra_id', type: 'text' })
 	intraId: string;
 
-	@Column({ name: 'e_mail', type: 'text' })
+	@Column({ name: 'email', type: 'text' })
 	email: string;
 
 	@Column({ name: 'nickname', type: 'text' })
@@ -17,8 +18,13 @@ export class User {
 	@Column({ name: 'avatar_path', type: 'text', default: 'test' })
 	avatarPath: string;
 
-	@Column({ name: 'status', type: 'bool', default: false })
-	status: boolean;
+	@Column({
+		name: 'status',
+		type: 'enum',
+		enum: UserStatus,
+		default: UserStatus.OFFLINE,
+	})
+	status: UserStatus;
 
 	@Column({ name: 'bio', type: 'text', nullable: true })
 	bio: string;

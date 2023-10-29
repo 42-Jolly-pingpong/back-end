@@ -1,6 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
-export class FriendRequestDTO {
+export class FriendRequestDto {
 	@ApiProperty({ description: '요청 보내는 유저' })
 	senderId: number;
 
