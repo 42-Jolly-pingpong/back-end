@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { UserDto } from 'src/user/dto/user.dto';
-import { FriendDto } from 'src/friend/dto/friend.dto';
 import { Friend } from 'src/friend/entities/friend.entity';
+import { FriendDto } from 'src/friend/dto/friend.dto';
 
 @Injectable()
 export class FriendRepository extends Repository<Friend> {
@@ -17,7 +17,7 @@ export class FriendRepository extends Repository<Friend> {
 		});
 
 		const friendList: UserDto[] = friends.map((item) => {
-			if (item.user.id === id) {
+			if (item.user.id == id) {
 				return item.friend;
 			} else {
 				return item.user;
@@ -48,7 +48,21 @@ export class FriendRepository extends Repository<Friend> {
 		});
 
 		if (friendData) {
-			await this.delete(friendData);
+			await this.remove(friendData);
 		}
+	}
+
+	async hasFriend(id: number, otherId: number): Promise<boolean> {
+		const friend = await this.findOne({
+			where: [
+				{ userId: id, friendId: otherId },
+				{ userId: otherId, friendId: id },
+			],
+		});
+		return !!friend;
+	}
+
+	async updateFriend(id: number, otherId: number): Promise<void> {
+		await this.save({ userId: id, friendId: otherId });
 	}
 }
