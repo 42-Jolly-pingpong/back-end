@@ -36,11 +36,6 @@ export class GameGateway
 	@WebSocketServer()
 	server: Server;
 
-	@SubscribeMessage('events')
-	async handleMessage(@MessageBody() data: string): Promise<string> {
-		return data;
-	}
-
 	afterInit(server: Server) {
 		console.log('웹소켓 서버 초기화');
 	}
@@ -53,16 +48,19 @@ export class GameGateway
 		const userId: number = this.clientListBySocekt.get(client);
 		this.userRepository.updateUserStatus(userId, UserStatus.OFFLINE);
 		this.clientListById.delete(userId);
-		this.clientListBySocekt.delete(client)
-		
-		console.log(`클라이언트 연결 끊김 : ${client.id}`);
+		this.clientListBySocekt.delete(client);
+		this.server.emit('reload');
+		console.log('reload 하쇼');
 	}
 
 	@SubscribeMessage('setClient')
 	handleEvent(client: Socket, id: number) {
 		this.clientListById.set(id, client);
-		this.clientListBySocekt.set(client, id)
+		this.clientListBySocekt.set(client, id);
 		this.userRepository.updateUserStatus(id, UserStatus.ONLINE);
+		this.server.emit('reload');
+		
+		console.log('setclient' ,'reload 하쇼');
 	}
 
 	@SubscribeMessage('speedMatching')
@@ -226,7 +224,6 @@ export class GameGateway
 	@SubscribeMessage('playerDesertion')
 	ExitEvent(client: Socket, message: string) {
 		const [roomName, position] = message;
-		console.log(roomName, position);
 		const game = this.gameRoomData.get(roomName);
 		if (game != undefined && !game.isEnd) {
 			if (position == '1') game.winner = 2;

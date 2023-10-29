@@ -23,7 +23,6 @@ export class FriendRepository extends Repository<Friend> {
 				return item.user;
 			}
 		});
-		console.log(friendList.length)
 		return friendList;
 	}
 
