@@ -48,7 +48,7 @@ export class FriendRepository extends Repository<Friend> {
 		});
 
 		if (friendData) {
-			await this.delete(friendData);
+			await this.remove(friendData);
 		}
 	}
 

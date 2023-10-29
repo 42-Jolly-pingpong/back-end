@@ -38,7 +38,7 @@ export class BlockedFriendRepository extends Repository<BlockedFriend> {
 		});
 
 		if (blocked) {
-			await this.delete(blocked);
+			await this.remove(blocked);
 		}
 	}
 

@@ -16,8 +16,6 @@ export class FriendRequestRepository extends Repository<FriendRequest> {
 			relations: { receiver: true, sender: true },
 		});
 
-		console.log(requestList);
-
 		if (requestList) {
 			return requestList.map((item) => item.sender);
 		}
@@ -32,7 +30,7 @@ export class FriendRequestRepository extends Repository<FriendRequest> {
 			],
 		});
 		if (requestData) {
-			await this.delete(requestData);
+			await this.remove(requestData);
 		}
 	}
 
@@ -46,9 +44,9 @@ export class FriendRequestRepository extends Repository<FriendRequest> {
 
 	async updateFriendRequest(
 		senderId: number,
-		requestedId: number
+		receiverId: number
 	): Promise<void> {
-		await this.save({ senderId, requestedId });
+		await this.save({ senderId, receiverId });
 	}
 }
 
