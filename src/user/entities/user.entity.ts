@@ -15,7 +15,7 @@ export class User {
 	@Column({ name: 'nickname', type: 'text' })
 	nickname: string;
 
-	@Column({ name: 'avatar_path', type: 'text', default: 'test' })
+	@Column({ name: 'avatar_path', type: 'text', nullable: true })
 	avatarPath: string;
 
 	@Column({
@@ -32,10 +32,10 @@ export class User {
 	@Column({ name: 'auth', type: 'bool', default: false })
 	auth: boolean;
 
-	@Column({ name: 'win', type: 'int', default: 0 })
+	@Column({ name: 'win_count', type: 'int', default: 0 })
 	winCount: number;
 
-	@Column({ name: 'lose', type: 'int', default: 0 })
+	@Column({ name: 'lose_count', type: 'int', default: 0 })
 	loseCount: number;
 
 	@Column({ name: 'is_leave', type: 'bool', default: false })

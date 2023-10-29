@@ -59,4 +59,12 @@ export class UserRepository extends Repository<User> {
 
 		return user.id;
 	}
+
+	async hasLeave(id: number): Promise<boolean> {
+		const user = await this.findOne({ where: { id } });
+		if (user) {
+			return user.isLeave;
+		}
+		return false;
+	}
 }

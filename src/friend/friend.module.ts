@@ -6,6 +6,7 @@ import { FriendController } from 'src/friend/friend.controller';
 import { FriendRepository } from 'src/friend/repositories/friend.repository';
 import { BlockedFriendRepository } from 'src/friend/repositories/blocked-friend.repository';
 import { FriendRequestRepository } from 'src/friend/repositories/friend-request.repository';
+import { UserRepository } from 'src/user/user.repository';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([Friend])],
@@ -15,6 +16,7 @@ import { FriendRequestRepository } from 'src/friend/repositories/friend-request.
 		FriendRepository,
 		BlockedFriendRepository,
 		FriendRequestRepository,
+		UserRepository,
 	],
 })
 export class FriendModule {}
