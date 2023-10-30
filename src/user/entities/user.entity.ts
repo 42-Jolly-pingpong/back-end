@@ -1,3 +1,4 @@
+import { UserStatus } from 'src/user/enums/user-status.enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('User')
@@ -8,17 +9,22 @@ export class User {
 	@Column({ name: 'intra_id', type: 'text' })
 	intraId: string;
 
-	@Column({ name: 'e_mail', type: 'text' })
+	@Column({ name: 'email', type: 'text' })
 	email: string;
 
 	@Column({ name: 'nickname', type: 'text' })
 	nickname: string;
 
-	@Column({ name: 'avatar_path', type: 'text', default: 'test' })
+	@Column({ name: 'avatar_path', type: 'text', nullable: true })
 	avatarPath: string;
 
-	@Column({ name: 'status', type: 'bool', default: false })
-	status: boolean;
+	@Column({
+		name: 'status',
+		type: 'enum',
+		enum: UserStatus,
+		default: UserStatus.OFFLINE,
+	})
+	status: UserStatus;
 
 	@Column({ name: 'bio', type: 'text', nullable: true })
 	bio: string;
@@ -26,10 +32,10 @@ export class User {
 	@Column({ name: 'auth', type: 'bool', default: false })
 	auth: boolean;
 
-	@Column({ name: 'win', type: 'int', default: 0 })
+	@Column({ name: 'win_count', type: 'int', default: 0 })
 	winCount: number;
 
-	@Column({ name: 'lose', type: 'int', default: 0 })
+	@Column({ name: 'lose_count', type: 'int', default: 0 })
 	loseCount: number;
 
 	@Column({ name: 'is_leave', type: 'bool', default: false })

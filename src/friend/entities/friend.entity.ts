@@ -3,10 +3,10 @@ import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
 @Entity('Friend')
 export class Friend {
-	@PrimaryColumn({ name: 'user_id', type: "int" })
+	@PrimaryColumn({ name: 'user_id', type: 'int' })
 	userId: number;
 
-	@PrimaryColumn({ name: 'friend_id', type: "int" })
+	@PrimaryColumn({ name: 'friend_id', type: 'int' })
 	friendId: number;
 
 	@ManyToOne((type) => User)

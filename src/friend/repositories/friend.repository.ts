@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { UserDto } from 'src/user/dto/user.dto';
-import { Friend } from '../entities/friend.entity';
-import { FriendDTO } from '../dto/friend.DTO';
+import { Friend } from 'src/friend/entities/friend.entity';
+import { FriendDto } from 'src/friend/dto/friend.dto';
 
 @Injectable()
 export class FriendRepository extends Repository<Friend> {
@@ -10,12 +10,59 @@ export class FriendRepository extends Repository<Friend> {
 		super(Friend, dataSource.createEntityManager());
 	}
 
-	async findAllFriend(userIdx: number): Promise<UserDto[]> {
-		const friend: FriendDTO[] = await this.find({
+	async findFriendList(id: number): Promise<UserDto[]> {
+		const friends: FriendDto[] = await this.find({
 			relations: { user: true, friend: true },
-			where: { userId: userIdx },
+			where: [{ userId: id }, { friendId: id }],
 		});
-		const friendList: UserDto[] = friend.map((item) => item.friend);
+
+		const friendList: UserDto[] = friends.map((item) => {
+			if (item.user.id == id) {
+				return item.friend;
+			} else {
+				return item.user;
+			}
+		});
 		return friendList;
+	}
+
+	async findFriendListByKeyword(
+		id: number,
+		keyword: string
+	): Promise<UserDto[]> {
+		const friendList: UserDto[] = await this.findFriendList(id);
+
+		const filteredFriendList: UserDto[] = friendList.filter((user) => {
+			return user.nickname.startsWith(keyword);
+		});
+
+		return filteredFriendList;
+	}
+
+	async deleteFriend(id: number, friendId: number): Promise<void> {
+		const friendData = await this.findOne({
+			where: [
+				{ userId: id, friendId },
+				{ userId: friendId, friendId: id },
+			],
+		});
+
+		if (friendData) {
+			await this.remove(friendData);
+		}
+	}
+
+	async hasFriend(id: number, otherId: number): Promise<boolean> {
+		const friend = await this.findOne({
+			where: [
+				{ userId: id, friendId: otherId },
+				{ userId: otherId, friendId: id },
+			],
+		});
+		return !!friend;
+	}
+
+	async updateFriend(id: number, otherId: number): Promise<void> {
+		await this.save({ userId: id, friendId: otherId });
 	}
 }
