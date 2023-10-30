@@ -1,8 +1,8 @@
-import { GameMode } from '../enums/game-mode.enum';
-import { Ball } from '../interfaces/Ball.interface';
-import { Game } from '../interfaces/game.interface';
-import { Player } from '../interfaces/player.interface';
-import { DIRECTION } from './enums/direction.enum';
+import { GameMode } from 'src/game/enums/game-mode.enum';
+import { Ball } from 'src/game/interfaces/Ball.interface';
+import { DIRECTION } from 'src/game/gateways/enums/direction.enum';
+import { Player } from 'src/game/interfaces/player.interface';
+import { Game } from 'src/game/interfaces/game.interface';
 
 const canvasWidth = 1000;
 const canvasHeight = 600;
@@ -21,7 +21,11 @@ export function initBall(turn: number, mode: GameMode): Ball {
 	};
 }
 
-export function initPlayer(position: number, score: number, id: number): Player {
+export function initPlayer(
+	position: number,
+	score: number,
+	id: number
+): Player {
 	return {
 		id,
 		width: 12,
@@ -41,7 +45,7 @@ export function initGame(
 	leftPlayerScore: number,
 	rightPlayerScore: number,
 	leftPlayerId: number,
-	rightPlayerId: number,
+	rightPlayerId: number
 ): Game {
 	return {
 		mode: mode,
@@ -133,13 +137,19 @@ export function update(game: Game): Game {
 	}
 
 	if (game.mode == GameMode.NORMAL) {
-		if (game.player1.score == normalMaxScore || game.player2.score == normalMaxScore) {
+		if (
+			game.player1.score == normalMaxScore ||
+			game.player2.score == normalMaxScore
+		) {
 			game.isEnd = true;
 			if (game.player1.score == normalMaxScore) game.winner = 1;
 			else game.winner = 2;
 		}
 	} else {
-		if (game.player1.score == speedMaxScore || game.player2.score == speedMaxScore) {
+		if (
+			game.player1.score == speedMaxScore ||
+			game.player2.score == speedMaxScore
+		) {
 			game.isEnd = true;
 			if (game.player1.score == speedMaxScore) game.winner = 1;
 			else game.winner = 2;

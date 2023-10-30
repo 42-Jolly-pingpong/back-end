@@ -1,4 +1,4 @@
-import { DIRECTION } from "../gateways/enums/direction.enum";
+import { DIRECTION } from "src/game/gateways/enums/direction.enum";
 
 export interface Player {
 	id: number,

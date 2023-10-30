@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GameHistoryRepository } from './repositories/game-history.repository';
-import { GameHistoryDto } from './dto/game-history.dto';
+import { GameHistoryRepository } from 'src/game/repositories/game-history.repository';
+import { GameHistoryDto } from 'src/game/dto/game-history.dto';
 
 @Injectable()
 export class GameService {
@@ -13,8 +13,4 @@ export class GameService {
 	async getGameHistoryByUserId(id: number): Promise<GameHistoryDto[]> {
 		return await this.gameHistoryRepository.findGameHistoryByUserId(id);
 	}
-
-	//create(createGameDto: CreateGameDto) {
-	//	return 'This action adds a new game';
-	//}
 }
