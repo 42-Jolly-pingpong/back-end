@@ -9,7 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-import { Game } from '../interfaces/game.interface';
+import { Game } from 'src/game/interfaces/game.interface';
 import { DIRECTION } from './enums/direction.enum';
 import { initGame, update } from './gameUtils';
 import { GameMode } from '../enums/game-mode.enum';
@@ -59,8 +59,8 @@ export class GameGateway
 		this.clientListBySocekt.set(client, id);
 		this.userRepository.updateUserStatus(id, UserStatus.ONLINE);
 		this.server.emit('reload');
-		
-		console.log('setclient' ,'reload 하쇼');
+
+		console.log('setclient', 'reload 하쇼');
 	}
 
 	@SubscribeMessage('speedMatching')
@@ -237,5 +237,41 @@ export class GameGateway
 	endGameEvent(client: Socket, roomName: string) {
 		client.emit('exitGame');
 		this.server.to(roomName).emit('exitOpponent');
+	}
+
+	@SubscribeMessage('inviteGame')
+	inviteGame(client: Socket, id: number, mode: GameMode) {
+		const userId: number = this.clientListBySocekt.get(client);
+		const friend: Socket = this.clientListById.get(id);
+		friend.emit('inviteGame', userId, mode);
+	}
+
+	@SubscribeMessage('acceptInvite')
+	acceptInvite(client: Socket, id: number, mode: GameMode) {
+		console.log(id);
+		const oppenentId: number = id;
+		const oppenentClient: Socket = this.clientListById.get(id);
+		const clientId = this.clientListBySocekt.get(client);
+		const roomName: string = uuidv4();
+		// 상대 클라이언트 소켓 접속 유무 확인하는 로직 필요
+		client.join(roomName);
+		oppenentClient.join(roomName);
+		this.gameRoomData.set(
+			roomName,
+			initGame(GameMode.NORMAL, 1, 0, 0, 0, id, oppenentId)
+		);
+		const clinet1 = {
+			roomName,
+			position: 1,
+			opponent: oppenentId,
+		};
+		const client2 = {
+			roomName,
+			position: 2,
+			opponent: clientId,
+		};
+		client.emit('getPlayerInfo', clinet1);
+		oppenentClient.emit('getPlayerInfo', client2);
+		this.server.to(roomName).emit('gameStart');
 	}
 }
