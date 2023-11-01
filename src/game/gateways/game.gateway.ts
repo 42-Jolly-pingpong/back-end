@@ -17,6 +17,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { GameHistoryRepository } from '../repositories/game-history.repository';
 import { UserRepository } from 'src/user/user.repository';
 import { UserStatus } from 'src/user/enums/user-status.enum';
+import { InviteInfo } from 'src/game/interfaces/inviteInfo.interface';
+import { UserDto } from 'src/user/dto/user.dto';
 
 @WebSocketGateway(4242, { namespace: `game`, cors: { origin: '* ' } })
 export class GameGateway
@@ -44,27 +46,25 @@ export class GameGateway
 		console.log(`클라이언트 연결됨 : ${client.id}`);
 	}
 
-	handleDisconnect(client: Socket) {
+	async handleDisconnect(client: Socket) {
 		const userId: number = this.clientListBySocekt.get(client);
-		this.userRepository.updateUserStatus(userId, UserStatus.OFFLINE);
+		await this.userRepository.updateUserStatus(userId, UserStatus.OFFLINE);
 		this.clientListById.delete(userId);
 		this.clientListBySocekt.delete(client);
 		this.server.emit('reload');
-		console.log('reload 하쇼');
+		console.log('client 나감');
 	}
 
 	@SubscribeMessage('setClient')
-	handleEvent(client: Socket, id: number) {
+	async handleEvent(client: Socket, id: number) {
 		this.clientListById.set(id, client);
 		this.clientListBySocekt.set(client, id);
-		this.userRepository.updateUserStatus(id, UserStatus.ONLINE);
+		await this.userRepository.updateUserStatus(id, UserStatus.ONLINE);
 		this.server.emit('reload');
-
-		console.log('setclient', 'reload 하쇼');
 	}
 
 	@SubscribeMessage('speedMatching')
-	SpeedGameMatching(client: Socket, id: number) {
+	async SpeedGameMatching(client: Socket, id: number) {
 		if (this.speedQueue.length < 1) {
 			this.speedQueue.push(id);
 		} else {
@@ -87,6 +87,12 @@ export class GameGateway
 				position: 2,
 				opponent: id,
 			};
+			await this.userRepository.updateUserStatus(id, UserStatus.INGAME);
+			await this.userRepository.updateUserStatus(
+				oppenentId,
+				UserStatus.INGAME
+			);
+			this.server.emit('reload');
 			client.emit('getPlayerInfo', clinet1);
 			oppenentClient.emit('getPlayerInfo', client2);
 			this.server.to(roomName).emit('gameStart');
@@ -94,7 +100,7 @@ export class GameGateway
 	}
 
 	@SubscribeMessage('normalMatching')
-	noramlGameMatching(client: Socket, id: number) {
+	async noramlGameMatching(client: Socket, id: number) {
 		if (this.normalQueue.length < 1) {
 			this.normalQueue.push(id);
 		} else {
@@ -118,6 +124,12 @@ export class GameGateway
 				position: 2,
 				opponent: id,
 			};
+			await this.userRepository.updateUserStatus(id, UserStatus.INGAME);
+			await this.userRepository.updateUserStatus(
+				oppenentId,
+				UserStatus.INGAME
+			);
+			this.server.emit('reload');
 			client.emit('getPlayerInfo', clinet1);
 			oppenentClient.emit('getPlayerInfo', client2);
 			this.server.to(roomName).emit('gameStart');
@@ -240,19 +252,23 @@ export class GameGateway
 	}
 
 	@SubscribeMessage('inviteGame')
-	inviteGame(client: Socket, id: number, mode: GameMode) {
-		const userId: number = this.clientListBySocekt.get(client);
-		const friend: Socket = this.clientListById.get(id);
-		friend.emit('inviteGame', userId, mode);
+	async inviteGame(client: Socket, message: string) {
+		const inviteInfo: InviteInfo = JSON.parse(message);
+		const user: UserDto = await this.userRepository.findUserById(
+			this.clientListBySocekt.get(client)
+		);
+		const friend: Socket = this.clientListById.get(inviteInfo.user.id);
+		friend.emit('inviteGame', user, inviteInfo.mode);
 	}
 
 	@SubscribeMessage('acceptInvite')
-	acceptInvite(client: Socket, id: number, mode: GameMode) {
-		console.log(id);
+	async acceptInvite(client: Socket, id: number, mode: GameMode) {
 		const oppenentId: number = id;
 		const oppenentClient: Socket = this.clientListById.get(id);
 		const clientId = this.clientListBySocekt.get(client);
 		const roomName: string = uuidv4();
+		console.log('player1 = ', clientId);
+		console.log('player2 = ', oppenentId);
 		// 상대 클라이언트 소켓 접속 유무 확인하는 로직 필요
 		client.join(roomName);
 		oppenentClient.join(roomName);
@@ -270,7 +286,14 @@ export class GameGateway
 			position: 2,
 			opponent: clientId,
 		};
+		await this.userRepository.updateUserStatus(id, UserStatus.INGAME);
+		await this.userRepository.updateUserStatus(
+			oppenentId,
+			UserStatus.INGAME
+		);
+		this.server.emit('reload');
 		client.emit('getPlayerInfo', clinet1);
+
 		oppenentClient.emit('getPlayerInfo', client2);
 		this.server.to(roomName).emit('gameStart');
 	}

@@ -10,11 +10,11 @@ import { GameHistoryDto } from './dto/game-history.dto';
 export class GameController {
 	constructor(private readonly gameService: GameService) {}
 
-	//@ApiOperation({ summary: '게임 종료 후 결과 생성' })
-	//@Post('/history')
-	//createGameHistory(): Promise<GameHistoryDto> {
-	//	return this.gameService.
-	//}
+	// @ApiOperation({ summary: '게임 종료 후 결과 생성' })
+	// @Post('/history')
+	// createGameHistory(): Promise<GameHistoryDto> {
+	// 	return this.gameService.
+	// }
 
 	//	@Post()
 	//	create(@Body() createGameDto: CreateGameDto) {
@@ -31,10 +31,10 @@ export class GameController {
 	//		return this.gameService.findOne(+id);
 	//	}
 
-	//	@Patch(':id')
-	//	update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
-	//		return this.gameService.update(+id, updateGameDto);
-	//	}
+		// @Patch(':id')
+		// update(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
+		// 	return this.gameService.update(+id, updateGameDto);
+		// }
 
 	//	@Delete(':id')
 	//	remove(@Param('id') id: string) {

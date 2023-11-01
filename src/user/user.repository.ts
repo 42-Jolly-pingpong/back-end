@@ -25,12 +25,13 @@ export class UserRepository extends Repository<User> {
 		await this.save(user);
 	}
 
-	async updateUserStatus(id: number, status: UserStatus) {
+	async updateUserStatus(id: number, status: UserStatus): Promise<void> {
 		const user: UserDto = await this.findOneBy({ id });
 		if (user) {
 			user.status = status;
-			this.save(user);
+			await this.save(user);
 		}
+		return ;
 	}
 
 	async updateUserAsLeave(user: UserDto): Promise<void> {

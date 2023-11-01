@@ -63,10 +63,12 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: '게임 전적 불러오기 ' })
-	@Post('/:id/history')
+	@Get('/:id/history')
 	async getGameHistoryById(
 		@Param('id') id: number
 	): Promise<GameHistoryDto[]> {
+		const data = this.gameService.getGameHistoryByUserId(+id)
+		console.log(data)
 		return await this.gameService.getGameHistoryByUserId(+id);
 	}
 
