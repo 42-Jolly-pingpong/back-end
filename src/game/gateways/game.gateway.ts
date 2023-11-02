@@ -1,3 +1,4 @@
+import { DIRECTION } from 'src/game/gateways/enums/direction.enum';
 import {
 	MessageBody,
 	OnGatewayConnection,
@@ -7,14 +8,13 @@ import {
 	WebSocketGateway,
 	WebSocketServer,
 } from '@nestjs/websockets';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
-import { Game } from '../interfaces/game.interface';
-import { DIRECTION } from './enums/direction.enum';
-import { initGame, update } from './gameUtils';
-import { GameMode } from '../enums/game-mode.enum';
-import { InjectRepository } from '@nestjs/typeorm';
-import { GameHistoryRepository } from '../repositories/game-history.repository';
+import { Game } from 'src/game/interfaces/game.interface';
+import { GameHistoryRepository } from 'src/game/repositories/game-history.repository';
+import { initGame, update } from 'src/game/gateways/gameUtils';
+import { GameMode } from 'src/game/enums/game-mode.enum';
 
 @WebSocketGateway(4242, { namespace: `game`, cors: { origin: '* ' } })
 export class GameGateway
@@ -59,22 +59,14 @@ export class GameGateway
 		if (this.speedQueue.length < 1) {
 			this.speedQueue.push(id);
 		} else {
-			const oppenentId: number = this.speedQueue.shift()
+			const oppenentId: number = this.speedQueue.shift();
 			const oppenentClient: Socket = this.clientList.get(oppenentId);
 			const roomName: string = uuidv4();
 			client.join(roomName);
 			oppenentClient.join(roomName);
 			this.gameRoomData.set(
 				roomName,
-				initGame(
-					GameMode.SPEED,
-					1,
-					0,
-					0,
-					0,
-					id,
-					oppenentId
-				)
+				initGame(GameMode.SPEED, 1, 0, 0, 0, id, oppenentId)
 			);
 			const clinet1 = {
 				roomName,
@@ -97,7 +89,7 @@ export class GameGateway
 		if (this.normalQueue.length < 1) {
 			this.normalQueue.push(id);
 		} else {
-			const oppenentId: number = this.normalQueue.shift()
+			const oppenentId: number = this.normalQueue.shift();
 			const oppenentClient: Socket = this.clientList.get(oppenentId);
 			const roomName: string = uuidv4();
 			// 상대 클라이언트 소켓 접속 유무 확인하는 로직 필요
@@ -105,15 +97,7 @@ export class GameGateway
 			oppenentClient.join(roomName);
 			this.gameRoomData.set(
 				roomName,
-				initGame(
-					GameMode.NORMAL,
-					1,
-					0,
-					0,
-					0,
-					id,
-					oppenentId
-				)
+				initGame(GameMode.NORMAL, 1, 0, 0, 0, id, oppenentId)
 			);
 			const clinet1 = {
 				roomName,
@@ -146,8 +130,7 @@ export class GameGateway
 	@SubscribeMessage('getGameData')
 	sendInitialPositions(client: Socket, roomName: string) {
 		let curGame: Game = this.gameRoomData.get(roomName);
-		if (curGame == undefined ||curGame.run)
-			return ;
+		if (curGame == undefined || curGame.run) return;
 		curGame.run = true;
 		this.gameRoomData.set(roomName, curGame);
 		const intervalId: NodeJS.Timeout = setInterval(() => {
@@ -232,13 +215,11 @@ export class GameGateway
 	@SubscribeMessage('playerDesertion')
 	ExitEvent(client: Socket, message: string) {
 		const [roomName, position] = message;
-		console.log(roomName, position)
+		console.log(roomName, position);
 		const game = this.gameRoomData.get(roomName);
 		if (game != undefined && !game.isEnd) {
-			if (position == '1')
-				game.winner = 2;
-			else
-				game.winner = 1;
+			if (position == '1') game.winner = 2;
+			else game.winner = 1;
 			game.isEnd = true;
 			this.gameRoomData.set(roomName, game);
 		}
