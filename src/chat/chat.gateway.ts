@@ -1,3 +1,4 @@
+import { JwtService } from '@nestjs/jwt';
 import { SetChatRoomDto } from './dto/set-chat-room.dto';
 import { DmDto } from './dto/dm.dto';
 import { Server, Socket } from 'socket.io';
@@ -17,6 +18,7 @@ import { SetParticipantRoleDto } from 'src/chat/dto/set-participant-role.dto';
 import { AddParticipantDto } from 'src/chat/dto/add-participant.dto';
 import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
 import {
+	BadRequestException,
 	HttpStatus,
 	UseGuards,
 	UsePipes,
@@ -25,21 +27,27 @@ import {
 import { RoomGuard } from 'src/chat/guards/room.guard';
 import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
+import { AuthService } from 'src/auth/auth.service';
+import { User } from 'src/user/entities/user.entity';
 
 @WebSocketGateway({
 	namespace: 'chat',
 	cors: {},
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
-	constructor(private readonly chatService: ChatService) {}
+	constructor(
+		private readonly chatService: ChatService,
+		private readonly authService: AuthService
+	) {}
 
 	@WebSocketServer()
 	server: Server;
 
 	async handleConnection(client: Socket, ...args: any[]) {
 		console.log('connected');
-		const userId = client.handshake.auth.userId; //temp
-		const rooms = await this.chatService.inquireAllJoinedChatRooms(userId);
+
+		const user = await this.getUserId(client);
+		const rooms = await this.chatService.inquireAllJoinedChatRooms(user.id);
 		rooms.map((room) => client.join(String(room.id)));
 
 		//status 수정
@@ -49,23 +57,40 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log('Method not implemented.');
 	}
 
+	async getUserId(client: Socket): Promise<User> {
+		const token = String(client.handshake.headers.authorization).replace(
+			'Bearer ',
+			''
+		);
+		const user = await this.authService.getUserIdFromToken(token);
+
+		if (user === null) {
+			throw new BadRequestException();
+		}
+
+		return user;
+	}
+
 	@SubscribeMessage('sendChat')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
 	async sendChat(client: Socket, createChatDto: CreateChatDto): Promise<void> {
-		const userId = client.handshake.auth.userId; //temp
-		const { roomId } = createChatDto;
-		const room = await this.chatService.getChatRoom(roomId);
+		try {
+			const user = await this.getUserId(client);
+			const { roomId } = createChatDto;
+			const room = await this.chatService.getChatRoom(roomId);
 
-		const newChat = await this.chatService.createChat(userId, createChatDto);
+			const newChat = await this.chatService.createChat(user.id, createChatDto);
 
-		if (room.roomType === ChatRoomType.DM) {
-			this.server
-				.to(String(roomId))
-				.emit('getNewChatOnDm', { newChat, roomId });
-			return;
+			if (room.roomType === ChatRoomType.DM) {
+				this.server
+					.to(String(roomId))
+					.emit('getNewChatOnDm', { newChat, roomId });
+				return;
+			}
+		} catch (e) {
+			console.log(e);
 		}
-		this.server.to(String(roomId)).emit('getNewChat', { newChat, roomId });
 	}
 
 	@SubscribeMessage('createNewDm')
@@ -75,7 +100,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		getDmDto: GetDmDto
 	): Promise<{ status: number; dm: DmDto | null }> {
 		try {
-			const dm = await this.chatService.getDm(getDmDto);
+			const user = await this.getUserId(client);
+
+			const dm = await this.chatService.getDm(getDmDto, user);
 
 			this.server.emit('addNewDm', {
 				dm: dm,
@@ -95,12 +122,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client: Socket,
 		data: { roomId: number }
 	): Promise<{ status: number; chatRoom: ChatRoomDto | null }> {
-		const userId = client.handshake.auth.userId; //temp
+		const user = await this.getUserId(client);
 
 		try {
 			const room = await this.chatService.deleteParticipant(
 				data.roomId,
-				userId
+				user.id
 			);
 			client.leave(String(data.roomId));
 			this.server.to(String(data.roomId)).emit('updateChatRoom', room);
@@ -180,10 +207,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client: Socket,
 		setChatRoomDto: SetChatRoomDto
 	): Promise<number> {
-		const userId = client.handshake.auth.userId; //temp
-
 		try {
-			await this.chatService.setChatRoomInfo(userId, setChatRoomDto);
+			const user = await this.getUserId(client);
+
+			await this.chatService.setChatRoomInfo(user.id, setChatRoomDto);
 
 			const newRoom = await this.chatService.getChatRoom(setChatRoomDto.roomId);
 			this.server
@@ -206,7 +233,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<{ status: number; chatRoom: ChatRoomDto | null }> {
 		try {
-			const room = await this.chatService.createChatRoom(createChatRoomDto);
+			const user = await this.getUserId(client);
+			const room = await this.chatService.createChatRoom(
+				createChatRoomDto,
+				user
+			);
 
 			client.join(String(room.id));
 
@@ -223,9 +254,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client: Socket,
 		data: { roomId: number }
 	): Promise<number> {
-		const userId = client.handshake.auth.userId; //temp
 		try {
-			await this.chatService.deleteChatRoom(data.roomId, userId);
+			const user = await this.getUserId(client);
+
+			await this.chatService.deleteChatRoom(data.roomId, user.id);
 
 			this.server.to(String(data.roomId)).emit('chatRoomDeleted', data.roomId);
 
@@ -242,11 +274,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client: Socket,
 		enterChatRoomDto: EnterChatRoomDto
 	): Promise<{ status: number; chatRoom: ChatRoomDto | null }> {
-		const userId = client.handshake.auth.userId; //temp
-
 		try {
+			const user = await this.getUserId(client);
+
 			const room = await this.chatService.addParticipant(
-				userId,
+				user.id,
 				enterChatRoomDto
 			);
 

@@ -139,11 +139,11 @@ export class ChatService {
 
 	/**
 	 * dm방을 반환한다.
-	 * @param getPrivateChatRoomDto 대화를 나눌 유저의 정보가 담긴 dto
-	 * @returns dm room을 반환한다.
+	 * @param getDmDto 대화를 나눌 유저의 정보가 담긴 dto
+	 * @param userId
+	 * @returns
 	 */
-	async getDm(getDmDto: GetDmDto): Promise<DmDto> {
-		const user = await this.userRepository.findUserById(0); //temp
+	async getDm(getDmDto: GetDmDto, user: User): Promise<DmDto> {
 		const chatMateId = getDmDto.chatMate.id;
 		if (user.id === chatMateId) {
 			throw new ConflictException();
@@ -262,12 +262,12 @@ export class ChatService {
 	 * @returns 생성된 chat-room을 반환한다.
 	 */
 	async createChatRoom(
-		createChatRoomDto: CreateChatRoomDto
+		createChatRoomDto: CreateChatRoomDto,
+		user: User
 	): Promise<ChatRoomDto> {
 		const emptyRoom = await this.chatRoomRepository.createChatRoom(
 			createChatRoomDto
 		);
-		const user = await this.userRepository.findUserById(0); //temp
 
 		const participant = await this.chatParticipantRepository.createChatRoom(
 			emptyRoom,
@@ -360,9 +360,7 @@ export class ChatService {
 	 * @param userId
 	 * @returns 존재하는 오픈 채팅방 리스트를 반환한다.
 	 */
-	async inquireOpenedChatRoom(userId: number): Promise<ChatRoomDto[]> {
-		const user = await this.userRepository.findUserById(userId); //temp
-
+	async inquireOpenedChatRoom(user: User): Promise<ChatRoomDto[]> {
 		const allRoom = await this.chatRoomRepository.inquireOpenedChatRoom(user);
 		const roomsWithoutBanned = allRoom.filter(
 			(room) =>
@@ -370,7 +368,7 @@ export class ChatService {
 				PaticipantStatus.BANNED
 		);
 
-		return this.roomsEntityToDto(roomsWithoutBanned, userId);
+		return this.roomsEntityToDto(roomsWithoutBanned, user.id);
 	}
 
 	/**

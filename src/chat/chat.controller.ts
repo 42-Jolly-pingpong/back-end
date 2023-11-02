@@ -42,7 +42,7 @@ export class ChatController {
 	@Get('/opened')
 	@UseGuards(AuthJwtGuard)
 	async inquireOpenedChatRoom(@GetUser() user: User): Promise<ChatRoomDto[]> {
-		return await this.chatService.inquireOpenedChatRoom(user.id);
+		return await this.chatService.inquireOpenedChatRoom(user);
 	}
 
 	@ApiOperation({ summary: '채팅방 정보 조회' })
