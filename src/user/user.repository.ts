@@ -37,7 +37,7 @@ export class UserRepository extends Repository<User> {
 		return await this.find({ where: { nickname: Like(`${keyword}%`) } });
 	}
 
-	async findUserById(id: number): Promise<UserDto> {
+	async findUserById(id: number): Promise<UserDto | null> {
 		return await this.findOneBy({ id: id });
 	}
 
@@ -49,5 +49,13 @@ export class UserRepository extends Repository<User> {
 		const user = await this.findOneBy({ intraId: id });
 
 		return user.id;
+	}
+
+	async hasLeave(id: number): Promise<boolean> {
+		const user = await this.findOne({ where: { id } });
+		if (user) {
+			return user.isLeave;
+		}
+		return false;
 	}
 }
