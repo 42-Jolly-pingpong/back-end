@@ -88,6 +88,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 					.emit('getNewChatOnDm', { newChat, roomId });
 				return;
 			}
+			this.server.to(String(roomId)).emit('getNewChat', { newChat, roomId });
 		} catch (e) {
 			console.log(e);
 		}
