@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthType } from './enums/auth-type.enum';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserDto } from '../user/dto/user.dto';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -39,5 +40,17 @@ export class AuthService {
 
 	async getUserById(id: number): Promise<UserDto | null> {
 		return await this.userRepository.findUserById(id);
+	}
+
+	async getUserIdFromToken(token: string): Promise<User> {
+		const payload = this.jwtService.verify(token);
+
+		if (!payload.id) {
+			return null;
+		}
+
+		const user = this.getUserById(payload.id);
+
+		return user;
 	}
 }
