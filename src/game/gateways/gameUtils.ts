@@ -1,5 +1,5 @@
 import { GameMode } from 'src/game/enums/game-mode.enum';
-import { Ball } from 'src/game/interfaces/Ball.interface';
+import { Ball } from 'src/game/interfaces/ball.interface';
 import { DIRECTION } from 'src/game/gateways/enums/direction.enum';
 import { Player } from 'src/game/interfaces/player.interface';
 import { Game } from 'src/game/interfaces/game.interface';
