@@ -19,6 +19,7 @@ import { UserDto } from 'src/user/dto/user.dto';
 import { GameHistoryRepository } from 'src/game/repositories/game-history.repository';
 import { initGame, update } from 'src/game/gateways/gameUtils';
 import { GameMode } from 'src/game/enums/game-mode.enum';
+import { ScoreLogRepository } from '../repositories/score-log.repository';
 
 @WebSocketGateway(4242, { namespace: `game`, cors: { origin: '* ' } })
 export class GameGateway
@@ -26,6 +27,8 @@ export class GameGateway
 {
 	@InjectRepository(GameHistoryRepository)
 	private gameHistoryRepository: GameHistoryRepository;
+	@InjectRepository(ScoreLogRepository)
+	private scoreLogRepository: ScoreLogRepository;
 	@InjectRepository(UserRepository) private userRepository: UserRepository;
 	constructor() {}
 
@@ -52,14 +55,12 @@ export class GameGateway
 		this.clientListById.delete(userId);
 		this.clientListBySocekt.delete(client);
 		this.server.emit('reload');
-		console.log('client 나감');
 	}
 
 	@SubscribeMessage('setClient')
 	async handleEvent(client: Socket, id: number) {
 		this.clientListById.set(id, client);
 		this.clientListBySocekt.set(client, id);
-		console.log(id)
 		await this.userRepository.updateUserStatus(id, UserStatus.ONLINE);
 		this.server.emit('reload');
 	}
@@ -76,7 +77,7 @@ export class GameGateway
 			oppenentClient.join(roomName);
 			this.gameRoomData.set(
 				roomName,
-				initGame(GameMode.SPEED, 1, 0, 0, 0, id, oppenentId, new Date())
+				initGame(roomName, GameMode.SPEED, 1, 0, 0, 0, id, oppenentId, new Date())
 			);
 			const clinet1 = {
 				roomName,
@@ -113,7 +114,7 @@ export class GameGateway
 			oppenentClient.join(roomName);
 			this.gameRoomData.set(
 				roomName,
-				initGame(GameMode.NORMAL, 1, 0, 0, 0, id, oppenentId, new Date())
+				initGame(roomName, GameMode.NORMAL, 1, 0, 0, 0, id, oppenentId, new Date())
 			);
 			const clinet1 = {
 				roomName,
@@ -131,7 +132,6 @@ export class GameGateway
 				UserStatus.INGAME
 			);
 			this.server.emit('reload');
-			console.log('abc')
 			client.emit('getPlayerInfo', clinet1);
 			oppenentClient.emit('getPlayerInfo', client2);
 			this.server.to(roomName).emit('gameStart');
@@ -171,6 +171,7 @@ export class GameGateway
 			}
 			if (curGame.isOver) {
 				curGame = initGame(
+					curGame.roomName,
 					curGame.mode,
 					curGame.turn,
 					curGame.round + 1,
@@ -196,7 +197,7 @@ export class GameGateway
 				clearInterval(intervalId);
 				return;
 			}
-			const updateGame = update(curGame);
+			const updateGame = update(curGame, this.scoreLogRepository);
 			this.gameRoomData.set(roomName, updateGame);
 			this.server
 				.to(roomName)
@@ -264,34 +265,36 @@ export class GameGateway
 		friend.emit('inviteGame', user, inviteInfo.mode);
 	}
 
+
+
 	@SubscribeMessage('acceptInvite')
-	async acceptInvite(client: Socket, id: number, mode: GameMode) {
-		const oppenentId: number = id;
-		const oppenentClient: Socket = this.clientListById.get(id);
+	async acceptInvite(client: Socket, message: string) {
+		const inviteInfo: InviteInfo = JSON.parse(message);
+		const oppenentClient: Socket = this.clientListById.get(inviteInfo.user.id);
 		const clientId = this.clientListBySocekt.get(client);
 		const roomName: string = uuidv4();
 		console.log('player1 = ', clientId);
-		console.log('player2 = ', oppenentId);
+		console.log('player2 = ', inviteInfo.user.id);
 		// 상대 클라이언트 소켓 접속 유무 확인하는 로직 필요
 		client.join(roomName);
 		oppenentClient.join(roomName);
 		this.gameRoomData.set(
 			roomName,
-			initGame(GameMode.NORMAL, 1, 0, 0, 0, clientId, oppenentId, new Date())
+			initGame(roomName, inviteInfo.mode, 1, 0, 0, 0, clientId, inviteInfo.user.id, new Date())
 		);
 		const clinet1 = {
 			roomName,
 			position: 1,
-			opponent: oppenentId,
+			opponent: inviteInfo.user.id,
 		};
 		const client2 = {
 			roomName,
 			position: 2,
 			opponent: clientId,
 		};
-		await this.userRepository.updateUserStatus(id, UserStatus.INGAME);
+		await this.userRepository.updateUserStatus(clientId, UserStatus.INGAME);
 		await this.userRepository.updateUserStatus(
-			oppenentId,
+			inviteInfo.user.id,
 			UserStatus.INGAME
 		);
 		this.server.emit('reload');

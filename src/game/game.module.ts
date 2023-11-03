@@ -6,10 +6,11 @@ import { GameController } from 'src/game/game.controller';
 import { GameService } from 'src/game/game.service';
 import { GameHistoryRepository } from 'src/game/repositories/game-history.repository';
 import { GameGateway } from 'src/game/gateways/game.gateway';
+import { ScoreLogRepository } from 'src/game/repositories/score-log.repository';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([GameHistory])],
 	controllers: [GameController],
-	providers: [GameService, GameHistoryRepository, GameGateway, UserRepository],
+	providers: [GameService, GameHistoryRepository, ScoreLogRepository, GameGateway, UserRepository],
 })
 export class GameModule {}

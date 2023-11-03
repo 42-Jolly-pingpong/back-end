@@ -3,6 +3,7 @@ import { Ball } from 'src/game/interfaces/ball.interface';
 import { Player } from 'src/game/interfaces/player.interface';
 
 export interface Game {
+	roomName: string;
 	mode: GameMode;
 	ball: Ball;
 	player1: Player;

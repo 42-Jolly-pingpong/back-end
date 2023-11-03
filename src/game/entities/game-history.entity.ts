@@ -1,11 +1,11 @@
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { GameMode } from 'src/game/enums/game-mode.enum';
 
 @Entity('GameHistory')
 export class GameHistory {
-	@PrimaryGeneratedColumn({ name: 'id', type: 'int' })
-	id: number;
+	@PrimaryColumn({ name: 'roomName', type: 'text' })
+	roomName: string;
 
 	@Column({name: 'winner_id', type: 'int'})
 	winnerId: number;
