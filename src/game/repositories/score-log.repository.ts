@@ -1,6 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 import { ScoreLog } from 'src/game/entities/score-log.entity';
 import { Injectable } from '@nestjs/common';
+import { ScoreLogDto } from 'src/game/dto/score-log.dto';
 
 @Injectable()
 export class ScoreLogRepository extends Repository<ScoreLog> {
@@ -15,6 +16,13 @@ export class ScoreLogRepository extends Repository<ScoreLog> {
 			userId,
 		});
 		this.save(log);
-		
+	}
+
+	async getScoreLog(roomName: string): Promise<ScoreLogDto[]> {
+		const scoreLog: ScoreLogDto[] = await this.find({
+			relations: { user: true },
+			where: { roomName },
+		});
+		return scoreLog;
 	}
 }

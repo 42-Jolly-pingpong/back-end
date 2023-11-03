@@ -1,11 +1,19 @@
-import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthJwtGuard } from 'src/auth/guards/jwt-guard';
 import { GameService } from 'src/game/game.service';
 
 @ApiTags('game-controller')
 @Controller('games')
 export class GameController {
 	constructor(private readonly gameService: GameService) {}
+
+	@ApiOperation({ summary: '점수 로그를 받아옴'})
+	@UseGuards(AuthJwtGuard)
+	@Get('score-log/:roomName')
+	async getScoreLog(@Param('roomName') roomName: string) {
+		return await this.gameService.getGameScoreLogByRoomName(roomName);
+	}
 
 	// @ApiOperation({ summary: '게임 종료 후 결과 생성' })
 	// @Post('/history')

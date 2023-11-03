@@ -11,6 +11,12 @@ import { ScoreLogRepository } from 'src/game/repositories/score-log.repository';
 @Module({
 	imports: [TypeOrmModule.forFeature([GameHistory])],
 	controllers: [GameController],
-	providers: [GameService, GameHistoryRepository, ScoreLogRepository, GameGateway, UserRepository],
+	providers: [
+		GameService,
+		ScoreLogRepository,
+		GameHistoryRepository,
+		GameGateway,
+		UserRepository,
+	],
 })
 export class GameModule {}

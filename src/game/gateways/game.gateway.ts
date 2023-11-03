@@ -19,7 +19,7 @@ import { UserDto } from 'src/user/dto/user.dto';
 import { GameHistoryRepository } from 'src/game/repositories/game-history.repository';
 import { initGame, update } from 'src/game/gateways/gameUtils';
 import { GameMode } from 'src/game/enums/game-mode.enum';
-import { ScoreLogRepository } from '../repositories/score-log.repository';
+import { ScoreLogRepository } from 'src/game/repositories/score-log.repository';
 
 @WebSocketGateway(4242, { namespace: `game`, cors: { origin: '* ' } })
 export class GameGateway
