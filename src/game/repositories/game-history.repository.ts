@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { GameHistory } from '../entities/game-history.entity';
-import { Game } from '../interfaces/game.interface';
-import { User } from 'src/user/entities/user.entity';
+import { GameHistory } from 'src/game/entities/game-history.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from 'src/user/user.repository';
 import { UserDto } from 'src/user/dto/user.dto';
+import { Game } from 'src/game/interfaces/game.interface';
 
 @Injectable()
 export class GameHistoryRepository extends Repository<GameHistory> {

@@ -1,6 +1,6 @@
 import { User } from 'src/user/entities/user.entity';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { GameMode } from '../enums/game-mode.enum';
+import { GameMode } from 'src/game/enums/game-mode.enum';
 
 @Entity('GameHistory')
 export class GameHistory {

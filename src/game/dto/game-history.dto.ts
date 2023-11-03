@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/user/entities/user.entity';
-import { GameMode } from '../enums/game-mode.enum';
+import { GameMode } from 'src/game/enums/game-mode.enum';
 
 export class GameHistoryDto {
 	@ApiProperty({ description: '히스토리 인덱스' })

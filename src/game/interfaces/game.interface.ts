@@ -1,6 +1,6 @@
-import { GameMode } from '../enums/game-mode.enum';
-import { Ball } from './Ball.interface';
-import { Player } from './player.interface';
+import { GameMode } from 'src/game/enums/game-mode.enum';
+import { Ball } from 'src/game/interfaces/ball.interface';
+import { Player } from 'src/game/interfaces/player.interface';
 
 export interface Game {
 	mode: GameMode;

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDto } from 'src/user/dto/user.dto';
-import { FriendRequestDto } from 'src/friend/dto/friend-request.dto';
 import { FriendRepository } from 'src/friend/repositories/friend.repository';
 import { BlockedFriendRepository } from 'src/friend/repositories/blocked-friend.repository';
 import { FriendRequestRepository } from 'src/friend/repositories/friend-request.repository';
@@ -48,7 +47,11 @@ export class FriendService {
 		}
 
 		if (await this.friendRequestRepository.hasRequest(id, otherId)) {
-			return ProfileStatus.REQUESTED;
+			return ProfileStatus.REQUESTEDBYME;
+		}
+
+		if (await this.friendRequestRepository.hasRequest(otherId, id)) {
+			return ProfileStatus.REQUESTEDBYOTHER;
 		}
 
 		if (await this.blockedFriendRepository.hasBlockedByMe(id, otherId)) {

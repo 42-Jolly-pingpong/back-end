@@ -1,3 +1,4 @@
+import { DIRECTION } from 'src/game/gateways/enums/direction.enum';
 import {
 	MessageBody,
 	OnGatewayConnection,
@@ -7,18 +8,17 @@ import {
 	WebSocketGateway,
 	WebSocketServer,
 } from '@nestjs/websockets';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Server, Socket } from 'socket.io';
 import { v4 as uuidv4 } from 'uuid';
 import { Game } from 'src/game/interfaces/game.interface';
-import { DIRECTION } from './enums/direction.enum';
-import { initGame, update } from './gameUtils';
-import { GameMode } from '../enums/game-mode.enum';
-import { InjectRepository } from '@nestjs/typeorm';
-import { GameHistoryRepository } from '../repositories/game-history.repository';
 import { UserRepository } from 'src/user/user.repository';
 import { UserStatus } from 'src/user/enums/user-status.enum';
 import { InviteInfo } from 'src/game/interfaces/inviteInfo.interface';
 import { UserDto } from 'src/user/dto/user.dto';
+import { GameHistoryRepository } from 'src/game/repositories/game-history.repository';
+import { initGame, update } from 'src/game/gateways/gameUtils';
+import { GameMode } from 'src/game/enums/game-mode.enum';
 
 @WebSocketGateway(4242, { namespace: `game`, cors: { origin: '* ' } })
 export class GameGateway
