@@ -13,4 +13,5 @@ export interface Game {
 	round: number;
 	winner: number;
 	run: boolean;
+	startTime: Date;
 }

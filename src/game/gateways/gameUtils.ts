@@ -42,6 +42,7 @@ export function initGame(
 	rightPlayerScore: number,
 	leftPlayerId: number,
 	rightPlayerId: number,
+	startTime: Date,
 ): Game {
 	return {
 		mode: mode,
@@ -54,6 +55,7 @@ export function initGame(
 		round,
 		winner: 0,
 		run: false,
+		startTime: startTime,
 	};
 }
 

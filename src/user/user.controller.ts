@@ -67,9 +67,9 @@ export class UserController {
 	async getGameHistoryById(
 		@Param('id') id: number
 	): Promise<GameHistoryDto[]> {
-		const data = this.gameService.getGameHistoryByUserId(+id)
+		const data = await this.gameService.getGameHistoryByUserId(+id)
 		console.log(data)
-		return await this.gameService.getGameHistoryByUserId(+id);
+		return data
 	}
 
 	@ApiOperation({ summary: '유저 검색' })

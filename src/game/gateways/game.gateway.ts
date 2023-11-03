@@ -59,6 +59,7 @@ export class GameGateway
 	async handleEvent(client: Socket, id: number) {
 		this.clientListById.set(id, client);
 		this.clientListBySocekt.set(client, id);
+		console.log(id)
 		await this.userRepository.updateUserStatus(id, UserStatus.ONLINE);
 		this.server.emit('reload');
 	}
@@ -75,7 +76,7 @@ export class GameGateway
 			oppenentClient.join(roomName);
 			this.gameRoomData.set(
 				roomName,
-				initGame(GameMode.SPEED, 1, 0, 0, 0, id, oppenentId)
+				initGame(GameMode.SPEED, 1, 0, 0, 0, id, oppenentId, new Date())
 			);
 			const clinet1 = {
 				roomName,
@@ -112,7 +113,7 @@ export class GameGateway
 			oppenentClient.join(roomName);
 			this.gameRoomData.set(
 				roomName,
-				initGame(GameMode.NORMAL, 1, 0, 0, 0, id, oppenentId)
+				initGame(GameMode.NORMAL, 1, 0, 0, 0, id, oppenentId, new Date())
 			);
 			const clinet1 = {
 				roomName,
@@ -130,6 +131,7 @@ export class GameGateway
 				UserStatus.INGAME
 			);
 			this.server.emit('reload');
+			console.log('abc')
 			client.emit('getPlayerInfo', clinet1);
 			oppenentClient.emit('getPlayerInfo', client2);
 			this.server.to(roomName).emit('gameStart');
@@ -175,7 +177,8 @@ export class GameGateway
 					curGame.player1.score,
 					curGame.player2.score,
 					curGame.player1.id,
-					curGame.player2.id
+					curGame.player2.id,
+					curGame.startTime
 				);
 				this.server
 					.to(roomName)
@@ -274,7 +277,7 @@ export class GameGateway
 		oppenentClient.join(roomName);
 		this.gameRoomData.set(
 			roomName,
-			initGame(GameMode.NORMAL, 1, 0, 0, 0, id, oppenentId)
+			initGame(GameMode.NORMAL, 1, 0, 0, 0, clientId, oppenentId, new Date())
 		);
 		const clinet1 = {
 			roomName,
@@ -293,7 +296,6 @@ export class GameGateway
 		);
 		this.server.emit('reload');
 		client.emit('getPlayerInfo', clinet1);
-
 		oppenentClient.emit('getPlayerInfo', client2);
 		this.server.to(roomName).emit('gameStart');
 	}

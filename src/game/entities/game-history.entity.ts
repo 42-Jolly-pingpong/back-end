@@ -7,6 +7,12 @@ export class GameHistory {
 	@PrimaryGeneratedColumn({ name: 'id', type: 'int' })
 	id: number;
 
+	@Column({name: 'winner_id', type: 'int'})
+	winnerId: number;
+
+	@Column({name: 'loser_id', type: 'int'})
+	loserId: number;
+
 	@ManyToOne(() => User, (user) => user.id)
 	@JoinColumn({ name: 'winner_id' })
 	winner: User;
@@ -24,8 +30,8 @@ export class GameHistory {
 	@Column({ name: 'play_date', type: 'timestamp' })
 	playDate: Date;
 
-	@Column({ name: 'play_time', type: 'time' })
-	playTime: Date;
+	@Column({ name: 'play_time', type: 'int' })
+	playTime: number;
 
 	@Column({ name: 'mode', type: 'enum', enum: GameMode })
 	mode: GameMode;

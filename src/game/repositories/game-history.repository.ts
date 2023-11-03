@@ -15,26 +15,23 @@ export class GameHistoryRepository extends Repository<GameHistory> {
 	}
 
 	async findGameHistoryByUserId(id: number): Promise<GameHistory[]> {
-		const gameHistories = await this.createQueryBuilder('GameHistory')
-			.where(
-				'GameHistory.winner_id = :id OR GameHistory.loser_id = :id',
-				{ id }
-			)
-			.getMany();
+		const gameHistories = await this.find({
+			relations: { winner: true, loser: true },
+			where: [{ winnerId: id }, { loserId: id }],
+		});
 		return gameHistories;
 	}
 
 	async gameHistorySave(gameInfo: Game) {
-		const winner: UserDto = await this.userRepository.findUserById(
-			gameInfo.winner === 1 ? gameInfo.player1.id : gameInfo.player2.id
-		);
-		const loser: UserDto = await this.userRepository.findUserById(
-			gameInfo.winner !== 1 ? gameInfo.player1.id : gameInfo.player2.id
-		);
-
 		const gameHistory = this.create({
-			winner,
-			loser,
+			winnerId:
+				gameInfo.winner === 1
+					? gameInfo.player1.id
+					: gameInfo.player2.id,
+			loserId:
+				gameInfo.winner !== 1
+					? gameInfo.player1.id
+					: gameInfo.player2.id,
 			winScore:
 				gameInfo.winner === 1
 					? gameInfo.player1.score
@@ -43,8 +40,8 @@ export class GameHistoryRepository extends Repository<GameHistory> {
 				gameInfo.winner !== 1
 					? gameInfo.player1.score
 					: gameInfo.player2.score,
-			playDate: new Date(),
-			playTime: new Date(),
+			playDate: gameInfo.startTime,
+			playTime: Date.now() - Date.parse(gameInfo.startTime.toString()),
 			mode: gameInfo.mode,
 		});
 		this.save(gameHistory);
