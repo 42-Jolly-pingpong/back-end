@@ -3,8 +3,8 @@ import { User } from 'src/user/entities/user.entity';
 import { GameMode } from 'src/game/enums/game-mode.enum';
 
 export class GameHistoryDto {
-	@ApiProperty({ description: '히스토리 인덱스' })
-	id: number;
+	@ApiProperty({ description: '방 이름' })
+	roomName: string;
 
 	@ApiProperty({ description: '승리 플레이어' })
 	winner: User;
@@ -22,7 +22,7 @@ export class GameHistoryDto {
 	playDate: Date;
 
 	@ApiProperty({ description: '총 플레이 시간' })
-	playTime: Date;
+	playTime: number;
 
 	@ApiProperty({ description: '플레이 모드' })
 	mode: GameMode;

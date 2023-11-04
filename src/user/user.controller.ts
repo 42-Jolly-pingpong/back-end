@@ -7,6 +7,7 @@ import {
 	Param,
 	HttpException,
 	HttpStatus,
+	UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserDto } from 'src/user/dto/user.dto';
@@ -15,6 +16,9 @@ import { GameService } from 'src/game/game.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { GameHistoryDto } from 'src/game/dto/game-history.dto';
+import { AuthJwtGuard } from 'src/auth/guards/jwt-guard';
+import { GetUser } from 'src/auth/decorators/user-info';
+import { UpdateStatusDto } from 'src/user/dto/update-status.dto';
 
 @ApiTags('user-controller')
 @Controller('user')
@@ -51,12 +55,19 @@ export class UserController {
 		return await this.userService.withdrawUser(+id);
 	}
 
+	@ApiOperation({ summary: '유저 상태 업데이트' })
+	@UseGuards(AuthJwtGuard)
+	@Patch('/update-Status/:status')
+	updateUserStatus(@GetUser() user: UserDto, @Body() body: UpdateStatusDto) {}
+
 	@ApiOperation({ summary: '게임 전적 불러오기 ' })
-	@Post('/:id/history')
+	@Get('/:id/history')
 	async getGameHistoryById(
 		@Param('id') id: number
 	): Promise<GameHistoryDto[]> {
-		return await this.gameService.getGameHistoryByUserId(+id);
+		const data = await this.gameService.getGameHistoryByUserId(+id);
+		console.log(data);
+		return data;
 	}
 
 	@ApiOperation({ summary: '유저 검색' })
