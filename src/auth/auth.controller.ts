@@ -7,14 +7,14 @@ import {
 	Res,
 	UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthFtGuard } from './guards/ft-guard';
 import { Response } from 'express';
-import { AuthType } from './enums/auth-type.enum';
-import { AuthJwtGuard } from './guards/jwt-guard';
 import { UserDto } from 'src/user/dto/user.dto';
-import { GetUser } from './decorators/user-info';
+import { AuthService } from 'src/auth/auth.service';
+import { AuthFtGuard } from 'src/auth/guards/ft-guard';
+import { GetUser } from 'src/auth/decorators/user-info';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { AuthJwtGuard } from 'src/auth/guards/jwt-guard';
 
 @ApiTags('auth-controller')
 @Controller('auth')

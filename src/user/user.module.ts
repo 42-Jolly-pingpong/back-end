@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { UserRepository } from './user.repository';
+import { UserService } from 'src/user/user.service';
 import { GameService } from 'src/game/game.service';
+import { User } from 'src/user/entities/user.entity';
+import { UserController } from 'src/user/user.controller';
+import { UserRepository } from 'src/user/user.repository';
 import { GameHistoryRepository } from 'src/game/repositories/game-history.repository';
 import { ScoreLogRepository } from 'src/game/repositories/score-log.repository';
 
