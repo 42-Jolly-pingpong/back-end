@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-oauth2';
-import { AuthService } from '../auth.service';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class AuthFtStrategy extends PassportStrategy(Strategy, 'ft') {

@@ -8,13 +8,13 @@ import {
 	HttpException,
 	HttpStatus,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { GameHistoryDto } from 'src/game/dto/game-history.dto';
+import { UserDto } from 'src/user/dto/user.dto';
+import { UserService } from 'src/user/user.service';
 import { GameService } from 'src/game/game.service';
-import { UserDto } from './dto/user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { GameHistoryDto } from 'src/game/dto/game-history.dto';
 
 @ApiTags('user-controller')
 @Controller('user')

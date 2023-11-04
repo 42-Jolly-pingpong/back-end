@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeORMConfig } from 'configs/typeorm.config';
 import { ConfigModule } from '@nestjs/config';
-import { FriendModule } from './friend/friend.module';
-import { ChatModule } from './chat/chat.module';
-import { GameModule } from './game/game.module';
-import { AuthModule } from './auth/auth.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from 'src/app.controller';
+import { AppService } from 'src/app.service';
+import { AuthModule } from 'src/auth/auth.module';
+import { ChatModule } from 'src/chat/chat.module';
+import { GameModule } from 'src/game/game.module';
+import { UserModule } from 'src/user/user.module';
+import { FriendModule } from 'src/friend/friend.module';
 
 @Module({
 	imports: [
