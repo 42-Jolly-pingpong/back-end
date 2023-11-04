@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { Injectable, Logger } from '@nestjs/common';
 import { UserDto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserStatus } from './enums/user-status.enum';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -22,6 +23,15 @@ export class UserRepository extends Repository<User> {
 	): Promise<void> {
 		const user = { ...userDto, ...updateUserDto };
 		await this.save(user);
+	}
+
+	async updateUserStatus(id: number, status: UserStatus): Promise<void> {
+		const user: UserDto = await this.findOneBy({ id });
+		if (user) {
+			user.status = status;
+			await this.save(user);
+		}
+		return ;
 	}
 
 	async updateUserAsLeave(user: UserDto): Promise<void> {

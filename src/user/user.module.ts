@@ -6,6 +6,7 @@ import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
 import { GameService } from 'src/game/game.service';
 import { GameHistoryRepository } from 'src/game/repositories/game-history.repository';
+import { ScoreLogRepository } from 'src/game/repositories/score-log.repository';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([User])],
@@ -14,6 +15,7 @@ import { GameHistoryRepository } from 'src/game/repositories/game-history.reposi
 		UserService,
 		GameService,
 		GameHistoryRepository,
+		ScoreLogRepository,
 		UserRepository,
 	],
 })
