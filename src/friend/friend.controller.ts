@@ -29,6 +29,7 @@ export class FriendController {
 	}
 
 	@ApiOperation({ summary: '친구 신청' })
+	@UseGuards(AuthJwtGuard)
 	@Post('/:id')
 	async updateFriend(
 		@GetUser() user: User,
