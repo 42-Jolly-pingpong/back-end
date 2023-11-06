@@ -8,20 +8,12 @@ import { ChatModule } from 'src/chat/chat.module';
 import { GameModule } from 'src/game/game.module';
 import { UserModule } from 'src/user/user.module';
 import { FriendModule } from 'src/friend/friend.module';
+import { typeORMConfig } from 'configs/typeorm.config';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({ isGlobal: true }),
-		TypeOrmModule.forRoot({
-			type: 'postgres',
-			host: process.env.DATABASE_HOST || 'localhost',
-			port: +process.env.PORT,
-			username: process.env.DATABASE_USER,
-			password: process.env.DATABASE_PASSWORD,
-			database: process.env.DATABASE_NAME,
-			entities: [__dirname + '/../**/*.entity.{js,ts}'],
-			synchronize: true,
-		}),
+		TypeOrmModule.forRoot(typeORMConfig),
 		UserModule,
 		FriendModule,
 		ChatModule,
