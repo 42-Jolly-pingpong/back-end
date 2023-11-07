@@ -232,8 +232,12 @@ export class ChatService {
 	 * @param ids
 	 * @returns UserDto의 리스트를 반환한다.
 	 */
-	async makeParticipantList(roomId: number, ids: number[]): Promise<UserDto[]> {
+	async makeParticipantList(
+		roomId: number,
+		ids: number[]
+	): Promise<[UserDto[], UserDto[]]> {
 		const users: UserDto[] = [];
+		const mutedUsers: UserDto[] = [];
 
 		for (const id of ids) {
 			const participant = await this.chatParticipantRepository.getParticipant(
@@ -248,12 +252,19 @@ export class ChatService {
 			) {
 				const user = await this.userRepository.findUserById(id);
 				if (user !== null) {
-					users.push(user);
+					if (
+						participant.muteExpirationTime &&
+						new Date() < participant.muteExpirationTime
+					) {
+						mutedUsers.push(user);
+					} else {
+						users.push(user);
+					}
 				} //다시 들어올 수 있는 사람인 지 확인한다.
 			} //존재하는 유저인지 확인 후, 존재하면 추가한다.
 		}
 
-		return users;
+		return [users, mutedUsers];
 	}
 
 	/**
@@ -518,7 +529,7 @@ export class ChatService {
 		const participantIds = addParticipantDto.participants;
 
 		const userList = await this.makeNewParticipantList(room.id, participantIds);
-		const existUserList = await this.makeParticipantList(
+		const [existUserList, mutedUserList] = await this.makeParticipantList(
 			room.id,
 			participantIds
 		);
@@ -530,6 +541,14 @@ export class ChatService {
 					roomId,
 					user,
 					status: PaticipantStatus.DEFAULT,
+				})
+		);
+		mutedUserList.map(
+			async (user) =>
+				await this.setParticipantStatus({
+					roomId,
+					user,
+					status: PaticipantStatus.MUTED,
 				})
 		);
 
