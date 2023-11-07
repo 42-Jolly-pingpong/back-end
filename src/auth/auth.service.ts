@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRepository } from 'src/user/user.repository';
 import { JwtService } from '@nestjs/jwt';
-import { AuthType } from './enums/auth-type.enum';
+import { UserDto } from 'src/user/dto/user.dto';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { UserRepository } from 'src/user/user.repository';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { UserDto } from '../user/dto/user.dto';
 import { User } from 'src/user/entities/user.entity';
 
 @Injectable()

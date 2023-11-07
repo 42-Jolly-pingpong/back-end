@@ -1,8 +1,9 @@
 import { GameMode } from 'src/game/enums/game-mode.enum';
-import { Ball } from 'src/game/interfaces/Ball.interface';
+import { Ball } from 'src/game/interfaces/ball.interface';
 import { DIRECTION } from 'src/game/gateways/enums/direction.enum';
 import { Player } from 'src/game/interfaces/player.interface';
 import { Game } from 'src/game/interfaces/game.interface';
+import { ScoreLogRepository } from 'src/game/repositories/score-log.repository';
 
 const canvasWidth = 1000;
 const canvasHeight = 600;
@@ -39,15 +40,18 @@ export function initPlayer(
 }
 
 export function initGame(
+	roomName: string,
 	mode: GameMode,
 	turn: number,
 	round: number,
 	leftPlayerScore: number,
 	rightPlayerScore: number,
 	leftPlayerId: number,
-	rightPlayerId: number
+	rightPlayerId: number,
+	startTime: Date,
 ): Game {
 	return {
+		roomName: roomName,
 		mode: mode,
 		ball: initBall(turn, mode),
 		player1: initPlayer(1, leftPlayerScore, leftPlayerId),
@@ -58,10 +62,11 @@ export function initGame(
 		round,
 		winner: 0,
 		run: false,
+		startTime: startTime,
 	};
 }
 
-export function update(game: Game): Game {
+export function update(game: Game, scoreLogRepository: ScoreLogRepository): Game {
 	if (game.ball.y <= 0) game.ball.moveY = DIRECTION.DOWN;
 	if (game.ball.y >= canvasHeight - game.ball.height)
 		game.ball.moveY = DIRECTION.UP;
@@ -129,11 +134,13 @@ export function update(game: Game): Game {
 		game.turn = 2;
 		game.isOver = true;
 		game.player2.score += 1;
+		scoreLogRepository.saveScoreLog(game.roomName, new Date(), game.player1.id)
 	}
 	if (game.ball.x >= canvasWidth - game.ball.width) {
 		game.isOver = true;
 		game.turn = 1;
 		game.player1.score += 1;
+		scoreLogRepository.saveScoreLog(game.roomName, new Date(), game.player2.id)
 	}
 
 	if (game.mode == GameMode.NORMAL) {

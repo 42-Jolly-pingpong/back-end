@@ -1,9 +1,10 @@
+import { Injectable } from '@nestjs/common';
 import { DataSource, Like, Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/create-user.dto';
-import { Injectable, Logger } from '@nestjs/common';
-import { UserDto } from './dto/user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UserDto } from 'src/user/dto/user.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { User } from 'src/user/entities/user.entity';
+import { UserStatus } from 'src/user/enums/user-status.enum';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -22,6 +23,15 @@ export class UserRepository extends Repository<User> {
 	): Promise<void> {
 		const user = { ...userDto, ...updateUserDto };
 		await this.save(user);
+	}
+
+	async updateUserStatus(id: number, status: UserStatus): Promise<void> {
+		const user: UserDto = await this.findOneBy({ id });
+		if (user) {
+			user.status = status;
+			await this.save(user);
+		}
+		return;
 	}
 
 	async updateUserAsLeave(user: UserDto): Promise<void> {
