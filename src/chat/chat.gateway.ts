@@ -104,9 +104,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const user = await this.getUserId(client);
 
 			const dm = await this.chatService.getDm(getDmDto, user);
+			const dmForChatMate = await this.chatService.getDm(
+				{ chatMate: user },
+				getDmDto.chatMate
+			);
+
+			client.join(String(dm.id));
 
 			this.server.emit('addNewDm', {
-				dm: dm,
+				dm: dmForChatMate,
 				userId: getDmDto.chatMate.id,
 			});
 
