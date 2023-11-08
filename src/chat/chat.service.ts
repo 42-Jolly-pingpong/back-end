@@ -107,16 +107,6 @@ export class ChatService {
 	}
 
 	/**
-	 * 유저가 room에 참여하고있는지 확인한다. 밴, 킥, 떠난 유저도 포함한다.
-	 * @param participants 확인할 room의 participant목록
-	 * @param user 참여해있는지 확인할 user
-	 * @returns 참여자하면 true, 참여자가 아니라면 false를 반환한다.
-	 */
-	checkUserInParticipant(participants: ChatParticipant[], user: User): boolean {
-		return participants.some((participant) => participant.user.id === user.id);
-	}
-
-	/**
 	 * 채팅방 참가자의 상태를 확인한다.
 	 * @param participants
 	 * @param user
@@ -470,8 +460,6 @@ export class ChatService {
 	 * @returns 챗 리스트를 반환한다.
 	 */
 	async getChats(roomId: number, userId: number): Promise<ChatDto[]> {
-		await this.updateReadTime(roomId, userId);
-
 		return this.chatRepository.getChats(roomId);
 	}
 
