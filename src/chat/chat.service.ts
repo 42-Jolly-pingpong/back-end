@@ -72,6 +72,11 @@ export class ChatService {
 	 * @returns
 	 */
 	roomEntityToDto(room: ChatRoom, participant: ChatParticipant): ChatRoomDto {
+		const leftToRead =
+			participant === null || room.updatedTime <= participant.lastReadTime
+				? false
+				: true;
+
 		const dto: ChatRoomDto = {
 			id: room.id,
 			roomName: room.roomName,
@@ -85,10 +90,7 @@ export class ChatService {
 					participant.status === PaticipantStatus.MUTED
 			).length,
 			participants: room.participants,
-			leftToRead:
-				participant === null || room.updatedTime <= participant.lastReadTime
-					? false
-					: true,
+			leftToRead,
 		};
 		return dto;
 	}
@@ -451,6 +453,10 @@ export class ChatService {
 
 	async updateReadTime(roomId: number, userId: number): Promise<void> {
 		return this.chatParticipantRepository.updateReadTime(roomId, userId);
+	}
+
+	async updateChatRoomUpdateTime(roomId: number): Promise<void> {
+		return this.chatRoomRepository.updateChatRoomUpdateTime(roomId);
 	}
 
 	/**

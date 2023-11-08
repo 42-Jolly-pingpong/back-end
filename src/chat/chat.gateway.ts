@@ -90,6 +90,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
+	@SubscribeMessage('readChat')
+	@UseGuards(RoomGuard)
+	async readChat(client: Socket, data: { roomId: number }): Promise<void> {
+		try {
+			const user = await this.getUserFromToken(client);
+
+			await this.chatService.updateReadTime(data.roomId, user.id);
+		} catch (e) {}
+	}
+
 	@SubscribeMessage('sendChat')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
@@ -100,6 +110,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const room = await this.chatService.getChatRoom(roomId);
 
 			const newChat = await this.chatService.createChat(user.id, createChatDto);
+
+			await this.chatService.updateChatRoomUpdateTime(roomId);
 
 			if (room.roomType === ChatRoomType.DM) {
 				this.server
