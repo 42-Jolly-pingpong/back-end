@@ -72,6 +72,24 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		return user;
 	}
 
+	@SubscribeMessage('getChats')
+	@UseGuards(RoomGuard)
+	async getChats(
+		client: Socket,
+		data: { roomId: number }
+	): Promise<{ status: number; chats: ChatDto[] }> {
+		try {
+			const user = await this.getUserFromToken(client);
+
+			await this.chatService.updateReadTime(data.roomId, user.id);
+
+			const chats = await this.chatService.getChats(data.roomId, user.id);
+			return { status: HttpStatus.OK, chats };
+		} catch (e) {
+			return { status: HttpStatus.NOT_FOUND, chats: [] };
+		}
+	}
+
 	@SubscribeMessage('sendChat')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
