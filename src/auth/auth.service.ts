@@ -42,7 +42,7 @@ export class AuthService {
 		return await this.userRepository.findUserById(id);
 	}
 
-	async getUserIdFromToken(token: string): Promise<User> {
+	async getUserByIdFromToken(token: string): Promise<User> {
 		const payload = this.jwtService.verify(token);
 
 		if (!payload.id) {
