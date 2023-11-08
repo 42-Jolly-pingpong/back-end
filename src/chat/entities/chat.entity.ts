@@ -12,7 +12,7 @@ import {
 
 @Entity('Chat')
 export class Chat {
-	@PrimaryGeneratedColumn({ name: 'id' })
+	@PrimaryGeneratedColumn({ name: 'id', type: 'bigint' })
 	id: number;
 
 	@ManyToOne(() => ChatParticipant, (user) => user.chats)
@@ -23,10 +23,10 @@ export class Chat {
 	@JoinColumn({ name: 'roomId' })
 	room: ChatRoom;
 
-	@Column({ name: 'content' })
+	@Column({ name: 'content', type: 'varchar', length: 4000 })
 	@MaxLength(4000)
 	content: string;
 
-	@CreateDateColumn({ name: 'sent_time' })
+	@CreateDateColumn({ name: 'sent_time', type: 'timestamp' })
 	sentTime: Date;
 }
