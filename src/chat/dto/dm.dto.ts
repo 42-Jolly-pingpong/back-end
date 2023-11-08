@@ -17,4 +17,7 @@ export class DmDto {
 
 	@ApiProperty({ description: '채팅방 상태' })
 	status: boolean;
+
+	@ApiProperty({ description: '읽어야하는 챗 있는 지 유무' })
+	leftToRead: boolean;
 }

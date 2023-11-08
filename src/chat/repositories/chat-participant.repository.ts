@@ -23,6 +23,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			role: Role.MEMBER,
 			status: PaticipantStatus.DEFAULT,
 			muteExpirationTime: null,
+			lastReadTime: new Date(),
 		});
 
 		const secondParticipant = this.create({
@@ -31,21 +32,25 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			role: Role.MEMBER,
 			status: PaticipantStatus.DEFAULT,
 			muteExpirationTime: null,
+			lastReadTime: new Date(),
 		});
 
 		await this.save([firstParticipant, secondParticipant]);
 	}
 
-	async createChatRoom(room: ChatRoom, user: User): Promise<void> {
+	async createChatRoom(room: ChatRoom, user: User): Promise<ChatParticipant> {
 		const owner = this.create({
 			room,
 			user,
 			role: Role.OWNER,
 			status: PaticipantStatus.DEFAULT,
 			muteExpirationTime: null,
+			lastReadTime: new Date(),
 		});
 
 		await this.save(owner);
+
+		return owner;
 	}
 
 	async getParticipant(
@@ -71,6 +76,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 				role: Role.MEMBER,
 				status: PaticipantStatus.DEFAULT,
 				muteExpirationTime: null,
+				lastReadTime: new Date(),
 			});
 		});
 
@@ -84,6 +90,7 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			role: Role.MEMBER,
 			status: PaticipantStatus.DEFAULT,
 			muteExpirationTime: null,
+			lastReadTime: new Date(),
 		});
 
 		await this.save(participant);
@@ -97,6 +104,19 @@ export class ChatParticipantRepository extends Repository<ChatParticipant> {
 			.getMany();
 
 		return participants;
+	}
+
+	async updateReadTime(roomId: number, userId: number): Promise<void> {
+		const query = this.createQueryBuilder('participant');
+
+		query
+			.update(ChatParticipant)
+			.set({ lastReadTime: new Date() })
+			.where('roomId = :roomId', { roomId })
+			.andWhere('userId = :userId', { userId })
+			.execute();
+
+		return;
 	}
 
 	async setParticipantStatus(

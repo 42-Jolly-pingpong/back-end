@@ -27,21 +27,6 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return chatRoom;
 	}
 
-	async inquireDm(userId: number): Promise<ChatRoom[]> {
-		const query = this.createQueryBuilder('room');
-
-		const dms = await query
-			.leftJoinAndSelect('room.participants', 'participant')
-			.leftJoinAndSelect('participant.user', 'user')
-			.where('room.roomType = :dm', { dm: ChatRoomType.DM })
-			.andWhere('user.id = :userId', { userId })
-			.leftJoinAndSelect('room.participants', 'all_participant')
-			.leftJoinAndSelect('all_participant.user', 'all_user')
-			.getMany();
-
-		return dms;
-	}
-
 	async getDm(roomName: string): Promise<ChatRoom> {
 		const query = this.createQueryBuilder('room');
 
@@ -65,20 +50,13 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return chatRoom;
 	}
 
-	async inquireChatRoom(user: UserDto): Promise<ChatRoom[]> {
+	async inquireAllJoinedChatRooms(userId: number): Promise<ChatRoom[]> {
 		const query = this.createQueryBuilder('room');
 
 		const rooms = await query
 			.leftJoinAndSelect('room.participants', 'participant')
 			.leftJoinAndSelect('participant.user', 'user')
-			.where('user.id=:userId', { userId: user.id })
-			.andWhere('room.roomType IN (:...types)', {
-				types: [
-					ChatRoomType.PRIVATE,
-					ChatRoomType.PROTECTED,
-					ChatRoomType.PUBLIC,
-				],
-			})
+			.where('user.id=:userId', { userId })
 			.andWhere('participant.status IN (:...status)', {
 				status: [PaticipantStatus.DEFAULT, PaticipantStatus.MUTED],
 			})
