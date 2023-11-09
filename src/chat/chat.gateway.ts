@@ -20,6 +20,7 @@ import { EnterChatRoomDto } from 'src/chat/dto/enter-chat-room.dto';
 import {
 	BadRequestException,
 	HttpStatus,
+	UnauthorizedException,
 	UseGuards,
 	UsePipes,
 	ValidationPipe,
@@ -340,7 +341,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 			return { status: HttpStatus.OK, chatRoom: room };
 		} catch (e) {
-			return { status: HttpStatus.UNAUTHORIZED, chatRoom: null };
+			if (e instanceof UnauthorizedException) {
+				return { status: HttpStatus.UNAUTHORIZED, chatRoom: null };
+			}
+			return { status: HttpStatus.BAD_REQUEST, chatRoom: null };
 		}
 	}
 
