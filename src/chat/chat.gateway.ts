@@ -30,6 +30,7 @@ import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { User } from 'src/user/entities/user.entity';
 import { ChatDto } from 'src/chat/dto/chat.dto';
+import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 
 @WebSocketGateway({
 	namespace: 'chat',
@@ -209,6 +210,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				chatParticipantDto
 			);
 
+			if (
+				chatParticipantDto.status === PaticipantStatus.BANNED ||
+				chatParticipantDto.status === PaticipantStatus.KICKED
+			) {
+				this.server
+					.to(String(chatParticipantDto.roomId))
+					.emit('leaveTheChannel', {
+						roomId: chatParticipantDto.roomId,
+						userId: chatParticipantDto.user.id,
+					});
+			}
 			this.server
 				.to(String(chatParticipantDto.roomId))
 				.emit('updateChatRoom', room);
@@ -336,5 +348,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@UseGuards(RoomGuard)
 	async requestJoin(client: Socket, data: { roomId: number }): Promise<void> {
 		client.join(String(data.roomId));
+	}
+
+	@SubscribeMessage('requestLeave')
+	@UseGuards(RoomGuard)
+	async requestLeave(client: Socket, data: { roomId: number }): Promise<void> {
+		client.leave(String(data.roomId));
 	}
 }
