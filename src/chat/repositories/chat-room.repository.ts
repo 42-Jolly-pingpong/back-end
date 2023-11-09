@@ -27,6 +27,14 @@ export class ChatRoomRepository extends Repository<ChatRoom> {
 		return chatRoom;
 	}
 
+	async updateChatRoomUpdateTime(roomId: number): Promise<void> {
+		const query = this.createQueryBuilder();
+
+		query.update(ChatRoom).set({}).where('id = :roomId', { roomId }).execute();
+
+		return;
+	}
+
 	async getDm(roomName: string): Promise<ChatRoom> {
 		const query = this.createQueryBuilder('room');
 

@@ -13,26 +13,26 @@ import {
 
 @Entity('ChatRoom')
 export class ChatRoom {
-	@PrimaryGeneratedColumn({ name: 'id' })
+	@PrimaryGeneratedColumn({ name: 'id', type: 'bigint' })
 	id: number;
 
-	@Column({ name: 'room_name' })
+	@Column({ name: 'room_name', type: 'varchar', length: 80 })
 	@MaxLength(80)
 	roomName: string;
 
-	@Column({ name: 'room_type' })
+	@Column({ name: 'room_type', type: 'varchar' })
 	roomType: ChatRoomType;
 
-	@Column({ name: 'password', nullable: true })
+	@Column({ name: 'password', nullable: true, type: 'text' })
 	password: string | null;
 
-	@CreateDateColumn({ name: 'created_at' })
+	@CreateDateColumn({ name: 'created_at', type: 'timestamp' })
 	createdAt: Date;
 
-	@UpdateDateColumn({ name: 'update_time' })
+	@UpdateDateColumn({ name: 'update_time', type: 'timestamp' })
 	updatedTime: Date;
 
-	@Column({ name: 'status', default: true })
+	@Column({ name: 'status', default: true, type: 'boolean' })
 	status: boolean;
 
 	@OneToMany(() => Chat, (chat) => chat.room)

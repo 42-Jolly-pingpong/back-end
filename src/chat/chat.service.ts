@@ -72,6 +72,11 @@ export class ChatService {
 	 * @returns
 	 */
 	roomEntityToDto(room: ChatRoom, participant: ChatParticipant): ChatRoomDto {
+		const leftToRead =
+			participant === null || room.updatedTime <= participant.lastReadTime
+				? false
+				: true;
+
 		const dto: ChatRoomDto = {
 			id: room.id,
 			roomName: room.roomName,
@@ -85,10 +90,7 @@ export class ChatService {
 					participant.status === PaticipantStatus.MUTED
 			).length,
 			participants: room.participants,
-			leftToRead:
-				participant === null || room.updatedTime <= participant.lastReadTime
-					? false
-					: true,
+			leftToRead,
 		};
 		return dto;
 	}
@@ -104,16 +106,6 @@ export class ChatService {
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * 유저가 room에 참여하고있는지 확인한다. 밴, 킥, 떠난 유저도 포함한다.
-	 * @param participants 확인할 room의 participant목록
-	 * @param user 참여해있는지 확인할 user
-	 * @returns 참여자하면 true, 참여자가 아니라면 false를 반환한다.
-	 */
-	checkUserInParticipant(participants: ChatParticipant[], user: User): boolean {
-		return participants.some((participant) => participant.user.id === user.id);
 	}
 
 	/**
@@ -463,6 +455,10 @@ export class ChatService {
 		return this.chatParticipantRepository.updateReadTime(roomId, userId);
 	}
 
+	async updateChatRoomUpdateTime(roomId: number): Promise<void> {
+		return this.chatRoomRepository.updateChatRoomUpdateTime(roomId);
+	}
+
 	/**
 	 * 챗을 조회한다.
 	 * @param roomId
@@ -470,8 +466,6 @@ export class ChatService {
 	 * @returns 챗 리스트를 반환한다.
 	 */
 	async getChats(roomId: number, userId: number): Promise<ChatDto[]> {
-		await this.updateReadTime(roomId, userId);
-
 		return this.chatRepository.getChats(roomId);
 	}
 

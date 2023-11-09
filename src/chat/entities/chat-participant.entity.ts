@@ -14,7 +14,7 @@ import {
 
 @Entity('ChatParticipant')
 export class ChatParticipant {
-	@PrimaryGeneratedColumn({ name: 'id' })
+	@PrimaryGeneratedColumn({ name: 'id', type: 'bigint' })
 	id: number;
 
 	@ManyToOne(() => ChatRoom, (room) => room.participants, {
@@ -27,18 +27,18 @@ export class ChatParticipant {
 	@JoinColumn({ name: 'userId' })
 	user: User;
 
-	@Column({ name: 'role' })
+	@Column({ name: 'role', type: 'varchar' })
 	role: Role;
 
-	@Column({ name: 'status' })
+	@Column({ name: 'status', type: 'varchar' })
 	status: PaticipantStatus;
 
-	@Column({ name: 'mute_expiration_time', nullable: true })
+	@Column({ name: 'mute_expiration_time', nullable: true, type: 'timestamp' })
 	muteExpirationTime: Date | null;
 
 	@OneToMany(() => Chat, (chat) => chat.user)
 	chats: Chat[];
 
-	@Column({ name: 'last_read_time' })
+	@Column({ name: 'last_read_time', type: 'timestamp' })
 	lastReadTime: Date;
 }

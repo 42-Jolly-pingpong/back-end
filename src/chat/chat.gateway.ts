@@ -29,6 +29,8 @@ import { ChatRoomType } from 'src/chat/enums/chat-room-type.enum';
 import { CreateChatRoomDto } from 'src/chat/dto/create-chat-room.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { User } from 'src/user/entities/user.entity';
+import { ChatDto } from 'src/chat/dto/chat.dto';
+import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 
 @WebSocketGateway({
 	namespace: 'chat',
@@ -46,7 +48,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleConnection(client: Socket, ...args: any[]) {
 		console.log('connected');
 
-		const user = await this.getUserId(client);
+		const user = await this.getUserFromToken(client);
 		const rooms = await this.chatService.inquireAllJoinedChatRooms(user.id);
 		rooms.map((room) => client.join(String(room.id)));
 
@@ -57,12 +59,12 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		console.log('Method not implemented.');
 	}
 
-	async getUserId(client: Socket): Promise<User> {
+	async getUserFromToken(client: Socket): Promise<User> {
 		const token = String(client.handshake.headers.authorization).replace(
 			'Bearer ',
 			''
 		);
-		const user = await this.authService.getUserIdFromToken(token);
+		const user = await this.authService.getUserByIdFromToken(token);
 
 		if (user === null) {
 			throw new BadRequestException();
@@ -71,16 +73,46 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		return user;
 	}
 
+	@SubscribeMessage('getChats')
+	@UseGuards(RoomGuard)
+	async getChats(
+		client: Socket,
+		data: { roomId: number }
+	): Promise<{ status: number; chats: ChatDto[] }> {
+		try {
+			const user = await this.getUserFromToken(client);
+
+			await this.chatService.updateReadTime(data.roomId, user.id);
+
+			const chats = await this.chatService.getChats(data.roomId, user.id);
+			return { status: HttpStatus.OK, chats };
+		} catch (e) {
+			return { status: HttpStatus.NOT_FOUND, chats: [] };
+		}
+	}
+
+	@SubscribeMessage('readChat')
+	@UseGuards(RoomGuard)
+	async readChat(client: Socket, data: { roomId: number }): Promise<void> {
+		try {
+			const user = await this.getUserFromToken(client);
+
+			await this.chatService.updateReadTime(data.roomId, user.id);
+		} catch (e) {}
+	}
+
 	@SubscribeMessage('sendChat')
 	@UseGuards(RoomGuard)
 	@UsePipes(ValidationPipe)
 	async sendChat(client: Socket, createChatDto: CreateChatDto): Promise<void> {
 		try {
-			const user = await this.getUserId(client);
+			const user = await this.getUserFromToken(client);
 			const { roomId } = createChatDto;
 			const room = await this.chatService.getChatRoom(roomId);
 
 			const newChat = await this.chatService.createChat(user.id, createChatDto);
+
+			await this.chatService.updateChatRoomUpdateTime(roomId);
 
 			if (room.roomType === ChatRoomType.DM) {
 				this.server
@@ -101,7 +133,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		getDmDto: GetDmDto
 	): Promise<{ status: number; dm: DmDto | null }> {
 		try {
-			const user = await this.getUserId(client);
+			const user = await this.getUserFromToken(client);
 
 			const dm = await this.chatService.getDm(getDmDto, user);
 			const dmForChatMate = await this.chatService.getDm(
@@ -129,7 +161,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client: Socket,
 		data: { roomId: number }
 	): Promise<{ status: number; chatRoom: ChatRoomDto | null }> {
-		const user = await this.getUserId(client);
+		const user = await this.getUserFromToken(client);
 
 		try {
 			const room = await this.chatService.deleteParticipant(
@@ -178,6 +210,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				chatParticipantDto
 			);
 
+			if (
+				chatParticipantDto.status === PaticipantStatus.BANNED ||
+				chatParticipantDto.status === PaticipantStatus.KICKED
+			) {
+				this.server
+					.to(String(chatParticipantDto.roomId))
+					.emit('leaveTheChannel', {
+						roomId: chatParticipantDto.roomId,
+						userId: chatParticipantDto.user.id,
+					});
+			}
 			this.server
 				.to(String(chatParticipantDto.roomId))
 				.emit('updateChatRoom', room);
@@ -215,7 +258,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		setChatRoomDto: SetChatRoomDto
 	): Promise<number> {
 		try {
-			const user = await this.getUserId(client);
+			const user = await this.getUserFromToken(client);
 
 			await this.chatService.setChatRoomInfo(user.id, setChatRoomDto);
 
@@ -240,7 +283,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		createChatRoomDto: CreateChatRoomDto
 	): Promise<{ status: number; chatRoom: ChatRoomDto | null }> {
 		try {
-			const user = await this.getUserId(client);
+			const user = await this.getUserFromToken(client);
 			const room = await this.chatService.createChatRoom(
 				createChatRoomDto,
 				user
@@ -262,7 +305,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		data: { roomId: number }
 	): Promise<number> {
 		try {
-			const user = await this.getUserId(client);
+			const user = await this.getUserFromToken(client);
 
 			await this.chatService.deleteChatRoom(data.roomId, user.id);
 
@@ -282,7 +325,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		enterChatRoomDto: EnterChatRoomDto
 	): Promise<{ status: number; chatRoom: ChatRoomDto | null }> {
 		try {
-			const user = await this.getUserId(client);
+			const user = await this.getUserFromToken(client);
 
 			const room = await this.chatService.addParticipant(
 				user.id,
@@ -305,5 +348,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@UseGuards(RoomGuard)
 	async requestJoin(client: Socket, data: { roomId: number }): Promise<void> {
 		client.join(String(data.roomId));
+	}
+
+	@SubscribeMessage('requestLeave')
+	@UseGuards(RoomGuard)
+	async requestLeave(client: Socket, data: { roomId: number }): Promise<void> {
+		client.leave(String(data.roomId));
 	}
 }
