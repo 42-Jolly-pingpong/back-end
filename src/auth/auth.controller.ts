@@ -50,7 +50,7 @@ export class AuthController {
 		const token = await this.authService.createToken(req.user);
 		res.cookie('access-token', token);
 		if (auth === AuthType.USERWITH2FA) {
-			res.redirect(`${url}/opt`);
+			res.redirect(`${url}/otp`);
 		} else if (auth === AuthType.USER) {
 			res.redirect(`${url}`);
 		}
