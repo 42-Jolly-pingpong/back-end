@@ -8,6 +8,7 @@ import {
 	HttpException,
 	HttpStatus,
 	UseGuards,
+	Delete,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserDto } from 'src/user/dto/user.dto';
@@ -17,8 +18,8 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { GameHistoryDto } from 'src/game/dto/game-history.dto';
 import { AuthJwtGuard } from 'src/auth/guards/jwt-guard';
-import { GetUser } from 'src/auth/decorators/user-info';
-import { UpdateStatusDto } from 'src/user/dto/update-status.dto';
+import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
 
 @ApiTags('user-controller')
 @Controller('user')
@@ -55,10 +56,10 @@ export class UserController {
 		return await this.userService.withdrawUser(+id);
 	}
 
-	@ApiOperation({ summary: '유저 상태 업데이트' })
-	@UseGuards(AuthJwtGuard)
-	@Patch('/update-Status/:status')
-	updateUserStatus(@GetUser() user: UserDto, @Body() body: UpdateStatusDto) {}
+	// @ApiOperation({ summary: '유저 상태 업데이트' })
+	// @UseGuards(AuthJwtGuard)
+	// @Patch('/update-Status/:status')
+	// updateUserStatus(@GetUser() user: UserDto, @Body() body: UpdateStatusDto) {}
 
 	@ApiOperation({ summary: '게임 전적 불러오기 ' })
 	@Get('/:id/history')
@@ -90,5 +91,43 @@ export class UserController {
 		if (isDuplicate) {
 			throw new HttpException('이거 나중에 핸들링', HttpStatus.CONFLICT);
 		}
+	}
+
+	@ApiOperation({ summary: 'OTP 추가를 위한 QR 코드 생성' })
+	@UseGuards(AuthJwtGuard)
+	@Get('/:id/otp')
+	async getOtp(@Param('id') id: number) {
+		const user = await this.userService.getUserById(+id);
+		// OTP 등록을 원하는 사용자 전용 시크릿 키
+		const secret = authenticator.generateSecret();
+		const url = authenticator.keyuri(
+			String(user.id),
+			`JOLLY PING PONG: ${user.email}`,
+			secret
+		);
+		const qr_code = await toDataURL(url);
+		return { secret, qr_code };
+	}
+
+	@ApiOperation({ summary: 'OTP 등록' })
+	@UseGuards(AuthJwtGuard)
+	@Post('/:id/otp')
+	async registerOtp(@Param('id') id: number, @Body() body) {
+		const { secret }: UpdateUserDto = body;
+
+		return await this.userService.updateUser(+id, {
+			auth: true,
+			secret,
+		});
+	}
+
+	@ApiOperation({ summary: 'OTP 삭제' })
+	@UseGuards(AuthJwtGuard)
+	@Delete('/:id/otp')
+	async deleteOtp(@Param('id') id: number) {
+		return await this.userService.updateUser(+id, {
+			auth: false,
+			secret: null,
+		});
 	}
 }

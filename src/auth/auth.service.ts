@@ -17,18 +17,13 @@ export class AuthService {
 
 	async validateUser(data: any): Promise<AuthType> {
 		const user = await this.userRepository.findUserByIntraId(data.intraId);
-		//console.log(user);
 		if (user) {
-			if (user.auth === true) {
-				return AuthType.USERWITH2FA;
-			}
-			return AuthType.USER;
+			return user.auth === true ? AuthType.USERWITH2FA : AuthType.USER;
 		}
 		return AuthType.NOUSER;
 	}
 
 	async createToken(data: any): Promise<string> {
-		//console.log(data);
 		const id = await this.userRepository.findUserIdByIntraId(data.intraId);
 		const payload = { id };
 		return this.jwtService.sign(payload);
@@ -44,13 +39,11 @@ export class AuthService {
 
 	async getUserByIdFromToken(token: string): Promise<User> {
 		const payload = this.jwtService.verify(token);
-
 		if (!payload.id) {
 			return null;
 		}
 
 		const user = this.getUserById(payload.id);
-
 		return user;
 	}
 }
