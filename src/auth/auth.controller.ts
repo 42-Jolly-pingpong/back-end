@@ -15,6 +15,7 @@ import { AuthFtGuard } from 'src/auth/guards/ft-guard';
 import { GetUser } from 'src/auth/decorators/user-info';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
 import { AuthJwtGuard } from 'src/auth/guards/jwt-guard';
+import { authenticator } from 'otplib';
 
 @ApiTags('auth-controller')
 @Controller('auth')
@@ -24,7 +25,9 @@ export class AuthController {
 	@ApiOperation({ summary: 'intra 권한 얻기' })
 	@UseGuards(AuthFtGuard)
 	@Get('/intra')
-	async intra() {}
+	async intra() {
+		return { message: 'intra 권한 얻기' };
+	}
 
 	@ApiOperation({ summary: 'intra 리다이렉트' })
 	@UseGuards(AuthFtGuard)
@@ -34,22 +37,22 @@ export class AuthController {
 		@Res({ passthrough: true }) res: Response
 	): Promise<void> {
 		const auth: AuthType = await this.authService.validateUser(req.user);
+		const url = `${process.env.DOMAIN}:${process.env.FRONT_PORT}`;
 
-		switch (auth) {
-			case AuthType.NOUSER:
-				console.log('회원가입을 해야합니다.');
-				res.cookie('user-data', JSON.stringify(req.user));
-				res.redirect(
-					`${process.env.DOMAIN}:${process.env.FRONT_PORT}/sign-up`
-				);
-				break;
-			case AuthType.USERWITH2FA:
-				res.cookie('2FA', JSON.stringify(true));
-			case AuthType.USER:
-				console.log('이미 회원입니다.');
-				const token = await this.authService.createToken(req.user);
-				res.cookie('access-token', token);
-				res.redirect(`${process.env.DOMAIN}:${process.env.FRONT_PORT}`);
+		// 회원가입
+		if (auth === AuthType.NOUSER) {
+			res.cookie('user-data', JSON.stringify(req.user));
+			res.redirect(`${url}/sign-up`);
+			return;
+		}
+
+		// 2FA 인증 or 로그인
+		const token = await this.authService.createToken(req.user);
+		res.cookie('access-token', token);
+		if (auth === AuthType.USERWITH2FA) {
+			res.redirect(`${url}/opt`);
+		} else if (auth === AuthType.USER) {
+			res.redirect(`${url}`);
 		}
 	}
 
@@ -82,5 +85,21 @@ export class AuthController {
 	async user(@GetUser() user: UserDto): Promise<UserDto | null> {
 		//console.log(user);
 		return user;
+	}
+
+	@ApiOperation({ summary: 'OTP 인증 시도' })
+	@Post('/otp')
+	async validOTP(@Req() req, @Body() body) {
+		let token = req.headers.authorization;
+		if (token) {
+			token = token.split(' ')[1];
+		}
+		const { code } = body;
+		const user = await this.authService.getUserByIdFromToken(token);
+		const isValid = authenticator.verify({
+			token: code,
+			secret: user.secret,
+		});
+		return { isValid };
 	}
 }
