@@ -16,7 +16,7 @@ export class User {
 	nickname: string;
 
 	@Column({ name: 'avatar_path', type: 'text', nullable: true })
-	avatarPath: string;
+	avatarPath?: string;
 
 	@Column({
 		name: 'status',
@@ -27,7 +27,7 @@ export class User {
 	status: UserStatus;
 
 	@Column({ name: 'bio', type: 'text', nullable: true })
-	bio: string;
+	bio?: string;
 
 	@Column({ name: 'auth', type: 'bool', default: false })
 	auth: boolean;
@@ -40,4 +40,7 @@ export class User {
 
 	@Column({ name: 'is_leave', type: 'bool', default: false })
 	isLeave: boolean;
+
+	@Column({ name: 'secret', type: 'text', nullable: true })
+	secret?: string;
 }

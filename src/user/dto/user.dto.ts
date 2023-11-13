@@ -15,13 +15,13 @@ export class UserDto {
 	nickname: string;
 
 	@ApiProperty({ description: '프로필 파일 경로' })
-	avatarPath: string;
+	avatarPath?: string;
 
 	@ApiProperty({ description: '접속 유무' })
 	status: UserStatus;
 
 	@ApiProperty({ description: '상태 메시지' })
-	bio: string;
+	bio?: string;
 
 	@ApiProperty({ description: '2차 인증 설정' })
 	auth: boolean;
@@ -34,4 +34,7 @@ export class UserDto {
 
 	@ApiProperty({ description: '탈퇴 유무' })
 	isLeave: boolean;
+
+	@ApiProperty({ description: '2차 인증키' })
+	secret?: string;
 }
