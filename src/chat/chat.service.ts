@@ -622,13 +622,16 @@ export class ChatService {
 		roomId: number,
 		userId: number
 	): Promise<ChatRoomDto> {
-		//owner가 채팅방 나가면?
-		const deletedParticipant =
-			await this.chatParticipantRepository.deleteParticipant(roomId, userId);
+		try {
+			const deletedParticipant =
+				await this.chatParticipantRepository.deleteParticipant(roomId, userId);
 
-		if (deletedParticipant === null) {
-			throw new NotFoundException();
+			if (deletedParticipant === null) {
+				throw new NotFoundException();
+			}
+			return this.getChatRoom(roomId);
+		} catch (e) {
+			throw new UnauthorizedException();
 		}
-		return this.getChatRoom(roomId);
 	}
 }

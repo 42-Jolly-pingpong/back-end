@@ -162,9 +162,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client: Socket,
 		data: { roomId: number }
 	): Promise<{ status: number; chatRoom: ChatRoomDto | null }> {
-		const user = await this.getUserFromToken(client);
-
 		try {
+			const user = await this.getUserFromToken(client);
+
 			const room = await this.chatService.deleteParticipant(
 				data.roomId,
 				user.id
