@@ -47,13 +47,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	server: Server;
 
 	async handleConnection(client: Socket, ...args: any[]) {
-		console.log('connected');
-
 		const user = await this.getUserFromToken(client);
 		const rooms = await this.chatService.inquireAllJoinedChatRooms(user.id);
 		rooms.map((room) => client.join(String(room.id)));
-
-		//status 수정
 	}
 
 	handleDisconnect(client: any) {
