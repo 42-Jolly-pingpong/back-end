@@ -37,7 +37,6 @@
 		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
 		"date-fns": "^2.30.0",
-		"express": "^4.18.2",
 		"Logger": "^0.0.0",
 		"otplib": "^12.0.1",
 		"passport": "^0.6.0",
