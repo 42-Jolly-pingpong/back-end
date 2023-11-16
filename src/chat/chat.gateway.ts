@@ -1,10 +1,8 @@
-import { JwtService } from '@nestjs/jwt';
 import { SetChatRoomDto } from './dto/set-chat-room.dto';
 import { DmDto } from './dto/dm.dto';
 import { Server, Socket } from 'socket.io';
 import {
 	OnGatewayConnection,
-	OnGatewayDisconnect,
 	SubscribeMessage,
 	WebSocketGateway,
 	WebSocketServer,
@@ -37,7 +35,7 @@ import { PaticipantStatus } from 'src/chat/enums/paticipant-status.enum';
 	namespace: 'chat',
 	cors: {},
 })
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayConnection {
 	constructor(
 		private readonly chatService: ChatService,
 		private readonly authService: AuthService
@@ -47,13 +45,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	server: Server;
 
 	async handleConnection(client: Socket, ...args: any[]) {
-		const user = await this.getUserFromToken(client);
-		const rooms = await this.chatService.inquireAllJoinedChatRooms(user.id);
-		rooms.map((room) => client.join(String(room.id)));
-	}
-
-	handleDisconnect(client: any) {
-		console.log('Method not implemented.');
+		try {
+			const user = await this.getUserFromToken(client);
+			const rooms = await this.chatService.inquireAllJoinedChatRooms(user.id);
+			rooms.map((room) => client.join(String(room.id)));
+		} catch (e) {
+			console.log('chat socket connection failure');
+		}
 	}
 
 	async getUserFromToken(client: Socket): Promise<User> {
@@ -95,7 +93,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const user = await this.getUserFromToken(client);
 
 			await this.chatService.updateReadTime(data.roomId, user.id);
-		} catch (e) {}
+		} catch (e) {
+			console.log('exception: chat/readChat');
+		}
 	}
 
 	@SubscribeMessage('sendChat')
@@ -119,7 +119,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 			this.server.to(String(roomId)).emit('getNewChat', { newChat, roomId });
 		} catch (e) {
-			console.log(e);
+			console.log('exception: chat/sendChat');
 		}
 	}
 
@@ -235,16 +235,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		client: Socket,
 		addParticipantDto: AddParticipantDto
 	): Promise<void> {
-		const room = await this.chatService.addParticipants(addParticipantDto);
+		try {
+			const room = await this.chatService.addParticipants(addParticipantDto);
 
-		client.join(String(addParticipantDto.roomId));
-		this.server
-			.to(String(addParticipantDto.roomId))
-			.emit('updateChatRoom', room);
-		this.server.emit('addNewChatRoom', {
-			chatRoom: room,
-			userId: addParticipantDto.participants,
-		});
+			client.join(String(addParticipantDto.roomId));
+			this.server
+				.to(String(addParticipantDto.roomId))
+				.emit('updateChatRoom', room);
+			this.server.emit('addNewChatRoom', {
+				chatRoom: room,
+				userId: addParticipantDto.participants,
+			});
+		} catch (e) {
+			console.log('exception: chat/inviteUser');
+		}
 	}
 
 	@SubscribeMessage('setChatRoom')
