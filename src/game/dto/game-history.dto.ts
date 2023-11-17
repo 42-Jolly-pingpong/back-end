@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/user/entities/user.entity';
 import { GameMode } from 'src/game/enums/game-mode.enum';
+import { ScoreLogDto } from './score-log.dto';
 
 export class GameHistoryDto {
 	@ApiProperty({ description: '방 이름' })
@@ -26,4 +27,7 @@ export class GameHistoryDto {
 
 	@ApiProperty({ description: '플레이 모드' })
 	mode: GameMode;
+
+	@ApiProperty({ description: '스코어 이력' })
+	scoreLogs?: ScoreLogDto[];
 }

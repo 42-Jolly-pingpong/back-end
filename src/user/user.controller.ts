@@ -70,7 +70,12 @@ export class UserController {
 		@Param('id') id: number
 	): Promise<GameHistoryDto[]> {
 		const data = await this.gameService.getGameHistoryByUserId(+id);
-		//console.log(data);
+		for (let i = 0; i < data.length; i++) {
+			const scoreLogs = await this.gameService.getGameScoreLogByRoomName(
+				data[i].roomName
+			);
+			data[i].scoreLogs = scoreLogs;
+		}
 		return data;
 	}
 

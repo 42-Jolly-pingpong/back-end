@@ -1,4 +1,4 @@
-FROM node:lts-alpine3.17
+FROM node:lts-alpine3.18
 
 ARG NODE_ENV=development
 ENV NODE_ENV $NODE_ENV
