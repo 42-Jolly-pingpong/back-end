@@ -67,7 +67,6 @@ export class UserController {
 		@Param('id') id: number
 	): Promise<GameHistoryDto[]> {
 		const data = await this.gameService.getGameHistoryByUserId(+id);
-		console.log(data);
 		return data;
 	}
 

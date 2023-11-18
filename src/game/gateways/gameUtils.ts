@@ -134,13 +134,13 @@ export function update(game: Game, scoreLogRepository: ScoreLogRepository): Game
 		game.turn = 2;
 		game.isOver = true;
 		game.player2.score += 1;
-		scoreLogRepository.saveScoreLog(game.roomName, new Date(), game.player1.id)
+		scoreLogRepository.saveScoreLog(game.roomName, game.startTime, game.player2.id)
 	}
 	if (game.ball.x >= canvasWidth - game.ball.width) {
 		game.isOver = true;
 		game.turn = 1;
 		game.player1.score += 1;
-		scoreLogRepository.saveScoreLog(game.roomName, new Date(), game.player2.id)
+		scoreLogRepository.saveScoreLog(game.roomName, game.startTime, game.player1.id)
 	}
 
 	if (game.mode == GameMode.NORMAL) {
