@@ -18,8 +18,6 @@ export class GameHistoryRepository extends Repository<GameHistory> {
 			where: [{ winnerId: id }, { loserId: id }],
 			order: { playDate: 'DESC' },
 		});
-		console.log(gameHistories);
-		console.log(gameHistories[0].scoreLog)
 		return gameHistories;
 	}
 
