@@ -1,6 +1,5 @@
 import { DIRECTION } from 'src/game/gateways/enums/direction.enum';
 import {
-	MessageBody,
 	OnGatewayConnection,
 	OnGatewayDisconnect,
 	OnGatewayInit,
@@ -330,5 +329,23 @@ export class GameGateway
 		client.emit('getPlayerInfo', clinet1);
 		oppenentClient.emit('getPlayerInfo', client2);
 		this.server.to(roomName).emit('gameStart');
+	}
+
+	@SubscribeMessage('inviteCencel')
+	invietCencel(client: Socket, message: string) {
+		const inviteInfo: InviteInfo = JSON.parse(message);
+		const oppenentClient: Socket = this.clientListById.get(
+			inviteInfo.user.id
+		);
+		oppenentClient.emit('inviteCencel');
+	}
+
+	@SubscribeMessage('refuseInvite')
+	refuseInvite(client: Socket, message: string) {
+		const inviteInfo: InviteInfo = JSON.parse(message);
+		const oppenentClient: Socket = this.clientListById.get(
+			inviteInfo.user.id
+		);
+		oppenentClient.emit('refuseInvite');
 	}
 }
