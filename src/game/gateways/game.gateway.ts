@@ -183,6 +183,8 @@ export class GameGateway
 			if (curGame.isEnd) {
 				this.gameRoomData.delete(roomName);
 				this.gameHistoryRepository.gameHistorySave(curGame);
+				this.userRepository.updateWinCount(curGame.winner === 1 ? curGame.player1.id : curGame.player2.id);
+				this.userRepository.updateLoseCount(curGame.winner === 1 ? curGame.player2.id : curGame.player1.id)
 				this.server.to(roomName).emit('gameResult', curGame.winner);
 				clearInterval(intervalId);
 				return;
