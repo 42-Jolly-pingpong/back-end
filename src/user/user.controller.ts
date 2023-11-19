@@ -49,7 +49,6 @@ export class UserController {
 		@GetUser() user: UserDto,
 		@Body() updateUserDto: UpdateUserDto
 	): Promise<void> {
-		//console.log(updateUserDto);
 		return await this.userService.updateUser(user.id, updateUserDto);
 	}
 
@@ -58,11 +57,6 @@ export class UserController {
 	async withdrawUser(@Param('id') id: number): Promise<void> {
 		return await this.userService.withdrawUser(+id);
 	}
-
-	// @ApiOperation({ summary: '유저 상태 업데이트' })
-	// @UseGuards(AuthJwtGuard)
-	// @Patch('/update-Status/:status')
-	// updateUserStatus(@GetUser() user: UserDto, @Body() body: UpdateStatusDto) {}
 
 	@ApiOperation({ summary: '게임 전적 불러오기 ' })
 	@Get('/:id/history')

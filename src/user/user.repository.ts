@@ -44,7 +44,10 @@ export class UserRepository extends Repository<User> {
 	}
 
 	async findUsersByKeyword(keyword: string): Promise<UserDto[]> {
-		return await this.find({ where: { nickname: Like(`${keyword}%`) } });
+		return await this.find({
+			where: { nickname: Like(`${keyword}%`) },
+			order: { nickname: 'ASC' },
+		});
 	}
 
 	async findUserById(id: number): Promise<UserDto | null> {
