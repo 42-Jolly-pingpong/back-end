@@ -25,11 +25,13 @@ export class BlockedFriendRepository extends Repository<BlockedFriend> {
 	}
 
 	async updateBlockedFriend(id: number, blockId: number): Promise<void> {
-		const blocked = this.create({
-			userId: id,
-			blockId: blockId,
+		const exist = await this.findOne({
+			where: { userId: id, blockId },
 		});
-		await this.save(blocked);
+
+		if (!exist) {
+			await this.save({ userId: id, blockId });
+		}
 	}
 
 	async deleteBlockFriend(userId: number, blockId: number): Promise<void> {
@@ -47,6 +49,14 @@ export class BlockedFriendRepository extends Repository<BlockedFriend> {
 			relations: { user: true, block: true },
 			where: { userId: id },
 		});
-		return blackList.map((item) => item.block);
+
+		if (blackList) {
+			const sortedBlackList = blackList.sort((front, back) =>
+				front.block.nickname.localeCompare(back.block.nickname)
+			);
+
+			return sortedBlackList.map((item) => item.block);
+		}
+		return [];
 	}
 }

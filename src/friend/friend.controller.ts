@@ -1,4 +1,4 @@
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
 	Controller,
 	Delete,
@@ -14,6 +14,7 @@ import { GetUser } from 'src/auth/decorators/user-info';
 import { User } from 'src/user/entities/user.entity';
 import { ProfileStatus } from 'src/friend/enums/profile-status.enum';
 
+@ApiTags('friend-controller')
 @Controller('friends')
 export class FriendController {
 	constructor(private readonly friendService: FriendService) {}
@@ -137,42 +138,3 @@ export class FriendController {
 		return await this.friendService.getFriendState(user.id, otherId);
 	}
 }
-
-/**
- * 블랙홀 보낼 애들
- */
-/**
- *
- *
- *
- */
-//@ApiOperation({ summary: '유저 id를 이용한 차단 친구 목록 찾기' })
-//@Get('users/:id/black-list')
-//async getBlackList(@Param('id') userIdx: number) {
-//	return await this.friendService.getBlackList(userIdx);
-
-//	@ApiOperation({ summary: '친구 신청' })
-//	@ApiProperty({
-//		example: '3',
-//		description: 'sender_idx',
-//		required: true,
-//	})
-//	@ApiProperty({
-//		example: '4',
-//		description: 'receiver_idx',
-//		required: true,
-//	})
-//	@Post('/')
-//	async SendFriendRequest(
-//		@Body() requestInfo: FriendRequestDto
-//	): Promise<void> {
-//		return await this.friendService.updateFriendRequest(requestInfo);
-//	}
-//}
-
-// [삭제 예정] : API 명세와 다름
-//@ApiOperation({ summary: '유저 id를 이용한 친구 목록 찾기' })
-//@Get('/')
-//async getFriendList(@Param('id') userIdx: number): Promise<UserDto[]> {
-//	return await this.friendService.findAllFriendList(userIdx);
-//}
