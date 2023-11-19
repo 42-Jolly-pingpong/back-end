@@ -16,6 +16,7 @@ export class GameHistoryRepository extends Repository<GameHistory> {
 		const gameHistories = await this.find({
 			relations: { winner: true, loser: true },
 			where: [{ winnerId: id }, { loserId: id }],
+			order: { playDate: 'DESC' },
 		});
 		return gameHistories;
 	}

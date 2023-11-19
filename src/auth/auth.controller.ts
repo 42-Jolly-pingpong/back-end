@@ -25,8 +25,8 @@ export class AuthController {
 	@ApiOperation({ summary: 'intra 권한 얻기' })
 	@UseGuards(AuthFtGuard)
 	@Get('/intra')
-	async intra() {
-		return { message: 'intra 권한 얻기' };
+	 intra() {
+		return ;
 	}
 
 	@ApiOperation({ summary: 'intra 리다이렉트' })
@@ -82,8 +82,7 @@ export class AuthController {
 	@ApiOperation({ summary: 'jwt token을 사용해 user 반환' })
 	@UseGuards(AuthJwtGuard)
 	@Post('/user')
-	async user(@GetUser() user: UserDto): Promise<UserDto | null> {
-		//console.log(user);
+	user(@GetUser() user: UserDto): UserDto {
 		return user;
 	}
 

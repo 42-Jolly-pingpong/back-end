@@ -20,6 +20,7 @@ import { GameHistoryDto } from 'src/game/dto/game-history.dto';
 import { AuthJwtGuard } from 'src/auth/guards/jwt-guard';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
+import { GetUser } from 'src/auth/decorators/user-info';
 
 @ApiTags('user-controller')
 @Controller('user')
@@ -42,12 +43,14 @@ export class UserController {
 	}
 
 	@ApiOperation({ summary: '유저정보 업데이트' })
-	@Patch('/:id')
+	@UseGuards(AuthJwtGuard)
+	@Patch('/')
 	async updateUser(
-		@Param('id') id: number,
+		@GetUser() user: UserDto,
 		@Body() updateUserDto: UpdateUserDto
 	): Promise<void> {
-		return await this.userService.updateUser(+id, updateUserDto);
+		//console.log(updateUserDto);
+		return await this.userService.updateUser(user.id, updateUserDto);
 	}
 
 	@ApiOperation({ summary: '회원 탈퇴' })
@@ -67,6 +70,15 @@ export class UserController {
 		@Param('id') id: number
 	): Promise<GameHistoryDto[]> {
 		const data = await this.gameService.getGameHistoryByUserId(+id);
+<<<<<<< HEAD
+=======
+		for (let i = 0; i < data.length; i++) {
+			const scoreLogs = await this.gameService.getGameScoreLogByRoomName(
+				data[i].roomName
+			);
+			data[i].scoreLogs = scoreLogs;
+		}
+>>>>>>> dev
 		return data;
 	}
 

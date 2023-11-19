@@ -22,6 +22,7 @@ export class ScoreLogRepository extends Repository<ScoreLog> {
 		const scoreLog: ScoreLogDto[] = await this.find({
 			relations: { user: true },
 			where: { roomName },
+			order: { elapsedTime: 'ASC' },
 		});
 		return scoreLog;
 	}
