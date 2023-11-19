@@ -9,4 +9,7 @@ export class CreateUserDto {
 
 	@ApiProperty({ description: '닉네임' })
 	nickname: string;
+
+	@ApiProperty({ description: '프로필 사진' })
+	avatarPath?: string;
 }
