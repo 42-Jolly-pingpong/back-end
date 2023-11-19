@@ -1,4 +1,4 @@
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
 	Controller,
 	Delete,
@@ -14,6 +14,7 @@ import { GetUser } from 'src/auth/decorators/user-info';
 import { User } from 'src/user/entities/user.entity';
 import { ProfileStatus } from 'src/friend/enums/profile-status.enum';
 
+@ApiTags('friend-controller')
 @Controller('friends')
 export class FriendController {
 	constructor(private readonly friendService: FriendService) {}
