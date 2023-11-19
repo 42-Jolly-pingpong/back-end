@@ -59,11 +59,6 @@ export class UserController {
 		return await this.userService.withdrawUser(+id);
 	}
 
-	// @ApiOperation({ summary: '유저 상태 업데이트' })
-	// @UseGuards(AuthJwtGuard)
-	// @Patch('/update-Status/:status')
-	// updateUserStatus(@GetUser() user: UserDto, @Body() body: UpdateStatusDto) {}
-
 	@ApiOperation({ summary: '게임 전적 불러오기 ' })
 	@Get('/:id/history')
 	async getGameHistoryById(
