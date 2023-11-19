@@ -100,10 +100,3 @@ export class FriendService {
 		await this.blockedFriendRepository.deleteBlockFriend(userId, blockId);
 	}
 }
-
-//async updateFriendRequest(requestInfo: FriendRequestDto): Promise<void> {
-//	return await this.friendRequestRepository.updateFriendRequest(
-//		requestInfo
-//	);
-//}
-//

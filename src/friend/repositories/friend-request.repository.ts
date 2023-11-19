@@ -17,7 +17,11 @@ export class FriendRequestRepository extends Repository<FriendRequest> {
 		});
 
 		if (requestList) {
-			return requestList.map((item) => item.sender);
+			const sortedRequestList = requestList.sort((front, back) =>
+				front.sender.nickname.localeCompare(back.sender.nickname)
+			);
+
+			return sortedRequestList.map((item) => item.sender);
 		}
 		return [];
 	}
@@ -46,11 +50,12 @@ export class FriendRequestRepository extends Repository<FriendRequest> {
 		senderId: number,
 		receiverId: number
 	): Promise<void> {
-		await this.save({ senderId, receiverId });
+		const exist = await this.findOne({
+			where: { senderId, receiverId },
+		});
+
+		if (!exist) {
+			await this.save({ senderId, receiverId });
+		}
 	}
 }
-
-//async updateFriendRequest(requestInfo: FriendRequestDto): Promise<void> {
-//	console.log(requestInfo);
-//	await this.save(requestInfo);
-//}

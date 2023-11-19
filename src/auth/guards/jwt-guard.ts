@@ -7,8 +7,10 @@ export class AuthJwtGuard extends AuthGuard('jwt') {
 		if (!user) {
 			throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
 		} else if (err) {
-			console.log('authJwtGuard error');
-			return;
+			throw new HttpException(
+				'Internal Server Error',
+				HttpStatus.INTERNAL_SERVER_ERROR
+			);
 		}
 		return user;
 	}

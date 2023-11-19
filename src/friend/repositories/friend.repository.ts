@@ -23,7 +23,14 @@ export class FriendRepository extends Repository<Friend> {
 				return item.user;
 			}
 		});
-		return friendList;
+
+		if (friendList) {
+			const sortedFriendList = friendList.sort((front, back) =>
+				front.nickname.localeCompare(back.nickname)
+			);
+			return sortedFriendList;
+		}
+		return [];
 	}
 
 	async findFriendListByKeyword(
@@ -36,7 +43,14 @@ export class FriendRepository extends Repository<Friend> {
 			return user.nickname.startsWith(keyword);
 		});
 
-		return filteredFriendList;
+		if (filteredFriendList) {
+			const sortedFriendList = filteredFriendList.sort((front, back) =>
+				front.nickname.localeCompare(back.nickname)
+			);
+			return sortedFriendList;
+		}
+
+		return [];
 	}
 
 	async deleteFriend(id: number, friendId: number): Promise<void> {
@@ -63,6 +77,15 @@ export class FriendRepository extends Repository<Friend> {
 	}
 
 	async updateFriend(id: number, otherId: number): Promise<void> {
-		await this.save({ userId: id, friendId: otherId });
+		const exist = await this.findOne({
+			where: [
+				{ userId: id, friendId: otherId },
+				{ userId: otherId, friendId: id },
+			],
+		});
+
+		if (!exist) {
+			await this.save({ userId: id, friendId: otherId });
+		}
 	}
 }
