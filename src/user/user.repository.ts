@@ -71,4 +71,11 @@ export class UserRepository extends Repository<User> {
 		}
 		return false;
 	}
+
+	async updateWinCount(id: number) {
+		this.update(id, { winCount: +1 });
+	}
+	async updateLoseCount(id: number) {
+		this.update(id, { loseCount: +1 });
+	}
 }
