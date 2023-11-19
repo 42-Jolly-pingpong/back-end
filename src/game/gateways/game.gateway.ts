@@ -121,20 +121,18 @@ export class GameGateway
 			// 상대 클라이언트 소켓 접속 유무 확인하는 로직 필요
 			client.join(roomName);
 			oppenentClient.join(roomName);
-			this.gameRoomData.set(
+			const gameData = initGame(
 				roomName,
-				initGame(
-					roomName,
-					GameMode.NORMAL,
-					1,
-					0,
-					0,
-					0,
-					id,
-					oppenentId,
-					new Date()
-				)
+				GameMode.NORMAL,
+				1,
+				0,
+				0,
+				0,
+				id,
+				oppenentId,
+				new Date()
 			);
+			this.gameRoomData.set(roomName, gameData);
 			const clinet1 = {
 				roomName,
 				position: 1,
@@ -150,6 +148,7 @@ export class GameGateway
 				oppenentId,
 				UserStatus.INGAME
 			);
+			await this.gameHistoryRepository.createHistory(gameData);
 			this.server.emit('reload');
 			client.emit('getPlayerInfo', clinet1);
 			oppenentClient.emit('getPlayerInfo', client2);
@@ -344,7 +343,9 @@ export class GameGateway
 	@SubscribeMessage('refuseInvite')
 	refuseInvite(client: Socket, message: string) {
 		const inviteInfo: InviteInfo = JSON.parse(message);
-		const oppenentClient: Socket = this.clientListById.get(inviteInfo.user.id);
-		oppenentClient.emit('refuseInvite')
+		const oppenentClient: Socket = this.clientListById.get(
+			inviteInfo.user.id
+		);
+		oppenentClient.emit('refuseInvite');
 	}
 }
