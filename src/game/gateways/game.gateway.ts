@@ -1,6 +1,5 @@
 import { DIRECTION } from 'src/game/gateways/enums/direction.enum';
 import {
-	MessageBody,
 	OnGatewayConnection,
 	OnGatewayDisconnect,
 	OnGatewayInit,
@@ -77,7 +76,17 @@ export class GameGateway
 			oppenentClient.join(roomName);
 			this.gameRoomData.set(
 				roomName,
-				initGame(roomName, GameMode.SPEED, 1, 0, 0, 0, id, oppenentId, new Date())
+				initGame(
+					roomName,
+					GameMode.SPEED,
+					1,
+					0,
+					0,
+					0,
+					id,
+					oppenentId,
+					new Date()
+				)
 			);
 			const clinet1 = {
 				roomName,
@@ -114,7 +123,17 @@ export class GameGateway
 			oppenentClient.join(roomName);
 			this.gameRoomData.set(
 				roomName,
-				initGame(roomName, GameMode.NORMAL, 1, 0, 0, 0, id, oppenentId, new Date())
+				initGame(
+					roomName,
+					GameMode.NORMAL,
+					1,
+					0,
+					0,
+					0,
+					id,
+					oppenentId,
+					new Date()
+				)
 			);
 			const clinet1 = {
 				roomName,
@@ -265,12 +284,12 @@ export class GameGateway
 		friend.emit('inviteGame', user, inviteInfo.mode);
 	}
 
-
-
 	@SubscribeMessage('acceptInvite')
 	async acceptInvite(client: Socket, message: string) {
 		const inviteInfo: InviteInfo = JSON.parse(message);
-		const oppenentClient: Socket = this.clientListById.get(inviteInfo.user.id);
+		const oppenentClient: Socket = this.clientListById.get(
+			inviteInfo.user.id
+		);
 		const clientId = this.clientListBySocekt.get(client);
 		const roomName: string = uuidv4();
 		console.log('player1 = ', clientId);
@@ -280,7 +299,17 @@ export class GameGateway
 		oppenentClient.join(roomName);
 		this.gameRoomData.set(
 			roomName,
-			initGame(roomName, inviteInfo.mode, 1, 0, 0, 0, clientId, inviteInfo.user.id, new Date())
+			initGame(
+				roomName,
+				inviteInfo.mode,
+				1,
+				0,
+				0,
+				0,
+				clientId,
+				inviteInfo.user.id,
+				new Date()
+			)
 		);
 		const clinet1 = {
 			roomName,
@@ -301,5 +330,21 @@ export class GameGateway
 		client.emit('getPlayerInfo', clinet1);
 		oppenentClient.emit('getPlayerInfo', client2);
 		this.server.to(roomName).emit('gameStart');
+	}
+
+	@SubscribeMessage('inviteCencel')
+	invietCencel(client: Socket, message: string) {
+		const inviteInfo: InviteInfo = JSON.parse(message);
+		const oppenentClient: Socket = this.clientListById.get(
+			inviteInfo.user.id
+		);
+		oppenentClient.emit('inviteCencel');
+	}
+
+	@SubscribeMessage('refuseInvite')
+	refuseInvite(client: Socket, message: string) {
+		const inviteInfo: InviteInfo = JSON.parse(message);
+		const oppenentClient: Socket = this.clientListById.get(inviteInfo.user.id);
+		oppenentClient.emit('refuseInvite')
 	}
 }
