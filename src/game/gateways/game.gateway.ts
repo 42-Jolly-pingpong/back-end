@@ -74,20 +74,18 @@ export class GameGateway
 			const roomName: string = uuidv4();
 			client.join(roomName);
 			oppenentClient.join(roomName);
-			this.gameRoomData.set(
+			const gameData = initGame(
 				roomName,
-				initGame(
-					roomName,
-					GameMode.SPEED,
-					1,
-					0,
-					0,
-					0,
-					id,
-					oppenentId,
-					new Date()
-				)
+				GameMode.NORMAL,
+				1,
+				0,
+				0,
+				0,
+				id,
+				oppenentId,
+				new Date()
 			);
+			this.gameRoomData.set(roomName, gameData);
 			const clinet1 = {
 				roomName,
 				position: 1,
@@ -103,6 +101,7 @@ export class GameGateway
 				oppenentId,
 				UserStatus.INGAME
 			);
+			await this.gameHistoryRepository.createHistory(gameData);
 			this.server.emit('reload');
 			client.emit('getPlayerInfo', clinet1);
 			oppenentClient.emit('getPlayerInfo', client2);
@@ -183,8 +182,19 @@ export class GameGateway
 			if (curGame.isEnd) {
 				this.gameRoomData.delete(roomName);
 				this.gameHistoryRepository.gameHistorySave(curGame);
-				this.userRepository.updateWinCount(curGame.winner === 1 ? curGame.player1.id : curGame.player2.id);
-				this.userRepository.updateLoseCount(curGame.winner === 1 ? curGame.player2.id : curGame.player1.id)
+				this.userRepository.updateWinCount(
+					curGame.winner === 1
+						? curGame.player1.id
+						: curGame.player2.id
+				);
+				this.userRepository.updateLoseCount(
+					curGame.winner === 1
+						? curGame.player2.id
+						: curGame.player1.id
+				);
+				this.userRepository.updateUserStatus(curGame.player1.id, UserStatus.ONLINE);
+				this.userRepository.updateUserStatus(curGame.player2.id, UserStatus.ONLINE);
+				this.server.emit('reload');
 				this.server.to(roomName).emit('gameResult', curGame.winner);
 				clearInterval(intervalId);
 				return;
@@ -293,25 +303,20 @@ export class GameGateway
 		);
 		const clientId = this.clientListBySocekt.get(client);
 		const roomName: string = uuidv4();
-		console.log('player1 = ', clientId);
-		console.log('player2 = ', inviteInfo.user.id);
-		// 상대 클라이언트 소켓 접속 유무 확인하는 로직 필요
 		client.join(roomName);
 		oppenentClient.join(roomName);
-		this.gameRoomData.set(
+		const gameData = initGame(
 			roomName,
-			initGame(
-				roomName,
-				inviteInfo.mode,
-				1,
-				0,
-				0,
-				0,
-				clientId,
-				inviteInfo.user.id,
-				new Date()
-			)
+			GameMode.NORMAL,
+			1,
+			0,
+			0,
+			0,
+			clientId,
+			inviteInfo.user.id,
+			new Date()
 		);
+		this.gameRoomData.set(roomName, gameData);
 		const clinet1 = {
 			roomName,
 			position: 1,
@@ -327,6 +332,7 @@ export class GameGateway
 			inviteInfo.user.id,
 			UserStatus.INGAME
 		);
+		await this.gameHistoryRepository.createHistory(gameData);
 		this.server.emit('reload');
 		client.emit('getPlayerInfo', clinet1);
 		oppenentClient.emit('getPlayerInfo', client2);

@@ -73,9 +73,13 @@ export class UserRepository extends Repository<User> {
 	}
 
 	async updateWinCount(id: number) {
-		this.update(id, { winCount: +1 });
+		const user = await this.findOneBy({id})
+
+		this.update(id, { winCount: user.winCount + 1 });
 	}
 	async updateLoseCount(id: number) {
-		this.update(id, { loseCount: +1 });
+		const user = await this.findOneBy({id})
+
+		this.update(id, { loseCount: user.loseCount + 1 });
 	}
 }
