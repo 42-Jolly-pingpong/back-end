@@ -76,6 +76,7 @@ export class FriendService {
 
 	async acceptFriendRequest(id: number, otherId: number): Promise<void> {
 		await this.friendRequestRepository.deleteFriendRequest(id, otherId);
+		await this.friendRequestRepository.deleteFriendRequest(otherId, id);
 		await this.friendRepository.updateFriend(id, otherId);
 	}
 
