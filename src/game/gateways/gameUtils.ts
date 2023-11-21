@@ -7,8 +7,8 @@ import { ScoreLogRepository } from 'src/game/repositories/score-log.repository';
 
 const canvasWidth = 1000;
 const canvasHeight = 600;
-const normalMaxScore: number = 2;
-const speedMaxScore: number = 2;
+const normalMaxScore: number = 6;
+const speedMaxScore: number = 6;
 
 export function initBall(turn: number, mode: GameMode): Ball {
 	return {
@@ -48,7 +48,7 @@ export function initGame(
 	rightPlayerScore: number,
 	leftPlayerId: number,
 	rightPlayerId: number,
-	startTime: Date,
+	startTime: Date
 ): Game {
 	return {
 		roomName: roomName,
@@ -66,7 +66,10 @@ export function initGame(
 	};
 }
 
-export function update(game: Game, scoreLogRepository: ScoreLogRepository): Game {
+export function update(
+	game: Game,
+	scoreLogRepository: ScoreLogRepository
+): Game {
 	if (game.ball.y <= 0) game.ball.moveY = DIRECTION.DOWN;
 	if (game.ball.y >= canvasHeight - game.ball.height)
 		game.ball.moveY = DIRECTION.UP;
@@ -134,13 +137,21 @@ export function update(game: Game, scoreLogRepository: ScoreLogRepository): Game
 		game.turn = 2;
 		game.isOver = true;
 		game.player2.score += 1;
-		scoreLogRepository.saveScoreLog(game.roomName, game.startTime, game.player2.id)
+		scoreLogRepository.saveScoreLog(
+			game.roomName,
+			game.startTime,
+			game.player2.id
+		);
 	}
 	if (game.ball.x >= canvasWidth - game.ball.width) {
 		game.isOver = true;
 		game.turn = 1;
 		game.player1.score += 1;
-		scoreLogRepository.saveScoreLog(game.roomName, game.startTime, game.player1.id)
+		scoreLogRepository.saveScoreLog(
+			game.roomName,
+			game.startTime,
+			game.player1.id
+		);
 	}
 
 	if (game.mode == GameMode.NORMAL) {
